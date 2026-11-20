@@ -263,3 +263,4 @@ Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
   .gitignore: fonts/*.ttf, displays/*/fonts/. Original und Western nutzen 'fonts/X.ttf' (relativ zur Geraete-YAML).
   Original: Rundung der Aussentemperatur korrigiert (alt: int(roundf(t*2)/2) -> 1.6 zeigte 1), sonst unveraendert.
   designs.txt: jetzt auch original und western.
+  20.11.2026: Secret FONTS_KEY vom Nutzer eingetragen.
