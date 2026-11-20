@@ -64,23 +64,5 @@ wifi:
 
 captive_portal:
 
-# Knopf in Home Assistant: sofort nach neuer Firmware schauen und einspielen
-button:
-  - platform: template
-    name: "Jetzt Update holen"
-    on_press:
-      - script.execute: update_jetzt
-
-script:
-  - id: update_jetzt
-    then:
-      - component.update: fw_update
-      - delay: 10s
-      - if:
-          condition:
-            lambda: 'return id(fw_update).state == update::UPDATE_STATE_AVAILABLE;'
-          then:
-            - update.perform: fw_update
-
 packages:
   anzeige: !include anzeige.yaml
