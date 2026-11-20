@@ -234,3 +234,4 @@ Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
 2026-11-20 Amiga2 Farben nach Nutzerbeobachtung am Display (Build 22): Leiste hellgruen, Hintergrund gelb, Karten fast weiss,
   Bitcoin/Kueche rosa, Schrift schwarz. Geaendert: MINT 73,182,0  CREME 146,146,85  LEISTE 36,109,0  KORALLE 219,36,0.
   Regel fuer dieses Display: Blau 85 macht helle Flaechen weisslich/rosa, hohe R+G wirken gelb/weiss -> Werte eher niedrig.
+  Statusleiste: Datum, Uhr, Innen jetzt CREME (hell) auf dunkler LEISTE.

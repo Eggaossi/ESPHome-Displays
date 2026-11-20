@@ -417,13 +417,13 @@ display:
             const char *wt[] = {"Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"};
             snprintf(lbuf, sizeof(lbuf), "%s %02d.%02d.", wt[(time.day_of_week + 5) % 7], time.day_of_month, time.month);
             { int bx, by, bw, bh; it.get_text_bounds(28, 4, lbuf, id(ru14), TextAlign::TOP_LEFT, &bx, &by, &bw, &bh);
-              fett_r(28 + bw, 4, id(ru14), GRAU, lbuf); }
-            it.printf(160, 2, id(ru20), NAVY, TextAlign::TOP_CENTER, "%02d:%02d", time.hour, time.minute);
+              fett_r(28 + bw, 4, id(ru14), CREME, lbuf); }
+            it.printf(160, 2, id(ru20), CREME, TextAlign::TOP_CENTER, "%02d:%02d", time.hour, time.minute);
           }
           if (id(sensor_thermo_hygrometer_3_temperatur).has_state())
           { snprintf(lbuf, sizeof(lbuf), "Innen %.1f°  %.0f%%",
               id(sensor_thermo_hygrometer_3_temperatur).state, id(sensor_thermo_hygrometer_3_luftfeuchtigkeit).state);
-            fett_r(312, 4, id(ru14), GRAU, lbuf); }
+            fett_r(312, 4, id(ru14), CREME, lbuf); }  // helle Schrift auf dunkler Leiste
 
           // ----- Titel -----
           links(10, 30, id(ru20b), NAVY, "Ossi's Wetterstation");
