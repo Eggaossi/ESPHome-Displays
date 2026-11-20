@@ -357,6 +357,10 @@ display:
           const Color ROT         = Color(255, 36, 0);
           const Color KORALLE     = Color(255, 146, 85);
 
+          // Roboto Condensed: linksbuendige Texte stehen am Geraet ca. 4 px hoeher als
+          // rechts-/mittig-buendige (am Foto gemessen) -> links um LO nach unten
+          const int LO = 4;
+
           it.fill(HINTERGRUND);
 
           // ----- Helfer -----
@@ -466,13 +470,13 @@ display:
 
           // ----- Raumklima: Kopfband, Zeilen abwechselnd hinterlegt -----
           band(240, 18);
-          it.print(16, 242, id(rc13), MESSING_H, TextAlign::TOP_LEFT, "RAUMKLIMA");
+          it.print(16, 242 + LO, id(rc13), MESSING_H, TextAlign::TOP_LEFT, "RAUMKLIMA");
           it.print(236, 242, id(rc13), MESSING, TextAlign::TOP_RIGHT, "Temp");
           it.print(304, 242, id(rc13), MESSING, TextAlign::TOP_RIGHT, "Feuchte");
           auto zeile = [&](int nr, const char *name, bool t_ok, float t, bool h_ok, float h) {
             int y = 260 + nr * 17;
             if (nr % 2 == 1) it.filled_rectangle(8, y - 1, 304, 17, BAND);
-            it.print(16, y, id(rc14), nr == 0 ? MESSING_H : WEISS, TextAlign::TOP_LEFT, name);
+            it.print(16, y + LO, id(rc14), nr == 0 ? MESSING_H : WEISS, TextAlign::TOP_LEFT, name);
             if (t_ok) it.printf(236, y, id(rc14), WEISS, TextAlign::TOP_RIGHT, "%.1f°C", t);
             else      it.print(236, y, id(rc14), ROT, TextAlign::TOP_RIGHT, "--");
             if (h_ok) {
@@ -507,12 +511,12 @@ display:
 
           // ----- Strom Kueche + Server -----
           band(384, 18);
-          it.print(16, 386, id(rc13), MESSING_H, TextAlign::TOP_LEFT, "STROM KUECHE");
+          it.print(16, 386 + LO, id(rc13), MESSING_H, TextAlign::TOP_LEFT, "STROM KUECHE");
           if (id(sensor_shellyplusplugs_e465b8b6b9e0_switch_0_power).has_state())
             it.printf(304, 386, id(rc13), MESSING, TextAlign::TOP_RIGHT, "Server %.0f W",
               id(sensor_shellyplusplugs_e465b8b6b9e0_switch_0_power).state);
           if (id(sensor_kuchl_steckdose_switch_0_voltage).has_state())
-            it.printf(16, 406, id(rc18), WEISS, TextAlign::TOP_LEFT, "%.1f V", id(sensor_kuchl_steckdose_switch_0_voltage).state);
+            it.printf(16, 406 + LO, id(rc18), WEISS, TextAlign::TOP_LEFT, "%.1f V", id(sensor_kuchl_steckdose_switch_0_voltage).state);
           if (id(sensor_kuchl_steckdose_switch_0_current).has_state())
             it.printf(160, 406, id(rc18), KORALLE, TextAlign::TOP_CENTER, "%.2f A", id(sensor_kuchl_steckdose_switch_0_current).state);
           if (id(sensor_kuchl_steckdose_switch_0_power).has_state())
