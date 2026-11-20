@@ -59,3 +59,11 @@ Hotspot (Fallback-AP) "Co-Ossi-Stube Fallback Hotspot", Passwort = OTA_PASSWORD.
   Luftguete = schlechtester Wert: CO2 >=1000/1400/2000, Feuchte <30/>70, CO >=25/50. Masse aus Original-Vorschau
   gemessen (Coffin 140: "2°" 111x97 px). Entwuerfe A-G (nur Bilder) im Chat; Alarmseite D noch offen.
   esphome config OK, Vorschau-lambda per g++ OK. NICHT am Geraet, noch nicht aktiv (design.txt = original).
+
+20.11.2026 Design "Messgeraet" (designs/anzeige_messgeraet.yaml, Entwurf H, Nutzer: "mach den mal"): Stil CO2-Messgeraet
+  (eigener Entwurf, kein Nachbau). Skalenbogen 400..2400 ppm aus 60 Stuecken (filled_triangle), Farbverlauf gruen->rot,
+  bis zum Wert hell, weisser Punkt. Ziffern = selbst gezeichnete LCD-7-Segment-Anzeige (lambda ziffer/lcd, Rechtecke mit
+  1 px Fuge, KEINE Schriftdatei). Schild unter der Zahl: SEHR GUT <800, GUT <1000, LUEFTEN <1400, LUEFTEN! <2000,
+  SOFORT LUEFTEN, bei CO >=50 "CO GEFAHR". Rechts: Aussen gross (LCD 34x74, bei Breite >82 px kleiner), Innen + Feuchte,
+  CO. Uhr 12 h unten links. Beschriftung Roboto 700/900 (gfonts). DSEG7 (OFL) ausprobiert, schraeg -> nicht genommen.
+  esphome config OK, Vorschau-lambda per g++ OK. Firmware erst gebaut, wenn der Nutzer es waehlt. NICHT am Geraet.

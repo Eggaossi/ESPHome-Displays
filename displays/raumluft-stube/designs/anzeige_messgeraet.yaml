@@ -1,0 +1,327 @@
+# =====================================================================
+#  Raumluft Stube by Ossi - Anzeige-Teil (Package fuer ESPHome)
+#  DESIGN "Messgeraet" (Entwurf H): CO2 im Skalenbogen 400..2400 ppm (Verlauf gruen->rot), Ziffern als
+#  selbst gezeichnete LCD-7-Segment-Anzeige (keine Schriftdatei), rechts Aussen gross, Innen, Feuchte, CO.
+#  Beschriftung Roboto (Google Fonts).
+#  KEINE Passwoerter/Schluessel (Repo oeffentlich).
+# =====================================================================
+
+time:
+  - platform: sntp
+    id: sntp_time
+    timezone: Europe/Berlin
+    servers:
+      - 0.pool.ntp.org
+      - 1.pool.ntp.org
+      - de.pool.ntp.org
+
+# Schriftarten-Konfiguration
+font:
+  - file: "gfonts://Roboto@700"
+    id: rb10
+    size: 10
+  - file: "gfonts://Roboto@700"
+    id: rb12
+    size: 12
+  - file: "gfonts://Roboto@700"
+    id: rb15
+    size: 15
+  - file: "gfonts://Roboto@900"
+    id: rk11
+    size: 11
+
+# Knopf in HA: sofort nach neuer Firmware schauen
+button:
+  - platform: template
+    name: "Jetzt Update holen"
+    on_press:
+      - script.execute: update_jetzt
+
+script:
+  - id: update_jetzt
+    then:
+      - component.update: fw_update
+      - delay: 10s
+      - if:
+          condition:
+            lambda: 'return id(fw_update).state == update::UPDATE_STATE_AVAILABLE;'
+          then:
+            - update.perform: fw_update
+
+# I2C Konfiguration
+i2c:
+  sda: GPIO4
+  scl: GPIO5
+  scan: true
+
+# SPI Konfiguration
+spi:
+  clk_pin: GPIO18
+  mosi_pin: GPIO17
+
+# Binary Sensor für Fehlererkennung
+binary_sensor:
+  - platform: template
+    name: "ZE15 Sensor Fehler"
+    id: sensor_error
+    lambda: |-
+      if (id(outside_temp).has_state()) {
+        float temp_aussen = id(outside_temp).state;
+        if (temp_aussen > 100 || temp_aussen < -100) {
+          return true;  // Außentemperatur Fehler
+        }
+      }
+      
+      if (id(temperature_value).has_state()) {
+        float temp_innen = id(temperature_value).state;
+        if (temp_innen > 100 || temp_innen < -100) {
+          return true;  // Innentemperatur Fehler
+        }
+      }
+      
+      if (id(co_value).has_state()) {
+        if (isnan(id(co_value).state)) {
+          return true;  // CO Fehler
+        }
+      }
+      
+      if (id(humidity_value).has_state()) {
+        float humidity = id(humidity_value).state;
+        if (humidity < 0 || humidity > 100) {
+          return true;  // Luftfeuchtigkeits Fehler
+        }
+      }
+      
+      return false;  // Kein Fehler
+
+# Sensor Konfigurationen
+sensor:
+  - platform: adc
+    pin: GPIO1
+    name: "CO Raw"
+    id: co_raw_value
+    update_interval: 5s
+    attenuation: 12db
+    accuracy_decimals: 3
+    unit_of_measurement: "V"
+
+  - platform: template
+    name: "CO-Wert"
+    id: co_value
+    unit_of_measurement: "ppm"
+    accuracy_decimals: 1
+    update_interval: 5s
+    lambda: |-
+      if (id(co_raw_value).has_state()) {
+        float raw = id(co_raw_value).state;
+        // Lineare Kalibrierung von 0 ppm (bei 0.350V) bis 500 ppm (bei 2.0V)
+        if (raw <= 0.350f) return 0.0f;
+        return (raw - 0.350f) * (500.0f / (2.0f - 0.350f));
+      }
+      return 0.0f;
+
+  # SCD4x Sensor
+  - platform: scd4x
+    co2:
+      id: co2_value
+      name: "Stube-CO2-Wert"
+      accuracy_decimals: 1
+    temperature:
+      id: temperature_value
+      name: "Stube-Temperatur"
+      accuracy_decimals: 1
+    humidity:
+      id: humidity_value
+      name: "Stube-Luftfeuchtigkeit"
+      accuracy_decimals: 1
+    address: 0x62
+    update_interval: 15s
+
+  # Home Assistant Sensor
+  - platform: homeassistant
+    id: outside_temp
+    entity_id: sensor.luxmeter_lux_korrigierte_temperatur
+    name: "Außentemperatur"
+
+# Display Konfiguration
+display:
+  - platform: ili9xxx
+    model: ST7789v
+    cs_pin: GPIO7
+    dc_pin: GPIO15
+    reset_pin: GPIO16
+    color_palette: 8BIT
+    rotation: 90
+    invert_colors: false
+    update_interval: 15s
+    lambda: |-
+      // ===== Design Messgeraet (320x240) =====
+      const Color WEISS(255, 255, 255), GRAU(146, 146, 85), LINIE(73, 73, 85), SCHWARZ(0, 0, 0);
+
+      // --- Farbverlauf der Skala 400..2400 ppm: gruen -> gelbgruen -> gelb -> orange -> rot ---
+      auto skalenfarbe = [](float v) -> Color {
+        float t = (std::min(std::max(v, 400.0f), 2400.0f) - 400.0f) / 2000.0f;
+        const float P[5] = {0.0f, 0.3f, 0.5f, 0.75f, 1.0f};
+        const int R[5] = {0, 146, 255, 255, 255}, G[5] = {219, 255, 219, 109, 0};
+        for (int i = 0; i < 4; i++) {
+          if (t <= P[i + 1]) {
+            float k = (t - P[i]) / (P[i + 1] - P[i]);
+            return Color(R[i] + (R[i + 1] - R[i]) * k, G[i] + (G[i + 1] - G[i]) * k, 0);
+          }
+        }
+        return Color(255, 0, 0);
+      };
+
+      // --- LCD-7-Segment-Ziffern (Segmente a b c d e f g = Bit 0..6), 1 px Fuge zwischen den Segmenten ---
+      auto ziffer = [&](int x, int y, int w, int h, int d, char z, Color c) {
+        const uint8_t M[10] = {63, 6, 91, 79, 102, 109, 125, 7, 127, 111};
+        uint8_t m = (z >= '0' && z <= '9') ? M[z - '0'] : (z == '-' ? 64 : 0);
+        int mi = y + h / 2;
+        if (m & 1)  it.filled_rectangle(x + d + 1, y, w - 2 * d - 1, d, c);                      // a
+        if (m & 64) it.filled_rectangle(x + d + 1, mi - d / 2, w - 2 * d - 1, d, c);              // g
+        if (m & 8)  it.filled_rectangle(x + d + 1, y + h - d, w - 2 * d - 1, d, c);               // d
+        if (m & 32) it.filled_rectangle(x, y + d + 1, d, mi - y - d - 2, c);                       // f
+        if (m & 2)  it.filled_rectangle(x + w - d, y + d + 1, d, mi - y - d - 2, c);               // b
+        if (m & 16) it.filled_rectangle(x, mi + 2, d, y + h - d - mi - 2, c);                      // e
+        if (m & 4)  it.filled_rectangle(x + w - d, mi + 2, d, y + h - d - mi - 2, c);              // c
+      };
+      auto lcd_breite = [&](const char* t, int w, int d, int ab) {
+        int b = 0;
+        for (const char* p = t; *p; p++) b += (*p == '.' || *p == ':') ? 2 * d : w + ab;
+        return b;
+      };
+      // zeichnet Text aus Ziffern . : -  ; rechts=true: x ist das rechte Ende. Gibt das Ende rechts zurueck.
+      auto lcd = [&](int x, int y, int w, int h, int d, const char* t, Color c, int ab, bool rechts) -> int {
+        if (rechts) x -= lcd_breite(t, w, d, ab);
+        for (const char* p = t; *p; p++) {
+          if (*p == '.') { it.filled_rectangle(x, y + h - d, d + 1, d + 1, c); x += 2 * d; }
+          else if (*p == ':') {
+            it.filled_rectangle(x, y + h / 3 - d / 2, d + 1, d + 1, c);
+            it.filled_rectangle(x, y + 2 * h / 3 - d / 2, d + 1, d + 1, c);
+            x += 2 * d;
+          } else { ziffer(x, y, w, h, d, *p, c); x += w + ab; }
+        }
+        return x;
+      };
+
+      // ================= Links: Skalenbogen mit CO2 =================
+      const int CX = 104, CY = 124, RA = 98, DI = 12;      // Mitte, Aussenradius, Dicke
+      const float START = 150.0f, SWEEP = 240.0f;
+      bool hat_co2 = id(co2_value).has_state() && !isnan(id(co2_value).state);
+      int co2 = hat_co2 ? (int) id(co2_value).state : 0;
+      for (int i = 0; i < 60; i++) {
+        float v0 = 400.0f + 2000.0f * i / 60.0f;
+        float a0 = (START + SWEEP * i / 60.0f) * M_PI / 180.0f;
+        float a1 = (START + SWEEP * (i + 1) / 60.0f - 1.2f) * M_PI / 180.0f;
+        Color c = skalenfarbe(v0 + 15);
+        if (!hat_co2 || v0 > co2) c = Color(c.r / 4, c.g / 4, 0);
+        int x1 = CX + RA * cosf(a0), y1 = CY + RA * sinf(a0), x2 = CX + RA * cosf(a1), y2 = CY + RA * sinf(a1);
+        int x3 = CX + (RA - DI) * cosf(a1), y3 = CY + (RA - DI) * sinf(a1), x4 = CX + (RA - DI) * cosf(a0), y4 = CY + (RA - DI) * sinf(a0);
+        it.filled_triangle(x1, y1, x2, y2, x3, y3, c);
+        it.filled_triangle(x1, y1, x3, y3, x4, y4, c);
+      }
+      for (int v = 400; v <= 2400; v += 400) {
+        float a = (START + SWEEP * (v - 400) / 2000.0f) * M_PI / 180.0f;
+        int rr = RA - DI - 14;
+        it.printf(CX + rr * cosf(a), CY + rr * sinf(a), id(rb10), GRAU, TextAlign::CENTER, "%d", v);
+      }
+      it.print(CX, CY - 46, id(rb15), WEISS, TextAlign::CENTER, "CO2");
+      it.print(CX, CY + 40, id(rb12), GRAU, TextAlign::CENTER, "PPM");
+
+      // Zustand fuer das Schild unter der Zahl (schlechtester Wert)
+      const char* schild = "--";
+      Color schild_farbe = GRAU;
+      if (hat_co2) {
+        float a = (START + SWEEP * (std::min(std::max(co2, 400), 2400) - 400) / 2000.0f) * M_PI / 180.0f;
+        int px = CX + (RA - DI / 2) * cosf(a), py = CY + (RA - DI / 2) * sinf(a);
+        it.filled_circle(px, py, 7, WEISS);
+        it.circle(px, py, 8, SCHWARZ);
+        char buf[8];
+        snprintf(buf, sizeof(buf), "%d", co2);
+        lcd(CX + 58, CY - 30, 22, 58, 5, buf, skalenfarbe(co2), 6, true);
+        if (co2 < 800) { schild = "SEHR GUT"; schild_farbe = Color(0, 219, 0); }
+        else if (co2 < 1000) { schild = "GUT"; schild_farbe = Color(146, 255, 0); }
+        else if (co2 < 1400) { schild = "LUEFTEN"; schild_farbe = Color(255, 219, 0); }
+        else if (co2 < 2000) { schild = "LUEFTEN!"; schild_farbe = Color(255, 109, 0); }
+        else { schild = "SOFORT LUEFTEN"; schild_farbe = Color(255, 0, 0); }
+      } else {
+        lcd(CX + 58, CY - 30, 22, 58, 5, "----", GRAU, 6, true);
+      }
+      bool co_da = id(co_value).has_state() && !isnan(id(co_value).state);
+      float co = co_da ? id(co_value).state : 0;
+      if (co_da && co >= 50) { schild = "CO GEFAHR"; schild_farbe = Color(255, 0, 0); }
+      it.filled_rectangle(CX - 46, CY + 54, 92, 17, Color(schild_farbe.r / 3, schild_farbe.g / 3, 0));
+      it.print(CX, CY + 62, id(rk11), schild_farbe, TextAlign::CENTER, schild);
+
+      // ================= Unten links: Uhr + Datum =================
+      auto time = id(sntp_time).now();
+      if (time.is_valid()) {
+        int h12 = time.hour % 12;
+        if (h12 == 0) h12 = 12;
+        char buf[8];
+        snprintf(buf, sizeof(buf), "%d:%02d", h12, time.minute);
+        int ende = lcd(8, 208, 14, 26, 3, buf, WEISS, 4, false);
+        const char* tage[] = {"So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"};
+        it.printf(ende + 6, 232, id(rb12), GRAU, TextAlign::BASELINE_LEFT, "%s %02d.%02d.",
+          tage[(time.day_of_week + 6) % 7], time.day_of_month, time.month);
+      }
+
+      // ================= Rechte Spalte =================
+      it.vertical_line(214, 8, 224, LINIE);
+      it.horizontal_line(220, 104, 97, LINIE);
+      it.horizontal_line(220, 190, 97, LINIE);
+
+      // Aussen gross (Farbe wie Original)
+      it.print(222, 6, id(rb12), GRAU, "AUSSEN");
+      if (id(outside_temp).has_state() && id(outside_temp).state > -100 && id(outside_temp).state < 100) {
+        int tr = int(roundf(id(outside_temp).state));
+        Color tc;
+        if (tr < -15) tc = Color(0, 0, 128);
+        else if (tr < -10) tc = Color(0, 0, 192);
+        else if (tr < -5) tc = Color(0, 128, 255);
+        else if (tr < 0) tc = Color(0, 192, 192);
+        else if (tr < 5) tc = Color(0, 255, 128);
+        else if (tr < 10) tc = Color(192, 255, 64);
+        else if (tr < 15) tc = Color(255, 255, 0);
+        else if (tr < 20) tc = Color(255, 128, 0);
+        else if (tr < 25) tc = Color(255, 200, 0);
+        else if (tr < 30) tc = Color(255, 255, 255);
+        else tc = Color(255, 255, 128);
+        char buf[8];
+        snprintf(buf, sizeof(buf), "%d", tr);
+        // passt die grosse Ziffer nicht in die Spalte (z.B. -12), kleiner zeichnen
+        int w = 34, h = 74, d = 7, ab = 8;
+        if (lcd_breite(buf, w, d, ab) + 14 > 96) { w = 22; h = 60; d = 5; ab = 5; }
+        int ende = lcd(224, 22, w, h, d, buf, tc, ab, false);
+        it.circle(ende + 6, 28, 6, tc);
+        it.circle(ende + 6, 28, 5, tc);
+      } else {
+        lcd(224, 22, 34, 74, 7, "--", GRAU, 8, false);
+      }
+
+      // Innen: Temperatur + Feuchte
+      it.print(222, 108, id(rb12), GRAU, "INNEN");
+      if (id(temperature_value).has_state() && id(temperature_value).state > -100 && id(temperature_value).state < 100) {
+        char buf[8];
+        snprintf(buf, sizeof(buf), "%.1f", id(temperature_value).state);
+        lcd(222, 124, 14, 28, 3, buf, Color(0, 255, 0), 4, false);
+        it.print(316, 122, id(rb12), Color(0, 255, 0), TextAlign::TOP_RIGHT, "°C");
+      }
+      if (id(humidity_value).has_state() && id(humidity_value).state >= 0 && id(humidity_value).state <= 100) {
+        char buf[8];
+        snprintf(buf, sizeof(buf), "%d", int(roundf(id(humidity_value).state)));
+        int ende = lcd(222, 158, 14, 28, 3, buf, Color(187, 94, 199), 4, false);
+        it.print(ende + 2, 162, id(rb15), Color(187, 94, 199), "%");
+      }
+
+      // CO
+      it.print(222, 194, id(rb12), GRAU, "CO");
+      if (co_da) {
+        Color cc = co < 25 ? Color(28, 185, 115) : co < 50 ? Color(255, 255, 0) : co < 100 ? Color(255, 165, 0) : Color(255, 0, 0);
+        char buf[8];
+        snprintf(buf, sizeof(buf), "%.1f", co);
+        int ende = lcd(222, 208, 14, 22, 3, buf, cc, 3, false);
+        it.print(ende + 2, 230, id(rb12), cc, TextAlign::BASELINE_LEFT, co < 25 ? "ppm ok" : "ppm hoch");
+      } else {
+        it.print(222, 210, id(rb12), Color(255, 0, 0), "Sensor Fehler");
+      }
