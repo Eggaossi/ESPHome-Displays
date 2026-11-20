@@ -98,5 +98,7 @@ Rahmen (seit 20.11. dezent): eine duenne dunkelgoldene Linie, je Ecke zwei klein
   wirkt hellbraun. Regel: Blauanteil klein halten (neutrales Grau z.B.
   146,146,85). Farbtest-Seite und Taster-1-Funktion danach entfernt (Wunsch).
   Entwurf Klassisch entsprechend angepasst (Grau/Rahmen ohne Blaustich).
+20.11.2026: Klassisch zum Ausprobieren aktiv geschaltet (esphome/anzeige.yaml = designs/anzeige_klassisch.yaml).
+  Zurueck: designs/anzeige_western.yaml nach esphome/anzeige.yaml kopieren (ohne die 2 Kopfzeilen).
 Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
   Thermo-Hygrometer 5 (Werkstatt) Batterie 0 %.
