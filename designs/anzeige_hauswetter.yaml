@@ -346,8 +346,8 @@ display:
       - id: seite_haupt
         lambda: |-
           // =========== Design (Racing-Gruen / Messing / Anton-Schrift) ===========
-          const Color HINTERGRUND = Color(0, 36, 0);
-          const Color BAND        = Color(0, 73, 0);
+          const Color HINTERGRUND = Color(0, 0, 0);       // fast schwarz, Gruen nur in den Baendern
+          const Color BAND        = Color(0, 36, 0);      // dunkles Gruen (dunkelste Stufe der 8-Bit-Palette)
           const Color MESSING     = Color(219, 182, 0);
           const Color MESSING_D   = Color(146, 109, 0);
           const Color MESSING_H   = Color(255, 219, 85);
@@ -365,7 +365,11 @@ display:
             it.filled_circle(x, y, 2, MESSING);
             it.draw_pixel_at(x - 1, y - 1, MESSING_H);
           };
-          auto band = [&](int y, int h) { it.filled_rectangle(8, y, 304, h, BAND); };
+          auto band = [&](int y, int h) {
+            it.filled_rectangle(8, y, 304, h, BAND);
+            it.horizontal_line(8, y, 304, MESSING_D);
+            it.horizontal_line(8, y + h - 1, 304, MESSING_D);
+          };
           auto feuchte_farbe = [&](float h) -> Color {
             if (h >= 70) return ROT;
             if (h >= 60) return GELB;

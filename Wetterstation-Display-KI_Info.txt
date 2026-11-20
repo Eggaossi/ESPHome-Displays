@@ -125,5 +125,7 @@ Rahmen (seit 20.11. dezent): eine duenne dunkelgoldene Linie, je Ecke zwei klein
   Im Foto lagen links- und rechtsbuendige Texte mit Roboto Condensed versetzt (links
   hoeher) -> alle Texte jetzt mit ausdruecklicher Ausrichtung TextAlign::TOP_LEFT.
   Ob das den Versatz behebt: noch NICHT am Geraet bestaetigt.
+20.11.2026: Nutzer "etwas dunkleres Gruen": 8-Bit hat nur Gruenstufen 0/36/73 ->
+  Baender jetzt (0,36,0) mit feiner Messinglinie oben/unten, Hintergrund schwarz.
 Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
   Thermo-Hygrometer 5 (Werkstatt) Batterie 0 %.
