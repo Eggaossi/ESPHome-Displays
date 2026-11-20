@@ -246,3 +246,6 @@ Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
   Beide in designs.txt (App). Lambda nutzt id(sensor) als Zeiger (Raum-Liste) - wie ESPHome: id(x) -> Zeiger.
   tools/vorschau.py setzt id() jetzt wie ESPHome um (id(x). -> Objekt, id(x) allein -> Zeiger, Globals als Wert).
   NICHT am Geraet getestet, nur Vorschau. C++ der lambda per g++ gegen Nachbildung uebersetzt.
+2026-11-20 Holz (Build 30 am Geraet GETESTET, laeuft): Zahl im Zifferblatt rutschte am Geraet nach unten ueber den Rand,
+  Grad-Zeichen riesig hohl. Jetzt BASELINE_CENTER (Grundlinie gleich in Vorschau und Geraet), Playfair 48 ohne Grad-Glyphe,
+  Grad-Kringel als zwei Kreise. Merker: TOP-Ausrichtung grosser Schriften weicht zwischen Vorschau und Geraet ab -> BASELINE nehmen.

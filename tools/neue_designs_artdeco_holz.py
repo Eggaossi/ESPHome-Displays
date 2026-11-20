@@ -237,7 +237,7 @@ ARTDECO = r'''          // =========== Design "Art deco": Schwarz, Gold, Champag
 '''
 
 # ======================================================================================
-HOLZ_FONTS = (gf("hm_temp", "Playfair Display", 900, 54, "-0123456789°") + gf("hm_titel", "Cinzel", 700, 15)
+HOLZ_FONTS = (gf("hm_temp", "Playfair Display", 900, 48, "-0123456789") + gf("hm_titel", "Cinzel", 700, 15)
     + gf("hm_label", "Cinzel", 700, 13) + gf("rs11", "Roboto Slab", 600, 11) + gf("rs14", "Roboto Slab", 800, 14)
     + gf("rs16", "Roboto Slab", 700, 16) + gf("rs20", "Roboto Slab", 700, 20) + gf("rs24", "Roboto Slab", 800, 24) + MDI)
 
@@ -327,8 +327,13 @@ HOLZ = r'''          // =========== Design "Holz und Messing": alte Wetterstatio
             it.line(cx, cy, zx, zy, ZEIGER);  it.line(cx + 1, cy, zx + 1, zy, ZEIGER);  it.line(cx, cy + 1, zx, zy + 1, ZEIGER);
             it.filled_circle(cx, cy, 5, MESS_D);
             it.filled_circle(cx, cy, 3, MESSING);
-            snprintf(lbuf, sizeof(lbuf), "%d°", (int) roundf(ta));
-            it.print(cx, cy + 10, id(hm_temp), GRAVUR, TextAlign::TOP_CENTER, lbuf);
+            // Zahl an der Grundlinie ausrichten (auf dem Geraet sonst tiefer als in der Vorschau), Grad-Kringel selbst zeichnen
+            snprintf(lbuf, sizeof(lbuf), "%d", (int) roundf(ta));
+            int bx, by, bw, bh;
+            it.get_text_bounds(cx, cy + 52, lbuf, id(hm_temp), TextAlign::BASELINE_CENTER, &bx, &by, &bw, &bh);
+            it.print(cx, cy + 52, id(hm_temp), GRAVUR, TextAlign::BASELINE_CENTER, lbuf);
+            it.circle(bx + bw + 6, cy + 18, 4, GRAVUR);
+            it.circle(bx + bw + 6, cy + 18, 3, GRAVUR);
           } else {
             it.print(cx, cy + 20, id(rs16), ROT, TextAlign::TOP_CENTER, "keine Daten");
           }
