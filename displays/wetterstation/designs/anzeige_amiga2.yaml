@@ -368,7 +368,7 @@ display:
           const Color CREME    = Color(182, 182, 85);    // Karten Beige (dunkler)
           const Color LEISTE   = Color(73, 146, 0);      // Statusleiste, Kartenrand
           const Color NAVY     = Color(36, 36, 0);       // Ueberschriften, Werte: Dunkelgrau statt Blau (Nutzerwunsch Build 14)
-          const Color GRAU     = Color(73, 73, 85);      // Unterzeilen
+          const Color GRAU     = Color(73, 73, 0);       // Unterzeilen: ohne Blau (73,73,85 wirkte am Display blau)
           const Color KORALLE  = Color(219, 73, 85);     // Akzent (wie Ein/Aus-Knopf am Cloner)
           const Color GRUEN    = Color(0, 146, 0);
           const Color OCKER    = Color(182, 109, 0);
@@ -493,6 +493,7 @@ display:
           auto zeile = [&](int nr, const char *name, bool t_ok, float t, bool h_ok, float h) {
             int y = 240 + nr * 17;
             links(16, y, id(ru14), nr == 0 ? KORALLE : NAVY, name);
+            links(17, y, id(ru14), nr == 0 ? KORALLE : NAVY, name);  // fett wie die Zahlen
             if (t_ok) { snprintf(lbuf, sizeof(lbuf), "%.1f°C", t); fett_r(232, y, id(ru14), NAVY, lbuf); }
             else      it.print(232, y, id(ru14), ROT, TextAlign::TOP_RIGHT, "--");
             if (h_ok) {

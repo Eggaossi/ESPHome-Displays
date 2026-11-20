@@ -197,3 +197,5 @@ Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
 
 2026-11-20 Amiga2 (Build 14 Foto): NAVY Blau -> Dunkelgrau 36,36,0. Kleine Zahlen (ru14: Raumwerte, Datum, Innen, heute-Zeile, Server, A/W)
   per fett_r() zweimal mit 1 px Versatz gedruckt, weil die "1" am Display duenner wirkte (lokal mit PIL 2 px, am Geraet duenner - nicht lokal nachvollziehbar).
+
+2026-11-20 Amiga2 (Build 15 Foto: 1 passt): Raumnamen auch fett (2x mit 1 px Versatz), GRAU 73,73,85 -> 73,73,0 (wirkte blau).
