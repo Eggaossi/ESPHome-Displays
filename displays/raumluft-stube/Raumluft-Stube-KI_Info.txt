@@ -43,6 +43,11 @@ Hotspot (Fallback-AP) "Co-Ossi-Stube Fallback Hotspot", Passwort = OTA_PASSWORD.
   in HA "Installieren" mit der einmaligen Geraete-Datei (Schluessel direkt drin, Anzeige als
   remote package displays/raumluft-stube/anzeige.yaml, liegt NICHT im Repo).
 
+20.11.2026: Secret RAUMLUFT_STUBE_API_KEY vom Nutzer eingetragen. Build 42 (Lauf 42) gruen, Firmware +
+  Vorschau (mit den echten Schriften) im Zweig firmware. Einmalige HA-Datei co-ossi-stube_HA_einmalig.yaml an
+  den Nutzer gegeben (esphome config OK). Wartet: Nutzer installiert sie EINMAL in HA, danach muss Build 42
+  von selbst kommen (Update-Entitaet "Firmware GitHub"). Am Geraet NOCH NICHT getestet.
+
 ── Offen/Ideen ──────────────────────────────────────────────────
 - Weitere Designs (jedes anders: Farben, Rahmen, Schrift), Display ist nur 320x240.
 - Datum/Uhr stehen bei y=-17 (Cabaret 70, oberer Rand der Schrift absichtlich abgeschnitten).
