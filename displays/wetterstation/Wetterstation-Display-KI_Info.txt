@@ -230,3 +230,4 @@ Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
   installiert -> Lauf dauert unter 1 min. Jedes Design wird beim ersten Mal noch einmal gebaut.
   version.txt: "Build <Nr> von <sha> Design <id> (neu gebaut|aufgehoben, Lauf <run>)". Die App vergleicht den Lauf.
   Zweig firmware wird ohne Verlauf (orphan) geschrieben, damit er nicht mit jeder Firmware waechst.
+  Test 20.11.2026: Lauf ohne Code-Aenderung -> muss "aufgehoben" melden.
