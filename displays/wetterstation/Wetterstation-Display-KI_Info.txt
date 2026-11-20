@@ -194,3 +194,6 @@ Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
   Thermo-Hygrometer 5 (Werkstatt) Batterie 0 %.
 
 2026-11-20 Amiga2: Build-Nummer rechts neben dem Titel (ru13, GRAU), wie bei Amiga1.
+
+2026-11-20 Amiga2 (Build 14 Foto): NAVY Blau -> Dunkelgrau 36,36,0. Kleine Zahlen (ru14: Raumwerte, Datum, Innen, heute-Zeile, Server, A/W)
+  per fett_r() zweimal mit 1 px Versatz gedruckt, weil die "1" am Display duenner wirkte (lokal mit PIL 2 px, am Geraet duenner - nicht lokal nachvollziehbar).

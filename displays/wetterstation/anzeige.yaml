@@ -276,7 +276,7 @@ display:
           const Color MINT     = Color(109, 182, 0);     // Hintergrund (Build 11 noch zu hell, eine Stufe dunkler, ohne Blau)
           const Color CREME    = Color(182, 182, 85);    // Karten Beige (dunkler)
           const Color LEISTE   = Color(73, 146, 0);      // Statusleiste, Kartenrand
-          const Color NAVY     = Color(0, 36, 85);       // Ueberschriften, Werte
+          const Color NAVY     = Color(36, 36, 0);       // Ueberschriften, Werte: Dunkelgrau statt Blau (Nutzerwunsch Build 14)
           const Color GRAU     = Color(73, 73, 85);      // Unterzeilen
           const Color KORALLE  = Color(219, 73, 85);     // Akzent (wie Ein/Aus-Knopf am Cloner)
           const Color GRUEN    = Color(0, 146, 0);
@@ -292,6 +292,11 @@ display:
             it.print(x + bw, y, f, c, TextAlign::TOP_RIGHT, t);
           };
           char lbuf[40];
+          // Zahlen fett: zweimal mit 1 px Versatz drucken, sonst ist die "1" duenner als die anderen Ziffern
+          auto fett_r = [&](int x, int y, esphome::display::BaseFont *f, Color c, const char *t) {
+            it.print(x - 1, y, f, c, TextAlign::TOP_RIGHT, t);
+            it.print(x, y, f, c, TextAlign::TOP_RIGHT, t);
+          };
           auto karte = [&](int x, int y, int w, int h) {
             int r = 7;
             // Rand (leicht dunkler) und Flaeche
@@ -320,12 +325,14 @@ display:
           if (time.is_valid()) {
             const char *wt[] = {"Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"};
             snprintf(lbuf, sizeof(lbuf), "%s %02d.%02d.", wt[(time.day_of_week + 5) % 7], time.day_of_month, time.month);
-            links(28, 4, id(ru14), GRAU, lbuf);
+            { int bx, by, bw, bh; it.get_text_bounds(28, 4, lbuf, id(ru14), TextAlign::TOP_LEFT, &bx, &by, &bw, &bh);
+              fett_r(28 + bw, 4, id(ru14), GRAU, lbuf); }
             it.printf(160, 2, id(ru20), NAVY, TextAlign::TOP_CENTER, "%02d:%02d", time.hour, time.minute);
           }
           if (id(sensor_thermo_hygrometer_3_temperatur).has_state())
-            it.printf(312, 4, id(ru14), GRAU, TextAlign::TOP_RIGHT, "Innen %.1f°  %.0f%%",
+          { snprintf(lbuf, sizeof(lbuf), "Innen %.1f°  %.0f%%",
               id(sensor_thermo_hygrometer_3_temperatur).state, id(sensor_thermo_hygrometer_3_luftfeuchtigkeit).state);
+            fett_r(312, 4, id(ru14), GRAU, lbuf); }
 
           // ----- Titel -----
           links(10, 30, id(ru20b), NAVY, "Ossi's Wetterstation");
@@ -350,7 +357,8 @@ display:
           links(16, 63, id(ru16b), NAVY, "Aussen");
           if (id(hz_min) < 999) {
             snprintf(lbuf, sizeof(lbuf), "heute %.1f° bis %.1f°", id(hz_min), id(hz_max));
-            links(16, 82, id(ru14), GRAU, lbuf);
+            { int bx, by, bw, bh; it.get_text_bounds(16, 82, lbuf, id(ru14), TextAlign::TOP_LEFT, &bx, &by, &bw, &bh);
+              fett_r(16 + bw, 82, id(ru14), GRAU, lbuf); }
           }
           if (ta_ok) {
             int t = (int) roundf(ta);
@@ -394,10 +402,10 @@ display:
           auto zeile = [&](int nr, const char *name, bool t_ok, float t, bool h_ok, float h) {
             int y = 240 + nr * 17;
             links(16, y, id(ru14), nr == 0 ? KORALLE : NAVY, name);
-            if (t_ok) it.printf(232, y, id(ru14), NAVY, TextAlign::TOP_RIGHT, "%.1f°C", t);
+            if (t_ok) { snprintf(lbuf, sizeof(lbuf), "%.1f°C", t); fett_r(232, y, id(ru14), NAVY, lbuf); }
             else      it.print(232, y, id(ru14), ROT, TextAlign::TOP_RIGHT, "--");
             if (h_ok) {
-              it.printf(290, y, id(ru14), feuchte_farbe(h), TextAlign::TOP_RIGHT, "%.0f%%", h);
+              snprintf(lbuf, sizeof(lbuf), "%.0f%%", h); fett_r(290, y, id(ru14), feuchte_farbe(h), lbuf);
               it.filled_circle(299, y + 8, 4, feuchte_farbe(h));
             } else {
               it.print(290, y, id(ru14), ROT, TextAlign::TOP_RIGHT, "--");
@@ -431,13 +439,15 @@ display:
           links(16, 376, id(ru16b), NAVY, "Strom Kueche");
           if (id(sensor_shellyplusplugs_e465b8b6b9e0_switch_0_power).has_state()) {
             snprintf(lbuf, sizeof(lbuf), "Server %.0f W", id(sensor_shellyplusplugs_e465b8b6b9e0_switch_0_power).state);
-            links(16, 398, id(ru14), GRAU, lbuf);
+            { int bx, by, bw, bh; it.get_text_bounds(16, 398, lbuf, id(ru14), TextAlign::TOP_LEFT, &bx, &by, &bw, &bh);
+              fett_r(16 + bw, 398, id(ru14), GRAU, lbuf); }
           }
           if (id(sensor_kuchl_steckdose_switch_0_voltage).has_state())
             it.printf(304, 376, id(ru16b), NAVY, TextAlign::TOP_RIGHT, "%.1f V", id(sensor_kuchl_steckdose_switch_0_voltage).state);
           if (id(sensor_kuchl_steckdose_switch_0_current).has_state() && id(sensor_kuchl_steckdose_switch_0_power).has_state())
-            it.printf(304, 398, id(ru14), GRAU, TextAlign::TOP_RIGHT, "%.2f A   %.1f W",
+          { snprintf(lbuf, sizeof(lbuf), "%.2f A   %.1f W",
               id(sensor_kuchl_steckdose_switch_0_current).state, id(sensor_kuchl_steckdose_switch_0_power).state);
+            fett_r(304, 398, id(ru14), GRAU, lbuf); }
 
           // ----- Karte Bitcoin -----
           karte(6, 428, 308, 46);
