@@ -19,7 +19,14 @@ text = quelle.read_text(encoding="utf-8")
 benutzt = set(re.findall(r"id\((\w+)\)", text[text.index("\ndisplay:"):]))
 
 zeilen = text.split("\n")
-start = next(i for i, z in enumerate(zeilen) if z.startswith("font:"))
+ziel = ordner / "anzeige.yaml"
+kopf = f"# AKTIVES DESIGN - erzeugt aus {sys.argv[2]} (tools/design_aktivieren.py)\n"
+start = next((i for i, z in enumerate(zeilen) if z.startswith("font:")), None)
+if start is None:
+    # Design ohne Schriftdateien (z.B. selbst gezeichnete Pixelschrift): 1:1 uebernehmen
+    ziel.write_text(kopf + text, encoding="utf-8")
+    print(f"{ziel}: keine Schriften im Design")
+    sys.exit(0)
 ende = next(i for i in range(start + 1, len(zeilen)) if zeilen[i] and not zeilen[i].startswith(" "))
 
 # Font-Liste in Bloecke ("  - file:" ... bis zum naechsten "  - ") zerlegen
@@ -50,8 +57,6 @@ for b in behalten:
         b = b[:-1]
     neu += b
 neu += [""] + zeilen[ende:]
-ziel = ordner / "anzeige.yaml"
-kopf = f"# AKTIVES DESIGN - erzeugt aus {sys.argv[2]} (tools/design_aktivieren.py)\n"
 ziel.write_text(kopf + "\n".join(neu), encoding="utf-8")
 ids_weg = [re.search(r"id:\s*(\w+)", "\n".join(b)).group(1) for b in weg if re.search(r"id:\s*(\w+)", "\n".join(b))]
 print(f"{ziel}: {len(behalten)} Schriften behalten, entfernt: {', '.join(ids_weg)}")

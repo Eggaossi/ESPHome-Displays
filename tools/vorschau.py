@@ -144,6 +144,7 @@ MOCK = r'''
 #include <map>
 #include <vector>
 #include <algorithm>
+#include <cstring>
 using namespace std;
 #define ESPHOME_PROJECT_VERSION "Vorschau"
 struct Color { uint8_t r, g, b, w; Color() : r(0), g(0), b(0), w(0) {}

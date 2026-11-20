@@ -77,3 +77,12 @@ Hotspot (Fallback-AP) "Co-Ossi-Stube Fallback Hotspot", Passwort = OTA_PASSWORD.
   kraeftige Farben ohne Zwischentoene (0,219,0 / 109,219,0 / 219,219,0 / 255,109,0 / 255,0,0), inaktiv /5, Zeiger =
   weisses Stueck 2.8 Grad ueber den Bogen hinaus statt Punkt. Skalenzahlen 800 und 2000 weg (stiessen an die Zahl).
   Radiale Linien ausprobiert -> Punktmuster, verworfen.
+
+20.11.2026 Messgeraet Build 52 (sauberer Bogen) gebaut. Design "Messgeraet Pixel" (designs/anzeige_messgeraet_pixel.yaml):
+  Wunsch Nutzer "Schrift wie Powerpanel". Powerpanel nutzt die eingebaute 5x7-Schrift von Arduino_GFX (glcdfont, BSD),
+  vergroessert per setTextSize. Hier als Tabelle F57 (Zeichen 32..126) in der lambda, ptext() zeichnet je Punkt ein
+  Quadrat der Groesse s. passend(text, smax, maxw): jeder Wert hat festen Platz, zu breit -> naechstkleinere Stufe
+  (Regel Nutzer: immer pruefen, ob z.B. -12 Grad passt). Getestet in der Vorschau mit normal/kalt -12/warm 35/extrem -25
+  (CO2 5000, CO 500, Feuchte 100): alles passt; -12 Grad wird Stufe 4 statt 9 (Minus so breit wie eine Ziffer).
+  Kein font:-Abschnitt -> tools/design_aktivieren.py kann jetzt Designs ohne Schriften. tools/vorschau.py: <cstring>.
+  esphome config OK. NICHT am Geraet.

@@ -1,3 +1,4 @@
 original=Original
 luftsaeule=Luftsaeule
 messgeraet=Messgeraet
+messgeraet_pixel=Messgeraet Pixel
