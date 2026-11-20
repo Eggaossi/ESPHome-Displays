@@ -64,13 +64,13 @@ font:
   - file:
       type: gfonts
       family: Roboto
-      weight: 700
+      weight: 900   # Black: bei 1-Bit-Darstellung wird die "1" sonst nur 1 Pixel breit
     id: rb13
     size: 13
   - file:
       type: gfonts
       family: Roboto
-      weight: 700
+      weight: 900   # Black: bei 1-Bit-Darstellung wird die "1" sonst nur 1 Pixel breit
     id: rb14
     size: 14
   - file:

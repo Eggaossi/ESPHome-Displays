@@ -68,5 +68,10 @@ Rahmen: Gold doppelt, gestufte Ecken, Rauten oben/unten (wie Heimnetz-App).
   nur die Kamera im Dunkeln), Nutzer zufrieden. Grosse "1" wirkte zu duenn
   (Coffin oben schmal) -> Ziffer 5x um je 1 px versetzt gezeichnet (4 px
   kraeftiger). Farbtest-Seite (Taster 1) bleibt drin.
+20.11.2026 07:16: Nutzer: "1" in kleinen Zahlen (14.6, 19.7) duenner als andere
+  Ziffern. Ursache: ESPHome zeichnet Schrift ohne Kantenglaettung (1 Bit), bei
+  Roboto Bold 14 rundet der Strich der "1" auf 1 Pixel, andere Ziffern 2 Pixel
+  (lokal mit FreeType nachgemessen). Loesung: rb13/rb14 in Roboto Black (900),
+  dort alle Ziffern 2-3 Pixel. rb16/rb18 (Bold) waren gleichmaessig.
 Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
   Thermo-Hygrometer 5 (Werkstatt) Batterie 0 %.
