@@ -191,6 +191,20 @@ display:
           x += 6 * s;
         }
       };
+      // wie ptext, aber Punkte sx breit und sy hoch (gestreckt, fuer die grosse Aussentemperatur)
+      auto ptext_hoch = [&](int x, int y, const char* t, int sx, int sy, Color c) {
+        for (const char* p = t; *p; p++) {
+          if (*p == '-') { it.filled_rectangle(x, y + 3 * sy, 3 * sx, sy, c); x += 4 * sx; continue; }
+          int ch = (unsigned char) *p;
+          if (ch < 32 || ch > 126) ch = '?';
+          for (int col = 0; col < 5; col++) {
+            uint8_t b = F57[(ch - 32) * 5 + col];
+            for (int row = 0; row < 8; row++)
+              if ((b >> row) & 1) it.filled_rectangle(x + col * sx, y + row * sy, sx, sy, c);
+          }
+          x += 6 * sx;
+        }
+      };
       auto passend = [&](const char* t, int smax, int maxw) -> int {
         int s = smax;
         while (s > 1 && pbreite(t, s) > maxw) s--;
@@ -232,13 +246,16 @@ display:
         else tc = Color(255, 255, 128);
         char b[8];
         snprintf(b, sizeof(b), "%d", tr);
-        int s = passend(b, 11, 214 - 6 - 22);
-        int r = std::max(3, s);
-        int gesamt = pbreite(b, s) + 6 + 2 * r;
-        int x = 104 + (214 - gesamt) / 2;
-        int y = 56 + (11 - s) * 7 / 2;
-        ptext(x, y, b, s, tc, 0);
-        kringel(x + pbreite(b, s) + 6, y, s, tc);
+        // Hoehe fest 18 px je Punkt (126 px Ziffern, zwischen Wochentag und unterer Zeile),
+        // Breite bis 12 px je Punkt, bei breiten Werten (z.B. -25) schmaler
+        const int SY = 18;
+        int sx = passend(b, 12, 208 - 6 - 24);   // Platz x 110..318, Abstand zum CO2-Bogen
+        int r = std::max(4, sx);
+        int gesamt = pbreite(b, sx) + 6 + 2 * r;
+        int x = 110 + (208 - gesamt) / 2;
+        int y = 62;
+        ptext_hoch(x, y, b, sx, SY, tc);
+        kringel(x + pbreite(b, sx) + 6, y, sx, tc);
       } else {
         ptext(211, 80, "--", 8, GRAU, 1);
       }

@@ -116,3 +116,7 @@ Hotspot (Fallback-AP) "Co-Ossi-Stube Fallback Hotspot", Passwort = OTA_PASSWORD.
 20.11.2026 ~17:00 (Foto Luftsaeule Bogen): "Freitag klebt von weitem fast am Datum" -> in Original, Luftsaeule und
   Luftsaeule Bogen Wochentag 6 px tiefer (Original y 66, sonst 64) und Aussentemperatur 6 px hoeher (Original TOP 64,
   sonst Grundlinie 190). Gilt als Regel fuer diesen Aufbau.
+
+20.11.2026 ~17:05 Pixel Klassik: Nutzer "Aussentemp groesser und einpassen" -> Aussentemperatur mit gestreckten Pixeln
+  (ptext_hoch, Punkt sx breit, sy=18 hoch -> Ziffern 126 px statt 77), Breite sx bis 12, bei breiten Werten schmaler
+  (Platz x 110..318, 12 px Abstand zum CO2-Bogen), y 62..188. Haertetest normal/-12/35/-25: alles passt, Hoehe bleibt.
