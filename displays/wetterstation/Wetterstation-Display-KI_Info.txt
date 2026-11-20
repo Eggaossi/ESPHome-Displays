@@ -221,3 +221,12 @@ Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
   Lokal getestet (amiga1, amiga2, gruen, simple). Alte designs/vorschau_*.png bleiben liegen (nicht loeschen).
 2026-11-20 Simple: Aussentemperatur in ganzen Grad (ohne Komma), Innen weiter mit einer Stelle.
   Gruen, Amiga1, Amiga2 hatten schon ganze Grad (alte Vorschaubilder zeigten noch Komma).
+
+2026-11-20 FIRMWARE-LAGER (schneller Design-Wechsel, Nutzerwunsch):
+  Jede gebaute Firmware wird je Design im Zweig firmware aufgehoben: <d>/lager/<design>/firmware.ota.bin,
+  firmware.factory.bin, schluessel.txt (sha256 aus <d>.yaml + aktivierter anzeige.yaml), build.txt.
+  Gleicher Schluessel -> kein Neubau, die aufgehobene Firmware wird freigegeben (manifest version = alte Build-Nr.,
+  das Geraet spielt auch eine "aeltere" Nummer ein, ESPHome vergleicht nur auf ungleich). ESPHome wird dann gar nicht
+  installiert -> Lauf dauert unter 1 min. Jedes Design wird beim ersten Mal noch einmal gebaut.
+  version.txt: "Build <Nr> von <sha> Design <id> (neu gebaut|aufgehoben, Lauf <run>)". Die App vergleicht den Lauf.
+  Zweig firmware wird ohne Verlauf (orphan) geschrieben, damit er nicht mit jeder Firmware waechst.

@@ -22,8 +22,8 @@ jobs:
             ~/.cache/vorschau
           key: esphome-${{ runner.os }}-${{ hashFiles('displays/*/*.yaml') }}
           restore-keys: esphome-${{ runner.os }}-
-      - name: ESPHome installieren
-        run: pip install esphome
+      - name: Werkzeuge fuer Vorschau
+        run: pip install pyyaml pillow
       - name: Geaenderte Displays bestimmen
         id: welche
         run: |
@@ -55,9 +55,12 @@ jobs:
             git worktree add --orphan -b firmware fw 2>/dev/null || { mkdir fw; cd fw; git init -q -b firmware; }
           }
       - name: Bauen
+        # Jede fertige Firmware wird je Design aufgehoben (fw/<d>/lager/<design>/). Ist der Code
+        # (Geraete-YAML + Design) seit dem letzten Bau gleich, wird sie nur freigegeben, ohne neu zu bauen.
         run: |
           set +e
           FEHLER=0
+          ESPHOME_DA=0
           for d in ${{ steps.welche.outputs.liste }}; do
             mkdir -p fw/$d
             # Design aus design.txt aktivieren (wird von der App oder am Handy auf github.com geaendert)
@@ -65,33 +68,51 @@ jobs:
             if [ -f displays/$d/design.txt ]; then
               DES=$(tr -d ' \r\n' < displays/$d/design.txt)
               if [ ! -f displays/$d/designs/anzeige_$DES.yaml ]; then
-                echo "FEHLER: Design '$DES' gibt es nicht (displays/$d/designs/anzeige_$DES.yaml)" > fw/$d/fehler.txt
+                echo "FEHLER Build ${{ github.run_number }}: Design '$DES' gibt es nicht (displays/$d/designs/anzeige_$DES.yaml)" > fw/$d/fehler.txt
                 FEHLER=1; continue
               fi
               python3 tools/design_aktivieren.py displays/$d designs/anzeige_$DES.yaml
             fi
-            esphome -s fw_version ${{ github.run_number }} compile displays/$d/$d.yaml > fw/$d/build.log 2>&1
-            if [ $? -ne 0 ]; then
-              echo "FEHLER Build ${{ github.run_number }} ($GITHUB_SHA)" > fw/$d/fehler.txt
-              tail -n 80 fw/$d/build.log >> fw/$d/fehler.txt
-              FEHLER=1; continue
+            LAGER=fw/$d/lager/${DES:-ohne}
+            SCHLUESSEL=$(cat displays/$d/$d.yaml displays/$d/anzeige.yaml | sha256sum | cut -c1-16)
+            if [ -f $LAGER/schluessel.txt ] && [ "$(cat $LAGER/schluessel.txt)" = "$SCHLUESSEL" ] && [ -f $LAGER/firmware.ota.bin ]; then
+              NR=$(cat $LAGER/build.txt)
+              echo "$d: $DES unveraendert, Firmware von Build $NR wird freigegeben (kein Neubau)"
+              cp $LAGER/firmware.ota.bin fw/$d/firmware.ota.bin
+              [ -f $LAGER/firmware.factory.bin ] && cp $LAGER/firmware.factory.bin fw/$d/firmware.factory.bin
+              ART="aufgehoben"
+            else
+              if [ $ESPHOME_DA = 0 ]; then pip install -q esphome; ESPHOME_DA=1; fi
+              NR=${{ github.run_number }}
+              esphome -s fw_version $NR compile displays/$d/$d.yaml > fw/$d/build.log 2>&1
+              if [ $? -ne 0 ]; then
+                echo "FEHLER Build $NR ($GITHUB_SHA)" > fw/$d/fehler.txt
+                tail -n 80 fw/$d/build.log >> fw/$d/fehler.txt
+                FEHLER=1; continue
+              fi
+              NAME=$(grep -m1 '^  name:' displays/$d/$d.yaml | awk '{print $2}')
+              BIN=$(find displays/$d/.esphome/build/$NAME -name firmware.ota.bin | head -1)
+              FAC=$(find displays/$d/.esphome/build/$NAME -name firmware.factory.bin | head -1)
+              if [ -z "$BIN" ]; then echo "FEHLER Build $NR: firmware.ota.bin nicht gefunden" > fw/$d/fehler.txt; FEHLER=1; continue; fi
+              cp "$BIN" fw/$d/firmware.ota.bin
+              [ -n "$FAC" ] && cp "$FAC" fw/$d/firmware.factory.bin
+              mkdir -p $LAGER
+              cp fw/$d/firmware.ota.bin $LAGER/
+              [ -f fw/$d/firmware.factory.bin ] && cp fw/$d/firmware.factory.bin $LAGER/
+              echo "$SCHLUESSEL" > $LAGER/schluessel.txt
+              echo "$NR" > $LAGER/build.txt
+              ART="neu gebaut"
+              tail -n 5 fw/$d/build.log
             fi
             rm -f fw/$d/fehler.txt
-            NAME=$(grep -m1 '^  name:' displays/$d/$d.yaml | awk '{print $2}')
-            BIN=$(find displays/$d/.esphome/build/$NAME -name firmware.ota.bin | head -1)
-            FAC=$(find displays/$d/.esphome/build/$NAME -name firmware.factory.bin | head -1)
-            if [ -z "$BIN" ]; then echo "FEHLER: firmware.ota.bin nicht gefunden" > fw/$d/fehler.txt; FEHLER=1; continue; fi
-            cp "$BIN" fw/$d/firmware.ota.bin
-            [ -n "$FAC" ] && cp "$FAC" fw/$d/firmware.factory.bin
             MD5=$(md5sum fw/$d/firmware.ota.bin | cut -d' ' -f1)
             cat > fw/$d/manifest.json <<JSON
-          {"name": "$d", "version": "${{ github.run_number }}", "builds": [{"chipFamily": "ESP32-S3",
+          {"name": "$d", "version": "$NR", "builds": [{"chipFamily": "ESP32-S3",
             "ota": {"path": "https://raw.githubusercontent.com/${{ github.repository }}/firmware/$d/firmware.ota.bin",
-                    "md5": "$MD5", "summary": "Build ${{ github.run_number }} von ${GITHUB_SHA::7}"}}]}
+                    "md5": "$MD5", "summary": "Build $NR ($ART) Design $DES"}}]}
           JSON
-            echo "Build ${{ github.run_number }} von ${GITHUB_SHA::7} Design $DES" > fw/$d/version.txt
+            echo "Build $NR von ${GITHUB_SHA::7} Design $DES ($ART, Lauf ${{ github.run_number }})" > fw/$d/version.txt
             echo "$DES" > fw/$d/design.txt
-            tail -n 5 fw/$d/build.log
           done
           echo "FEHLER=$FEHLER" >> $GITHUB_ENV
       - name: Vorschaubilder zeichnen
@@ -114,8 +135,10 @@ jobs:
         run: |
           cd fw
           git config user.name "github-actions"; git config user.email "actions@github.com"
+          # immer nur ein Stand ohne Verlauf (sonst waechst der Zweig mit jeder Firmware)
+          git checkout -q --orphan neu
           git add -A
-          git commit -qm "Build ${{ github.run_number }} von ${GITHUB_SHA::7}" || true
+          git commit -qm "Lauf ${{ github.run_number }} von ${GITHUB_SHA::7}" || true
           git push -f https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git HEAD:firmware
       - name: Ergebnis
         run: test "$FEHLER" = "0"
