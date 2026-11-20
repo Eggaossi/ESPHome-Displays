@@ -1,6 +1,6 @@
 # =====================================================================
 #  Wetterstation by Ossi - Anzeige-Teil (Package fuer ESPHome)
-#  DESIGN "Klassisch" (Entwurf, 20.11.2026)
+#  DESIGN "Simple" (vom Nutzer abgenommen und benannt, 20.11.2026)
 #  Wird von der Geraete-YAML im ESPHome Builder per "packages:" geholt.
 #  Hier stehen: Zeit, Schriften, Taster, LEDs, Sensoren aus Home Assistant
 #  und die Display-Zeichnung. KEINE Passwoerter/Schluessel (Repo oeffentlich).
@@ -285,7 +285,7 @@ display:
     pages:
       - id: seite_haupt
         lambda: |-
-          // =========== Design "Klassisch": wie eine normale Wetterstation ===========
+          // =========== Design "Simple": wie eine normale Wetterstation ===========
           const Color SCHWARZ = Color(0, 0, 0);
           const Color WEISS   = Color(255, 255, 255);
           const Color GRAU    = Color(146, 146, 85);   // B klein halten, Display zeigt Blau sehr stark

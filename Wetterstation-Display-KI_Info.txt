@@ -100,5 +100,9 @@ Rahmen (seit 20.11. dezent): eine duenne dunkelgoldene Linie, je Ecke zwei klein
   Entwurf Klassisch entsprechend angepasst (Grau/Rahmen ohne Blaustich).
 20.11.2026: Klassisch zum Ausprobieren aktiv geschaltet (esphome/anzeige.yaml = designs/anzeige_klassisch.yaml).
   Zurueck: designs/anzeige_western.yaml nach esphome/anzeige.yaml kopieren (ohne die 2 Kopfzeilen).
+20.11.2026 07:38: Klassisch laeuft, Nutzer: "das ist jetzt Design Simple" ->
+  umbenannt in designs/anzeige_simple.yaml. AKTIV: Simple.
+  Gespeicherte Designs: Simple (aktiv), Western, Nixie (abgelehnt, nur Entwurf).
+  Umschalten: gewuenschte designs/anzeige_<name>.yaml nach esphome/anzeige.yaml.
 Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
   Thermo-Hygrometer 5 (Werkstatt) Batterie 0 %.
