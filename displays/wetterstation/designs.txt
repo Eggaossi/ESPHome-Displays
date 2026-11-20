@@ -1,0 +1,4 @@
+amiga2=Amiga2
+amiga1=Amiga1
+gruen=Gruen
+simple=Simple

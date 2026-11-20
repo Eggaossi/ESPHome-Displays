@@ -209,3 +209,5 @@ Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
   Hinweis: anzeige.yaml im main-Zweig ist dann nur noch ein Stand, massgeblich ist design.txt.
   Verfuegbare Designs: amiga1, amiga2, gruen, simple, nixie (Entwurf); western braucht noch eigene Schriften im Repo.
   Naechster Schritt: App (eigene oder Bereich in Projekt-Zentrale) liest designs/ ueber GitHub-API, zeigt vorschau_*.png, schreibt design.txt.
+
+2026-11-20 designs.txt: Liste der Designs fuer die App HA-Displays (Zeilen id=Name). western (Schriften fehlen) und nixie (Entwurf) nicht drin.
