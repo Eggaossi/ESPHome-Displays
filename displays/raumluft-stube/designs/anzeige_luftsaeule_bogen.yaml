@@ -256,9 +256,9 @@ display:
             it.draw_pixel_at(CX + dx, CY + dy, c);
           }
         }
-        it.print(CX, CY - 22, id(my_font_Coffin_miniklein), GRAU, TextAlign::TOP_CENTER, "CO2");
-        if (hat) it.printf(CX, CY + 6, id(my_font_Coffin_mittel), farbe(c2), TextAlign::BASELINE_CENTER, "%d", c2);
-        it.print(CX, CY + 10, id(my_font_Coffin_miniklein), STUFE_HELL[stufe], TextAlign::TOP_CENTER, grund);
+        it.print(CX, CY - 31, id(my_font_Coffin_miniklein), GRAU, TextAlign::TOP_CENTER, "CO2");
+        if (hat) it.printf(CX, CY + 8, id(my_font_Coffin_mittel), farbe(c2), TextAlign::BASELINE_CENTER, "%d", c2);
+        it.print(CX, CY + 12, id(my_font_Coffin_miniklein), STUFE_HELL[stufe], TextAlign::TOP_CENTER, grund);
       }
       if (id(co_value).has_state() && !isnan(id(co_value).state)) {
         float co = id(co_value).state;
