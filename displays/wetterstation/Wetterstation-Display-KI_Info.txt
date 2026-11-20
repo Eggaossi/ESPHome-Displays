@@ -176,5 +176,7 @@ Rahmen (seit 20.11. dezent): eine duenne dunkelgoldene Linie, je Ecke zwei klein
   sofort pruefen (script update_jetzt). Grenze: raw.githubusercontent cached bis
   5 min -> realistisch 3 min Bauen + bis 5 min Cache. Ganz schnell beim Testen:
   in HA "Installieren" (kompiliert dort sofort mit remote package, ohne Cache).
+20.11.2026: Nutzer: "Amiga passt, der erste" -> Amiga1 abgenommen.
+  Naechste Idee: Amiga2 hell wie Micro-SD Cloner Pro (Beige/Mint, Karten).
 Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
   Thermo-Hygrometer 5 (Werkstatt) Batterie 0 %.
