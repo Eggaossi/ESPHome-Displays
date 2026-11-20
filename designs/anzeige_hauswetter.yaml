@@ -119,9 +119,16 @@ font:
       type: gfonts
       family: Anton
       weight: 400
+    id: an_temp_k
+    size: 118
+    glyphs: "-0123456789"
+  - file:
+      type: gfonts
+      family: Anton
+      weight: 400
     id: an_dez
     size: 64
-    glyphs: ".0123456789°"
+    glyphs: "°"
   - file:
       type: gfonts
       family: Anton
@@ -386,11 +393,11 @@ display:
           auto time = id(sntp_time).now();
           if (time.is_valid()) {
             const char *wochentage[] = {"Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"};
-            it.printf(16, 22, id(rc18), WEISS, "%s", wochentage[(time.day_of_week + 5) % 7]);
-            it.printf(16, 43, id(rc14), MESSING, "%02d.%02d.%04d", time.day_of_month, time.month, time.year);
+            it.printf(16, 22, id(rc18), WEISS, TextAlign::TOP_LEFT, "%s", wochentage[(time.day_of_week + 5) % 7]);
+            it.printf(16, 43, id(rc14), MESSING, TextAlign::TOP_LEFT, "%02d.%02d.%04d", time.day_of_month, time.month, time.year);
             it.printf(304, 4, id(an_uhr), MESSING_H, TextAlign::TOP_RIGHT, "%02d:%02d", time.hour, time.minute);
           } else {
-            it.print(16, 32, id(rc16), MESSING, "warte auf Zeit...");
+            it.print(16, 32, id(rc16), MESSING, TextAlign::TOP_LEFT, "warte auf Zeit...");
           }
 
           // ----- Tages-Tiefst/Hoechst (eigene Rechnung, Reset bei Datumswechsel) -----
@@ -407,22 +414,27 @@ display:
           }
 
           // ----- Aussen: Temperatur gross links, Werte rechts -----
-          it.print(16, 66, id(rc13), MESSING, "AUSSEN");
+          it.print(16, 66, id(rc13), MESSING, TextAlign::TOP_LEFT, "AUSSEN");
           if (ta_ok) {
+            // ganze Grad ohne Komma; bei breiten Werten (z.B. -15) kleinere Schrift
             Color tf = temp_farbe(ta);
-            int ganz = (int) truncf(ta);
-            int zehntel = (int) roundf(fabsf(ta - ganz) * 10);
-            if (zehntel == 10) { zehntel = 0; ganz += (ta < 0) ? -1 : 1; }
-            char g[8], z[8];
-            if (ta < 0 && ganz == 0) snprintf(g, sizeof(g), "-0"); else snprintf(g, sizeof(g), "%d", ganz);
-            snprintf(z, sizeof(z), ".%d°", zehntel);
-            int x1, y1, w, h, z1, z2, zw, zh;
-            it.get_text_bounds(0, 0, g, id(an_temp), TextAlign::TOP_LEFT, &x1, &y1, &w, &h);
-            it.get_text_bounds(0, 0, z, id(an_dez), TextAlign::TOP_LEFT, &z1, &z2, &zw, &zh);
-            int x0 = 108 - (w + zw) / 2;
+            int t = (int) roundf(ta);
+            char g[8];
+            snprintf(g, sizeof(g), "%d", t);
+            esphome::display::BaseFont *f = id(an_temp);
+            int x1, y1, w, h, gx, gy, gw, gh;
+            it.get_text_bounds(0, 0, g, f, TextAlign::TOP_LEFT, &x1, &y1, &w, &h);
+            it.get_text_bounds(0, 0, "°", id(an_dez), TextAlign::TOP_LEFT, &gx, &gy, &gw, &gh);
+            int yoff = 33;
+            if (w + gw > 196) {
+              f = id(an_temp_k);
+              it.get_text_bounds(0, 0, g, f, TextAlign::TOP_LEFT, &x1, &y1, &w, &h);
+              yoff = 47;
+            }
+            int x0 = 108 - (w + gw) / 2;
             if (x0 < 12) x0 = 12;
-            it.print(x0, 33, id(an_temp), tf, g);
-            it.print(x0 + w + 2, 61, id(an_dez), tf, z);
+            it.print(x0, yoff, f, tf, TextAlign::TOP_LEFT, g);
+            it.print(x0 + w + 2, 61, id(an_dez), tf, TextAlign::TOP_LEFT, "°");
           } else {
             it.print(108, 130, id(rc18), ROT, TextAlign::TOP_CENTER, "keine Daten");
           }
@@ -432,8 +444,8 @@ display:
           it.vertical_line(212, 76, 156, MESSING_D);
           auto wert = [&](int nr, const char *symbol, bool ok, Color wf, const char *text) {
             int y = 80 + nr * 38;
-            it.print(220, y + 6, id(mdi_icons_klein), MESSING, symbol);
-            it.print(242, y + 6, id(rc18), ok ? wf : ROT, ok ? text : "--");
+            it.print(220, y + 6, id(mdi_icons_klein), MESSING, TextAlign::TOP_LEFT, symbol);
+            it.print(242, y + 6, id(rc18), ok ? wf : ROT, TextAlign::TOP_LEFT, ok ? text : "--");
           };
           char buf[16];
           snprintf(buf, sizeof(buf), "%.0f %%", id(sensor_luxmeter_aussen_luftfeuchtigkeit).state);
@@ -450,13 +462,13 @@ display:
 
           // ----- Raumklima: Kopfband, Zeilen abwechselnd hinterlegt -----
           band(240, 18);
-          it.print(16, 242, id(rc13), MESSING_H, "RAUMKLIMA");
+          it.print(16, 242, id(rc13), MESSING_H, TextAlign::TOP_LEFT, "RAUMKLIMA");
           it.print(236, 242, id(rc13), MESSING, TextAlign::TOP_RIGHT, "Temp");
           it.print(304, 242, id(rc13), MESSING, TextAlign::TOP_RIGHT, "Feuchte");
           auto zeile = [&](int nr, const char *name, bool t_ok, float t, bool h_ok, float h) {
             int y = 260 + nr * 17;
             if (nr % 2 == 1) it.filled_rectangle(8, y - 1, 304, 17, BAND);
-            it.print(16, y, id(rc14), nr == 0 ? MESSING_H : WEISS, name);
+            it.print(16, y, id(rc14), nr == 0 ? MESSING_H : WEISS, TextAlign::TOP_LEFT, name);
             if (t_ok) it.printf(236, y, id(rc14), WEISS, TextAlign::TOP_RIGHT, "%.1f°C", t);
             else      it.print(236, y, id(rc14), ROT, TextAlign::TOP_RIGHT, "--");
             if (h_ok) {
@@ -491,12 +503,12 @@ display:
 
           // ----- Strom Kueche + Server -----
           band(384, 18);
-          it.print(16, 386, id(rc13), MESSING_H, "STROM KUECHE");
+          it.print(16, 386, id(rc13), MESSING_H, TextAlign::TOP_LEFT, "STROM KUECHE");
           if (id(sensor_shellyplusplugs_e465b8b6b9e0_switch_0_power).has_state())
             it.printf(304, 386, id(rc13), MESSING, TextAlign::TOP_RIGHT, "Server %.0f W",
               id(sensor_shellyplusplugs_e465b8b6b9e0_switch_0_power).state);
           if (id(sensor_kuchl_steckdose_switch_0_voltage).has_state())
-            it.printf(16, 406, id(rc18), WEISS, "%.1f V", id(sensor_kuchl_steckdose_switch_0_voltage).state);
+            it.printf(16, 406, id(rc18), WEISS, TextAlign::TOP_LEFT, "%.1f V", id(sensor_kuchl_steckdose_switch_0_voltage).state);
           if (id(sensor_kuchl_steckdose_switch_0_current).has_state())
             it.printf(160, 406, id(rc18), KORALLE, TextAlign::TOP_CENTER, "%.2f A", id(sensor_kuchl_steckdose_switch_0_current).state);
           if (id(sensor_kuchl_steckdose_switch_0_power).has_state())
@@ -504,7 +516,7 @@ display:
 
           // ----- Bitcoin -----
           band(432, 36);
-          it.print(16, 443, id(rc13), MESSING_H, "BITCOIN");
+          it.print(16, 443, id(rc13), MESSING_H, TextAlign::TOP_LEFT, "BITCOIN");
           if (id(bitcoin_preis).has_state())
             it.printf(304, 427, id(an_btc), MESSING_H, TextAlign::TOP_RIGHT, "%.0f EUR", id(bitcoin_preis).state);
           else

@@ -119,5 +119,11 @@ Rahmen (seit 20.11. dezent): eine duenne dunkelgoldene Linie, je Ecke zwei klein
   Mokka. Hauswetter neu: Racing-Gruen (0,36,0)/(0,73,0) mit Messing, Rahmen doppelt
   Messing mit Nieten (Typenschild), Anton fuer Temp (150 px)/Uhr/Bitcoin, kleine Texte
   Roboto Condensed Bold (rc13-18, Ziffern gleich dick). Aktiv zum Testen.
+20.11.2026 08:05 Foto Hauswetter gruen: Nutzer will Aussentemp OHNE Komma -> ganze
+  Grad (gerundet), Grad-Zeichen klein oben. Breite Werte (z.B. -15) automatisch in
+  kleinerer Anton (118 statt 150), getestet als Simulation (designs/test_temperaturen.png).
+  Im Foto lagen links- und rechtsbuendige Texte mit Roboto Condensed versetzt (links
+  hoeher) -> alle Texte jetzt mit ausdruecklicher Ausrichtung TextAlign::TOP_LEFT.
+  Ob das den Versatz behebt: noch NICHT am Geraet bestaetigt.
 Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
   Thermo-Hygrometer 5 (Werkstatt) Batterie 0 %.
