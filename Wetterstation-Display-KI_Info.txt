@@ -54,6 +54,7 @@ Rahmen: Gold doppelt, gestufte Ecken, Rauten oben/unten (wie Heimnetz-App).
   ORIGINAL (Ausgangscode Nutzer), V1 blau (Kacheln), V2 Art Deco schwarz/gold,
   V3 Heimnetz-Stil Petrol (am Display knallblau -> abgelehnt).
   Aktuell: Mokka + Roboto Bold, vom Nutzer "schon besser" (per Copy/Paste
-  aufgespielt, lief). Umstellung auf GitHub-Package: noch NICHT getestet.
+  aufgespielt, lief). Umstellung auf GitHub-Package am 20.11.2026 vom Nutzer
+  eingespielt und installiert ("soo drauf") -> Weg ueber GitHub funktioniert.
 Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
   Thermo-Hygrometer 5 (Werkstatt) Batterie 0 %.
