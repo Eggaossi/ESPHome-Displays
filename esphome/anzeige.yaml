@@ -303,26 +303,22 @@ display:
             it.filled_triangle(cx - r, cy, cx + r, cy, cx, cy + r, c);
           };
           // gestufte Ecke: 3 verschachtelte Winkel (dx/dy = Richtung)
+          // dezente Ecke: nur ein kurzer Winkel (dx/dy = Richtung)
           auto ecke = [&](int x, int y, int dx, int dy) {
-            for (int k = 0; k < 3; k++) {
-              int o = 6 + k * 4;
-              int len = 18 - k * 5;
-              int px = x + dx * o;
-              int py = y + dy * o;
-              it.line(px, py, px + dx * len, py, k == 0 ? GOLD : GOLD_DUNKEL);
-              it.line(px, py, px, py + dy * len, k == 0 ? GOLD : GOLD_DUNKEL);
-            }
+            int px = x + dx * 5;
+            int py = y + dy * 5;
+            it.line(px, py, px + dx * 10, py, GOLD_DUNKEL);
+            it.line(px, py, px, py + dy * 10, GOLD_DUNKEL);
           };
 
-          // ===== Goldrahmen mit Stufenecken und Rauten =====
-          it.rectangle(0, 0, 320, 480, GOLD_DUNKEL);
-          it.rectangle(2, 2, 316, 476, GOLD);
+          // ===== Rahmen dezent: eine duenne Linie, kleine Eckwinkel, kleine Rauten =====
+          it.rectangle(1, 1, 318, 478, GOLD_DUNKEL);
           ecke(0, 0, 1, 1);
           ecke(319, 0, -1, 1);
           ecke(0, 479, 1, -1);
           ecke(319, 479, -1, -1);
-          raute(160, 2, 5, GOLD);
-          raute(160, 477, 5, GOLD);
+          raute(160, 1, 3, GOLD_DUNKEL);
+          raute(160, 478, 3, GOLD_DUNKEL);
 
           // ===== Kopf: Titel, Untertitel, Uhr als Knopf =====
           it.print(16, 12, id(my_font_cabaret), ORANGE, "Wetterstation");

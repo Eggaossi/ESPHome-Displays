@@ -48,7 +48,8 @@ Raumklima: Hygrometer 1 Schlafzimmer oben, 4 Bad, 2 Schlafzimmer Mutti,
   5 Werkstatt Ossi, 6 Heizraum Pumpe, 7 Retroraum. Feuchte gruen <60,
   gelb ab 60, rot ab 70 (+ Punkt).
 Strom Kueche: Kuchl-Steckdose V/A/W; rechts Server-I9 Watt; Bitcoin.
-Rahmen: Gold doppelt, gestufte Ecken, Rauten oben/unten (wie Heimnetz-App).
+Rahmen (seit 20.11. dezent): eine duenne dunkelgoldene Linie, je Ecke ein kleiner
+  Winkel (10 px), kleine Rauten oben/unten.
 
 ── Stand ────────────────────────────────────────────────────────
 20.11.2026: Verschoenerung. Versionen (in alt/):
@@ -73,5 +74,6 @@ Rahmen: Gold doppelt, gestufte Ecken, Rauten oben/unten (wie Heimnetz-App).
   Roboto Bold 14 rundet der Strich der "1" auf 1 Pixel, andere Ziffern 2 Pixel
   (lokal mit FreeType nachgemessen). Loesung: rb13/rb14 in Roboto Black (900),
   dort alle Ziffern 2-3 Pixel. rb16/rb18 (Bold) waren gleichmaessig.
+20.11.2026: Nutzer "Jetzt passt alles" (Ziffern gleich dick). Danach Rahmen dezenter.
 Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
   Thermo-Hygrometer 5 (Werkstatt) Batterie 0 %.
