@@ -114,5 +114,10 @@ Rahmen (seit 20.11. dezent): eine duenne dunkelgoldene Linie, je Ecke zwei klein
   Zurueck zu Simple: designs/anzeige_simple.yaml nach esphome/anzeige.yaml.
 20.11.2026: Nutzer "zu schaebig, Aussentemp groesser, Rahmen und Farben" -> Hauswetter
   ueberarbeitet: Mokka-Karten, Goldrahmen mit 2 Eckwinkeln, Temp 124 px, Uhr gold. Aktiv.
+20.11.2026: Mokka-Fassung abgelehnt: REGEL Nutzer: jedes Design muss ANDERS sein
+  (eigene Farben, eigener Rahmen, eigene Schrift fuer Aussentemp usw.), nicht immer
+  Mokka. Hauswetter neu: Racing-Gruen (0,36,0)/(0,73,0) mit Messing, Rahmen doppelt
+  Messing mit Nieten (Typenschild), Anton fuer Temp (150 px)/Uhr/Bitcoin, kleine Texte
+  Roboto Condensed Bold (rc13-18, Ziffern gleich dick). Aktiv zum Testen.
 Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
   Thermo-Hygrometer 5 (Werkstatt) Batterie 0 %.
