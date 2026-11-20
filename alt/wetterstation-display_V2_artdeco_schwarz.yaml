@@ -1,0 +1,452 @@
+esphome:
+  name: wetterstation-display
+  friendly_name: Wetterstation-Display
+
+esp32:
+  board: esp32-s3-devkitc-1
+  framework:
+    type: arduino
+
+logger:
+
+api:
+  encryption:
+    key: "ENTFERNT"
+
+ota:
+  - platform: esphome
+    password: "ENTFERNT"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  ap:
+    ssid: "Wetterstation-Display"
+    password: "ENTFERNT"
+
+captive_portal:
+
+time:
+  - platform: sntp
+    id: sntp_time
+    timezone: Europe/Berlin
+
+font:
+  - file: 'fonts/Ananda.ttf'
+    id: my_font_ananda
+    size: 26
+  - file: 'fonts/Ananda.ttf'
+    id: my_font_cabaret_klein
+    size: 24
+  - file: 'fonts/Coffin.ttf'
+    id: my_font_Coffin
+    size: 28
+  - file: 'fonts/Coffin.ttf'
+    id: my_font_Coffin_miniklein
+    size: 15
+  - file: 'fonts/Coffin.ttf'
+    id: my_font_Coffin_klein
+    size: 18
+  - file: 'fonts/Coffin.ttf'
+    id: my_font_Coffin_benu
+    size: 20
+  # Riesige Aussentemperatur: nur die noetigen Zeichen, spart viel Speicher
+  - file: 'fonts/Coffin.ttf'
+    id: my_font_Coffin_gross
+    size: 200
+    glyphs: "-0123456789°"
+  - file: 'fonts/Coffin.ttf'
+    id: my_font_Coffin_extra
+    size: 32
+  - file: 'fonts/Cabaret.ttf'
+    id: my_font_cabaret
+    size: 37
+  - file: 'fonts/Cabaret.ttf'
+    id: my_font_minicabaret
+    size: 26
+  - file: 'fonts/Cabaret.ttf'
+    id: my_font_miniminicabaret
+    size: 22
+  - file: 'fonts/Cabaret.ttf'
+    id: my_font_groscabaret
+    size: 40
+  - file: 'fonts/Roboto-Regular.ttf'
+    id: my_font
+    size: 25
+  - file: 'fonts/Roboto-Regular.ttf'
+    id: my_font_medium
+    size: 35
+  - file: 'fonts/Roboto-Regular.ttf'
+    id: my_font_large
+    size: 50
+  # Symbole (Material Design Icons), ESPHome laedt die Datei beim Kompilieren
+  - file:
+      type: web
+      url: "https://github.com/Templarian/MaterialDesign-Webfont/raw/master/fonts/materialdesignicons-webfont.ttf"
+    id: mdi_icons
+    size: 24
+    glyphs:
+      - "\U000F058E"  # water-percent
+      - "\U000F029A"  # gauge
+      - "\U000F059D"  # weather-windy
+      - "\U000F05A8"  # white-balance-sunny
+      - "\U000F048B"  # server
+      - "\U000F0241"  # flash
+      - "\U000F0813"  # bitcoin
+  - file:
+      type: web
+      url: "https://github.com/Templarian/MaterialDesign-Webfont/raw/master/fonts/materialdesignicons-webfont.ttf"
+    id: mdi_icons_klein
+    size: 18
+    glyphs:
+      - "\U000F058E"  # water-percent
+      - "\U000F029A"  # gauge
+      - "\U000F059D"  # weather-windy
+      - "\U000F05A8"  # white-balance-sunny
+
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO11
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "Wetterstation-Taster 1"
+    id: wetterstation_taster_1
+    filters:
+      - delayed_on: 50ms
+    on_press:
+      - logger.log: "Wetterstation-Taster 1 wurde gedrückt!"
+  - platform: gpio
+    pin:
+      number: GPIO10
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "Wetterstation-Taster 2"
+    id: wetterstation_taster_2
+    filters:
+      - delayed_on: 50ms
+    on_press:
+      - logger.log: "Wetterstation-Taster 2 wurde gedrückt!"
+  - platform: gpio
+    pin:
+      number: GPIO9
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "Wetterstation-Taster 3"
+    id: wetterstation_taster_3
+    filters:
+      - delayed_on: 50ms
+    on_press:
+      - logger.log: "Wetterstation-Taster 3 wurde gedrückt!"
+
+output:
+  - platform: gpio
+    pin: GPIO14
+    id: wetterstation_led_1
+  - platform: gpio
+    pin: GPIO13
+    id: wetterstation_led_2
+  - platform: gpio
+    pin: GPIO12
+    id: wetterstation_led_3
+
+light:
+  - platform: binary
+    name: "Wetterstation-LED 1"
+    output: wetterstation_led_1
+  - platform: binary
+    name: "Wetterstation-LED 2"
+    output: wetterstation_led_2
+  - platform: binary
+    name: "Wetterstation-LED 3"
+    output: wetterstation_led_3
+
+sensor:
+  - platform: homeassistant
+    id: sensor_thermo_hygrometer_3_temperatur
+    entity_id: sensor.thermo_hygrometer_3_temperatur
+  - platform: homeassistant
+    id: sensor_thermo_hygrometer_3_luftfeuchtigkeit
+    entity_id: sensor.thermo_hygrometer_3_luftfeuchtigkeit
+  - platform: homeassistant
+    id: sensor_luxmeter_lux_korrigierte_temperatur
+    entity_id: sensor.luxmeter_lux_korrigierte_temperatur
+  - platform: homeassistant
+    id: sensor_luxmeter_aussen_luftfeuchtigkeit
+    entity_id: sensor.luxmeter_aussen_luftfeuchtigkeit
+  - platform: homeassistant
+    id: sensor_luxmeter_aussen_luftdruck
+    entity_id: sensor.luxmeter_aussen_luftdruck
+  - platform: homeassistant
+    id: aussenfuhler_umgebungslicht
+    entity_id: sensor.luxmeter_aussen_helligkeit
+  - platform: homeassistant
+    id: sensor_thermo_hygrometer_1_temperatur
+    entity_id: sensor.thermo_hygrometer_1_temperatur
+  - platform: homeassistant
+    id: sensor_thermo_hygrometer_1_luftfeuchtigkeit
+    entity_id: sensor.thermo_hygrometer_1_luftfeuchtigkeit
+  - platform: homeassistant
+    id: sensor_thermo_hygrometer_4_temperatur
+    entity_id: sensor.thermo_hygrometer_4_temperatur
+  - platform: homeassistant
+    id: sensor_thermo_hygrometer_4_luftfeuchtigkeit
+    entity_id: sensor.thermo_hygrometer_4_luftfeuchtigkeit
+  - platform: homeassistant
+    id: sensor_thermo_hygrometer_2_temperatur
+    entity_id: sensor.thermo_hygrometer_2_temperatur
+  - platform: homeassistant
+    id: sensor_thermo_hygrometer_2_luftfeuchtigkeit
+    entity_id: sensor.thermo_hygrometer_2_luftfeuchtigkeit
+  - platform: homeassistant
+    id: sensor_thermo_hygrometer_5_temperatur
+    entity_id: sensor.thermo_hygrometer_5_temperatur
+  - platform: homeassistant
+    id: sensor_thermo_hygrometer_5_luftfeuchtigkeit
+    entity_id: sensor.thermo_hygrometer_5_luftfeuchtigkeit
+  - platform: homeassistant
+    id: sensor_thermo_hygrometer_6_temperatur
+    entity_id: sensor.thermo_hygrometer_6_temperatur
+  - platform: homeassistant
+    id: sensor_thermo_hygrometer_6_luftfeuchtigkeit
+    entity_id: sensor.thermo_hygrometer_6_luftfeuchtigkeit
+  - platform: homeassistant
+    id: sensor_thermo_hygrometer_7_temperatur
+    entity_id: sensor.thermo_hygrometer_7_temperatur
+  - platform: homeassistant
+    id: sensor_thermo_hygrometer_7_luftfeuchtigkeit
+    entity_id: sensor.thermo_hygrometer_7_luftfeuchtigkeit
+  - platform: homeassistant
+    id: sensor_shellyplusplugs_e465b8b6b9e0_switch_0_power
+    entity_id: sensor.shellyplusplugs_e465b8b6b9e0_switch_0_power
+  - platform: homeassistant
+    id: sensor_kuchl_steckdose_switch_0_voltage
+    entity_id: sensor.kuchl_steckdose_switch_0_voltage
+  - platform: homeassistant
+    id: sensor_kuchl_steckdose_switch_0_current
+    entity_id: sensor.kuchl_steckdose_switch_0_current
+  - platform: homeassistant
+    id: sensor_kuchl_steckdose_switch_0_power
+    entity_id: sensor.kuchl_steckdose_switch_0_power
+  - platform: homeassistant
+    id: bitcoin_preis
+    entity_id: sensor.bitcoin_preis
+  - platform: homeassistant
+    name: "Windgeschwindigkeit vom Windmesser"
+    id: wind_speed_kmh
+    entity_id: sensor.windmesser_windspeed_km_h
+    unit_of_measurement: "km/h"
+    accuracy_decimals: 1
+
+spi:
+  clk_pin: GPIO18
+  mosi_pin: GPIO17
+
+
+display:
+  - platform: ili9xxx
+    model: ST7796
+    cs_pin: GPIO7
+    dc_pin: GPIO15
+    reset_pin: GPIO16
+    color_palette: 8bit
+    rotation: 0
+    invert_colors: false
+    update_interval: 5s
+    lambda: |-
+      // ===== Art-Deco-Farben: Schwarz, Gold, Creme =====
+      const Color SCHWARZ     = Color(0, 0, 0);
+      const Color GOLD        = Color(255, 182, 0);
+      const Color GOLD_HELL   = Color(255, 219, 85);
+      const Color GOLD_DUNKEL = Color(146, 109, 0);
+      const Color CREME       = Color(255, 255, 170);
+      const Color GRUEN       = Color(109, 219, 85);
+      const Color GELB        = Color(255, 219, 0);
+      const Color ROT         = Color(255, 36, 0);
+      const Color KORALLE     = Color(255, 146, 85);
+
+      it.fill(SCHWARZ);
+
+      // ===== Helfer: Raute, Trennlinie, Eckfaecher =====
+      auto raute = [&](int cx, int cy, int r, Color c) {
+        it.filled_triangle(cx - r, cy, cx + r, cy, cx, cy - r, c);
+        it.filled_triangle(cx - r, cy, cx + r, cy, cx, cy + r, c);
+      };
+      auto trenner = [&](int y) {
+        it.horizontal_line(16, y - 2, 128, GOLD_DUNKEL);
+        it.horizontal_line(16, y + 2, 128, GOLD_DUNKEL);
+        it.horizontal_line(176, y - 2, 128, GOLD_DUNKEL);
+        it.horizontal_line(176, y + 2, 128, GOLD_DUNKEL);
+        raute(160, y, 7, GOLD);
+        raute(150, y, 3, GOLD_DUNKEL);
+        raute(170, y, 3, GOLD_DUNKEL);
+      };
+      auto ecke = [&](int x, int y, int dx, int dy) {
+        it.line(x, y, x + dx * 26, y + dy * 8, GOLD);
+        it.line(x, y, x + dx * 20, y + dy * 20, GOLD);
+        it.line(x, y, x + dx * 8, y + dy * 26, GOLD);
+        it.line(x + dx * 26, y + dy * 8, x + dx * 20, y + dy * 20, GOLD_DUNKEL);
+        it.line(x + dx * 20, y + dy * 20, x + dx * 8, y + dy * 26, GOLD_DUNKEL);
+        raute(x + dx * 3, y + dy * 3, 3, GOLD_HELL);
+      };
+
+      // ===== Rahmen: doppelt, mit Faechern in den Ecken =====
+      it.rectangle(0, 0, 320, 480, GOLD);
+      it.rectangle(4, 4, 312, 472, GOLD_DUNKEL);
+      ecke(4, 4, 1, 1);
+      ecke(315, 4, -1, 1);
+      ecke(4, 475, 1, -1);
+      ecke(315, 475, -1, -1);
+
+      // ===== Titel =====
+      it.print(160, 8, id(my_font_ananda), GOLD, TextAlign::TOP_CENTER, "Wetterstation by Ossi");
+      trenner(42);
+
+      // ===== Wochentag, Datum, Uhrzeit =====
+      auto time = id(sntp_time).now();
+      if (time.is_valid()) {
+        const char* wochentage[] = {"Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"};
+        it.printf(14, 50, id(my_font_Coffin_benu), GOLD_HELL, "%s", wochentage[(time.day_of_week + 5) % 7]);
+        it.printf(14, 70, id(my_font_Coffin_benu), CREME, "%02d.%02d.%04d", time.day_of_month, time.month, time.year);
+        it.printf(306, 50, id(my_font_cabaret), GOLD, TextAlign::TOP_RIGHT, "%02d:%02d", time.hour, time.minute);
+      } else {
+        it.print(14, 60, id(my_font_Coffin_benu), GOLD_DUNKEL, "Warte auf Zeit...");
+      }
+
+      // ===== Innen (Kueche Ossi, Thermo-Hygrometer 3), mittig zwischen Datum und Uhr =====
+      it.print(168, 48, id(my_font_Coffin_miniklein), GOLD, TextAlign::TOP_CENTER, "Innen");
+      bool ti_ok = id(sensor_thermo_hygrometer_3_temperatur).has_state();
+      bool hi_ok = id(sensor_thermo_hygrometer_3_luftfeuchtigkeit).has_state();
+      float hi = id(sensor_thermo_hygrometer_3_luftfeuchtigkeit).state;
+      Color hi_farbe = GRUEN;
+      if (hi >= 70) hi_farbe = ROT;
+      else if (hi >= 60) hi_farbe = GELB;
+      if (ti_ok) it.printf(164, 66, id(my_font_Coffin_klein), CREME, TextAlign::TOP_RIGHT, "%.1f°C", id(sensor_thermo_hygrometer_3_temperatur).state);
+      else       it.print(164, 66, id(my_font_Coffin_klein), ROT, TextAlign::TOP_RIGHT, "--");
+      if (hi_ok) it.printf(172, 66, id(my_font_Coffin_klein), hi_farbe, "%.0f%%", hi);
+      else       it.print(172, 66, id(my_font_Coffin_klein), ROT, "--");
+      trenner(96);
+
+      // ===== Grosse Aussentemperatur mit Farbskala, mittig =====
+      if (id(sensor_luxmeter_lux_korrigierte_temperatur).has_state()) {
+        float temp_aussen = id(sensor_luxmeter_lux_korrigierte_temperatur).state;
+        int t = (int) roundf(temp_aussen);
+        Color temp_color;
+        if (t < -15)      temp_color = Color(0, 0, 170);
+        else if (t < -10) temp_color = Color(0, 0, 255);
+        else if (t < -5)  temp_color = Color(0, 182, 255);
+        else if (t < 0)   temp_color = Color(0, 255, 255);
+        else if (t < 5)   temp_color = Color(0, 255, 146);
+        else if (t < 10)  temp_color = Color(182, 255, 85);
+        else if (t < 15)  temp_color = Color(255, 255, 0);
+        else if (t < 20)  temp_color = Color(255, 146, 0);
+        else if (t < 25)  temp_color = Color(255, 219, 0);
+        else if (t < 30)  temp_color = Color(255, 255, 255);
+        else              temp_color = Color(255, 255, 170);
+        it.printf(160, 86, id(my_font_Coffin_gross), temp_color, TextAlign::TOP_CENTER, "%d°", t);
+      } else {
+        it.print(160, 86, id(my_font_Coffin_gross), ROT, TextAlign::TOP_CENTER, "--");
+      }
+
+      // ===== Leiste: Aussenwerte mit Symbolen =====
+      auto feld = [&](int nr, const char* symbol, bool ok, Color wf, const char* text) {
+        int x = 10 + nr * 76;
+        it.print(x, 246, id(mdi_icons_klein), GOLD, symbol);
+        it.print(x + 20, 249, id(my_font_Coffin_miniklein), ok ? wf : ROT, ok ? text : "--");
+      };
+      char buf[16];
+
+      bool ok = id(sensor_luxmeter_aussen_luftfeuchtigkeit).has_state();
+      snprintf(buf, sizeof(buf), "%.0f%%", id(sensor_luxmeter_aussen_luftfeuchtigkeit).state);
+      feld(0, "\U000F058E", ok, CREME, buf);
+
+      ok = id(sensor_luxmeter_aussen_luftdruck).has_state();
+      float druck = id(sensor_luxmeter_aussen_luftdruck).state;
+      Color druck_farbe = CREME;                 // gelb unter 1000, rot ueber 1030
+      if (druck < 1000) druck_farbe = GELB;
+      else if (druck > 1030) druck_farbe = ROT;
+      snprintf(buf, sizeof(buf), "%d hPa", (int) druck);
+      feld(1, "\U000F029A", ok, druck_farbe, buf);
+
+      ok = id(wind_speed_kmh).has_state();
+      snprintf(buf, sizeof(buf), "%.1f km/h", id(wind_speed_kmh).state);
+      feld(2, "\U000F059D", ok, CREME, buf);
+
+      ok = id(aussenfuhler_umgebungslicht).has_state();
+      snprintf(buf, sizeof(buf), "%.1f lx", id(aussenfuhler_umgebungslicht).state);
+      feld(3, "\U000F05A8", ok, CREME, buf);
+
+      trenner(274);
+
+      // ===== Raum-Tabelle (ohne Fuellung, goldene Linien) =====
+      it.print(16, 280, id(my_font_Coffin_miniklein), GOLD, "Raum");
+      it.print(232, 280, id(my_font_Coffin_miniklein), GOLD, TextAlign::TOP_RIGHT, "Temp");
+      it.print(304, 280, id(my_font_Coffin_miniklein), GOLD, TextAlign::TOP_RIGHT, "Feuchte");
+      it.horizontal_line(14, 297, 292, GOLD_DUNKEL);
+
+      auto zeile = [&](int nr, const char* name, bool t_ok, float t, bool h_ok, float h) {
+        int y = 300 + nr * 15;
+        it.print(16, y, id(my_font_Coffin_miniklein), CREME, name);
+        if (t_ok) it.printf(232, y, id(my_font_Coffin_miniklein), GOLD_HELL, TextAlign::TOP_RIGHT, "%.1f°C", t);
+        else      it.print(232, y, id(my_font_Coffin_miniklein), ROT, TextAlign::TOP_RIGHT, "--");
+        if (h_ok) {
+          Color hf = GRUEN;
+          if (h >= 70) hf = ROT;
+          else if (h >= 60) hf = GELB;
+          it.printf(304, y, id(my_font_Coffin_miniklein), hf, TextAlign::TOP_RIGHT, "%.0f%%", h);
+        } else {
+          it.print(304, y, id(my_font_Coffin_miniklein), ROT, TextAlign::TOP_RIGHT, "--");
+        }
+      };
+
+      zeile(0, "Schlafzimmer oben",
+        id(sensor_thermo_hygrometer_1_temperatur).has_state(), id(sensor_thermo_hygrometer_1_temperatur).state,
+        id(sensor_thermo_hygrometer_1_luftfeuchtigkeit).has_state(), id(sensor_thermo_hygrometer_1_luftfeuchtigkeit).state);
+      zeile(1, "Bad",
+        id(sensor_thermo_hygrometer_4_temperatur).has_state(), id(sensor_thermo_hygrometer_4_temperatur).state,
+        id(sensor_thermo_hygrometer_4_luftfeuchtigkeit).has_state(), id(sensor_thermo_hygrometer_4_luftfeuchtigkeit).state);
+      zeile(2, "Schlafzimmer Mutti",
+        id(sensor_thermo_hygrometer_2_temperatur).has_state(), id(sensor_thermo_hygrometer_2_temperatur).state,
+        id(sensor_thermo_hygrometer_2_luftfeuchtigkeit).has_state(), id(sensor_thermo_hygrometer_2_luftfeuchtigkeit).state);
+      zeile(3, "Werkstatt Ossi",
+        id(sensor_thermo_hygrometer_5_temperatur).has_state(), id(sensor_thermo_hygrometer_5_temperatur).state,
+        id(sensor_thermo_hygrometer_5_luftfeuchtigkeit).has_state(), id(sensor_thermo_hygrometer_5_luftfeuchtigkeit).state);
+      zeile(4, "Heizraum Pumpe",
+        id(sensor_thermo_hygrometer_6_temperatur).has_state(), id(sensor_thermo_hygrometer_6_temperatur).state,
+        id(sensor_thermo_hygrometer_6_luftfeuchtigkeit).has_state(), id(sensor_thermo_hygrometer_6_luftfeuchtigkeit).state);
+      zeile(5, "Retroraum",
+        id(sensor_thermo_hygrometer_7_temperatur).has_state(), id(sensor_thermo_hygrometer_7_temperatur).state,
+        id(sensor_thermo_hygrometer_7_luftfeuchtigkeit).has_state(), id(sensor_thermo_hygrometer_7_luftfeuchtigkeit).state);
+
+      trenner(396);
+
+      // ===== Server und Kueche in einer Zeile =====
+      it.print(16, 404, id(mdi_icons), GOLD, "\U000F048B");
+      if (id(sensor_shellyplusplugs_e465b8b6b9e0_switch_0_power).has_state())
+        it.printf(92, 402, id(my_font_minicabaret), GOLD_HELL, TextAlign::TOP_RIGHT, "%.0fW",
+          id(sensor_shellyplusplugs_e465b8b6b9e0_switch_0_power).state);
+      else
+        it.print(92, 402, id(my_font_minicabaret), ROT, TextAlign::TOP_RIGHT, "--");
+      it.vertical_line(102, 402, 26, GOLD_DUNKEL);
+
+      it.print(110, 404, id(mdi_icons), GOLD, "\U000F0241");
+      if (id(sensor_kuchl_steckdose_switch_0_voltage).has_state())
+        it.printf(136, 406, id(my_font_Coffin_benu), CREME, "%.1fV", id(sensor_kuchl_steckdose_switch_0_voltage).state);
+      else
+        it.print(136, 406, id(my_font_Coffin_benu), ROT, "--");
+      if (id(sensor_kuchl_steckdose_switch_0_current).has_state())
+        it.printf(206, 406, id(my_font_Coffin_benu), KORALLE, "%.2fA", id(sensor_kuchl_steckdose_switch_0_current).state);
+      else
+        it.print(206, 406, id(my_font_Coffin_benu), ROT, "--");
+      if (id(sensor_kuchl_steckdose_switch_0_power).has_state())
+        it.printf(306, 406, id(my_font_Coffin_benu), GRUEN, TextAlign::TOP_RIGHT, "%.1fW", id(sensor_kuchl_steckdose_switch_0_power).state);
+      else
+        it.print(306, 406, id(my_font_Coffin_benu), ROT, TextAlign::TOP_RIGHT, "--");
+
+      // ===== Bitcoin =====
+      it.horizontal_line(40, 434, 240, GOLD_DUNKEL);
+      it.print(44, 444, id(mdi_icons), GOLD, "\U000F0813");
+      if (id(bitcoin_preis).has_state())
+        it.printf(172, 437, id(my_font_cabaret), GOLD, TextAlign::TOP_CENTER, "%.0f EUR", id(bitcoin_preis).state);
+      else
+        it.print(172, 437, id(my_font_cabaret), ROT, TextAlign::TOP_CENTER, "--");

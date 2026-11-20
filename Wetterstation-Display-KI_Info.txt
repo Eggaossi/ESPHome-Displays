@@ -1,0 +1,59 @@
+═══════════════════════════════════════════════════════════════
+  Wetterstation-Display-KI_Info.txt
+═══════════════════════════════════════════════════════════════
+
+Was:      "Wetterstation by Ossi" - ESPHome-Display im lila Gehaeuse,
+          zeigt nur Werte aus Home Assistant (keine eigenen Messfuehler).
+Hardware: ESP32-S3 (board esp32-s3-devkitc-1, Arduino-Framework),
+          Display ST7796 320x480 SPI, color_palette 8bit
+          SPI: CLK GPIO18, MOSI GPIO17; CS GPIO7, DC GPIO15, RST GPIO16
+          Taster 1/2/3: GPIO11/10/9 (Pullup, invertiert), nur Log
+          LEDs 1/2/3: GPIO14/13/12 (in HA als Licht)
+Netz:     im IP-Plan .34 (ESP-32-Bereich), Hostname wetterstation-display
+
+── Wie aktualisiert wird (seit 20.11.2026) ─────────────────────
+Repo ist OEFFENTLICH (Wunsch Nutzer), damit ESPHome es ohne Token holt.
+Darum stehen hier KEINE Schluessel/Passwoerter.
+Die Geraete-YAML im ESPHome Builder (Home Assistant) enthaelt nur
+Name, Board, api-Key, OTA-Passwort, WLAN und:
+  packages:
+    anzeige:
+      url: https://github.com/Eggaossi/Wetterstation-Display
+      ref: main
+      files: [esphome/anzeige.yaml]
+      refresh: 0s
+Aenderungen nur in esphome/anzeige.yaml pushen, Nutzer drueckt in HA
+"Installieren" (geht auch am Handy). Kein Build bei GitHub, kein Zweig
+firmware (ESPHome kompiliert in Home Assistant).
+Eigene Schriften liegen in HA unter /config/esphome/fonts/ (Ananda,
+Coffin, Cabaret, Roboto-Regular) -> im Package mit absolutem Pfad.
+Roboto Bold (gfonts) und Material Design Icons (web) laedt ESPHome selbst.
+
+── Display-Erkenntnisse ─────────────────────────────────────────
+- Das Display zeigt Blau VIEL staerker als im Code (jede Farbe mit etwas
+  Blauanteil wird deutlich blau). Darum Mokka-Design: alle Farben ohne
+  Blauanteil (B=0), ausser Weiss und den kalten Temperaturfarben.
+- 8-Bit-Palette: R/G in Stufen 0,36,73,109,146,182,219,255; B 0,85,170,255.
+- Die verschnoerkelte Coffin-Schrift ist klein schlecht lesbar -> kleine
+  Texte in Roboto Bold (rb13/14/16/18/28).
+- Keine Umlaute in Anzeigetexten (Kueche, Raeume ...).
+
+── Inhalt der Anzeige ───────────────────────────────────────────
+Kopf: "Wetterstation" (Cabaret, orange), Wochentag + Datum, Uhr im Knopf.
+Aussen: grosse Aussentemp (luxmeter_lux_korrigierte_temperatur, Farbskala),
+  Leiste Feuchte / Luftdruck (gelb <1000, rot >1030) / Wind / Lux;
+  rechts oben Innen = Thermo-Hygrometer 3 (Kueche).
+Raumklima: Hygrometer 1 Schlafzimmer oben, 4 Bad, 2 Schlafzimmer Mutti,
+  5 Werkstatt Ossi, 6 Heizraum Pumpe, 7 Retroraum. Feuchte gruen <60,
+  gelb ab 60, rot ab 70 (+ Punkt).
+Strom Kueche: Kuchl-Steckdose V/A/W; rechts Server-I9 Watt; Bitcoin.
+Rahmen: Gold doppelt, gestufte Ecken, Rauten oben/unten (wie Heimnetz-App).
+
+── Stand ────────────────────────────────────────────────────────
+20.11.2026: Verschoenerung. Versionen (in alt/):
+  ORIGINAL (Ausgangscode Nutzer), V1 blau (Kacheln), V2 Art Deco schwarz/gold,
+  V3 Heimnetz-Stil Petrol (am Display knallblau -> abgelehnt).
+  Aktuell: Mokka + Roboto Bold, vom Nutzer "schon besser" (per Copy/Paste
+  aufgespielt, lief). Umstellung auf GitHub-Package: noch NICHT getestet.
+Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
+  Thermo-Hygrometer 5 (Werkstatt) Batterie 0 %.

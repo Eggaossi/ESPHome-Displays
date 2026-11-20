@@ -1,0 +1,466 @@
+esphome:
+  name: wetterstation-display
+  friendly_name: Wetterstation-Display
+
+esp32:
+  board: esp32-s3-devkitc-1
+  framework:
+    type: arduino
+
+logger:
+
+api:
+  encryption:
+    key: "ENTFERNT"
+
+ota:
+  - platform: esphome
+    password: "ENTFERNT"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  ap:
+    ssid: "Wetterstation-Display"
+    password: "ENTFERNT"
+
+captive_portal:
+
+time:
+  - platform: sntp
+    id: sntp_time
+    timezone: Europe/Berlin
+
+font:
+  - file: 'fonts/Ananda.ttf'
+    id: my_font_ananda
+    size: 26
+  - file: 'fonts/Ananda.ttf'
+    id: my_font_cabaret_klein
+    size: 24
+  - file: 'fonts/Coffin.ttf'
+    id: my_font_Coffin
+    size: 28
+  - file: 'fonts/Coffin.ttf'
+    id: my_font_Coffin_miniklein
+    size: 15
+  - file: 'fonts/Coffin.ttf'
+    id: my_font_Coffin_klein
+    size: 18
+  - file: 'fonts/Coffin.ttf'
+    id: my_font_Coffin_benu
+    size: 20
+  - file: 'fonts/Coffin.ttf'
+    id: my_font_Coffin_gross
+    size: 200
+  - file: 'fonts/Coffin.ttf'
+    id: my_font_Coffin_extra
+    size: 32
+  - file: 'fonts/Cabaret.ttf'
+    id: my_font_cabaret
+    size: 37
+  - file: 'fonts/Cabaret.ttf'
+    id: my_font_minicabaret
+    size: 26
+  - file: 'fonts/Cabaret.ttf'
+    id: my_font_miniminicabaret
+    size: 22
+  - file: 'fonts/Cabaret.ttf'
+    id: my_font_groscabaret
+    size: 40
+  - file: 'fonts/Roboto-Regular.ttf'
+    id: my_font
+    size: 25
+  - file: 'fonts/Roboto-Regular.ttf'
+    id: my_font_medium
+    size: 35
+  - file: 'fonts/Roboto-Regular.ttf'
+    id: my_font_large
+    size: 50
+
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO11
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "Wetterstation-Taster 1"
+    id: wetterstation_taster_1
+    filters:
+      - delayed_on: 50ms
+    on_press:
+      - logger.log: "Wetterstation-Taster 1 wurde gedrückt!"
+  - platform: gpio
+    pin:
+      number: GPIO10
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "Wetterstation-Taster 2"
+    id: wetterstation_taster_2
+    filters:
+      - delayed_on: 50ms
+    on_press:
+      - logger.log: "Wetterstation-Taster 2 wurde gedrückt!"
+  - platform: gpio
+    pin:
+      number: GPIO9
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "Wetterstation-Taster 3"
+    id: wetterstation_taster_3
+    filters:
+      - delayed_on: 50ms
+    on_press:
+      - logger.log: "Wetterstation-Taster 3 wurde gedrückt!"
+
+output:
+  - platform: gpio
+    pin: GPIO14
+    id: wetterstation_led_1
+  - platform: gpio
+    pin: GPIO13
+    id: wetterstation_led_2
+  - platform: gpio
+    pin: GPIO12
+    id: wetterstation_led_3
+
+light:
+  - platform: binary
+    name: "Wetterstation-LED 1"
+    output: wetterstation_led_1
+  - platform: binary
+    name: "Wetterstation-LED 2"
+    output: wetterstation_led_2
+  - platform: binary
+    name: "Wetterstation-LED 3"
+    output: wetterstation_led_3
+
+sensor:
+  - platform: homeassistant
+    id: sensor_thermo_hygrometer_3_temperatur
+    entity_id: sensor.thermo_hygrometer_3_temperatur
+  - platform: homeassistant
+    id: sensor_thermo_hygrometer_3_luftfeuchtigkeit
+    entity_id: sensor.thermo_hygrometer_3_luftfeuchtigkeit
+  - platform: homeassistant
+    id: sensor_luxmeter_lux_korrigierte_temperatur
+    entity_id: sensor.luxmeter_lux_korrigierte_temperatur
+  - platform: homeassistant
+    id: sensor_luxmeter_aussen_luftfeuchtigkeit
+    entity_id: sensor.luxmeter_aussen_luftfeuchtigkeit
+  - platform: homeassistant
+    id: sensor_luxmeter_aussen_luftdruck
+    entity_id: sensor.luxmeter_aussen_luftdruck
+  - platform: homeassistant
+    id: aussenfuhler_umgebungslicht
+    entity_id: sensor.luxmeter_aussen_helligkeit
+  - platform: homeassistant
+    id: sensor_thermo_hygrometer_1_temperatur
+    entity_id: sensor.thermo_hygrometer_1_temperatur
+  - platform: homeassistant
+    id: sensor_thermo_hygrometer_1_luftfeuchtigkeit
+    entity_id: sensor.thermo_hygrometer_1_luftfeuchtigkeit
+  - platform: homeassistant
+    id: sensor_thermo_hygrometer_4_temperatur
+    entity_id: sensor.thermo_hygrometer_4_temperatur
+  - platform: homeassistant
+    id: sensor_thermo_hygrometer_4_luftfeuchtigkeit
+    entity_id: sensor.thermo_hygrometer_4_luftfeuchtigkeit
+  - platform: homeassistant
+    id: sensor_thermo_hygrometer_2_temperatur
+    entity_id: sensor.thermo_hygrometer_2_temperatur
+  - platform: homeassistant
+    id: sensor_thermo_hygrometer_2_luftfeuchtigkeit
+    entity_id: sensor.thermo_hygrometer_2_luftfeuchtigkeit
+  - platform: homeassistant
+    id: sensor_thermo_hygrometer_5_temperatur
+    entity_id: sensor.thermo_hygrometer_5_temperatur
+  - platform: homeassistant
+    id: sensor_thermo_hygrometer_5_luftfeuchtigkeit
+    entity_id: sensor.thermo_hygrometer_5_luftfeuchtigkeit
+  - platform: homeassistant
+    id: sensor_thermo_hygrometer_6_temperatur
+    entity_id: sensor.thermo_hygrometer_6_temperatur
+  - platform: homeassistant
+    id: sensor_thermo_hygrometer_6_luftfeuchtigkeit
+    entity_id: sensor.thermo_hygrometer_6_luftfeuchtigkeit
+  - platform: homeassistant
+    id: sensor_thermo_hygrometer_7_temperatur
+    entity_id: sensor.thermo_hygrometer_7_temperatur
+  - platform: homeassistant
+    id: sensor_thermo_hygrometer_7_luftfeuchtigkeit
+    entity_id: sensor.thermo_hygrometer_7_luftfeuchtigkeit
+  - platform: homeassistant
+    id: sensor_shellyplusplugs_e465b8b6b9e0_switch_0_power
+    entity_id: sensor.shellyplusplugs_e465b8b6b9e0_switch_0_power
+  - platform: homeassistant
+    id: sensor_kuchl_steckdose_switch_0_voltage
+    entity_id: sensor.kuchl_steckdose_switch_0_voltage
+  - platform: homeassistant
+    id: sensor_kuchl_steckdose_switch_0_current
+    entity_id: sensor.kuchl_steckdose_switch_0_current
+  - platform: homeassistant
+    id: sensor_kuchl_steckdose_switch_0_power
+    entity_id: sensor.kuchl_steckdose_switch_0_power
+  - platform: homeassistant
+    id: bitcoin_preis
+    entity_id: sensor.bitcoin_preis
+  - platform: homeassistant
+    name: "Windgeschwindigkeit vom Windmesser"
+    id: wind_speed_kmh
+    entity_id: sensor.windmesser_windspeed_km_h
+    unit_of_measurement: "km/h"
+    accuracy_decimals: 1
+
+spi:
+  clk_pin: GPIO18
+  mosi_pin: GPIO17
+
+display:
+  - platform: ili9xxx
+    model: ST7796
+    cs_pin: GPIO7
+    dc_pin: GPIO15
+    reset_pin: GPIO16
+    color_palette: 8bit
+    rotation: 0
+    invert_colors: false
+    update_interval: 5s
+    lambda: |-
+      // Titel in Weiß
+      it.printf(45, 7, id(my_font_ananda), Color(255, 255, 255), "Wetterstation by Ossi");
+
+      // Datum in Gelb
+      auto time = id(sntp_time).now();
+      if (time.is_valid()) {
+        it.printf(100, 31, id(my_font_cabaret), Color(255, 255, 0), "%02d.%02d.%04d",
+          time.day_of_month, time.month, time.year);
+      }
+
+      // Wochentag separat anzeigen
+      const char* weekdays[] = {"Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"};
+      it.printf(130, 73, id(my_font_Coffin_klein), Color(176, 185, 28), "%s",
+        weekdays[(time.day_of_week + 5) % 7]);
+
+      // Temperatur in Grün
+      if (id(sensor_thermo_hygrometer_3_temperatur).has_state()) {
+        float temp = id(sensor_thermo_hygrometer_3_temperatur).state;
+        it.printf(3, 48, id(my_font_Coffin), Color(0, 255, 0), "%.1f°C", temp);
+      } else {
+        it.printf(3, 48, id(my_font_Coffin), Color(255, 0, 0), "N/A");
+      }
+
+      // Luftfeuchtigkeit in Hellblau
+      if (id(sensor_thermo_hygrometer_3_luftfeuchtigkeit).has_state()) {
+        float humidity = id(sensor_thermo_hygrometer_3_luftfeuchtigkeit).state;
+        it.printf(260, 48, id(my_font_Coffin), Color(135, 206, 250), "%.0f%%", humidity);
+      } else {
+        it.printf(260, 48, id(my_font_Coffin), Color(255, 0, 0), "N/A");
+      }
+
+      // Temperatur Außen mit erweitertem Farbspektrum
+      if (id(sensor_luxmeter_lux_korrigierte_temperatur).has_state()) {
+        float temp_aussen = id(sensor_luxmeter_lux_korrigierte_temperatur).state;
+        int temp_aussen_rund = roundf(temp_aussen * 2) / 2;
+        Color temp_color;
+        if (temp_aussen_rund < -15) {
+          temp_color = Color(0, 0, 139);
+        } else if (temp_aussen_rund < -10) {
+          temp_color = Color(0, 0, 255);
+        } else if (temp_aussen_rund < -5) {
+          temp_color = Color(0, 191, 255);
+        } else if (temp_aussen_rund < 0) {
+          temp_color = Color(0, 255, 255);
+        } else if (temp_aussen_rund < 5) {
+          temp_color = Color(0, 255, 128);
+        } else if (temp_aussen_rund < 10) {
+          temp_color = Color(173, 255, 47);
+        } else if (temp_aussen_rund < 15) {
+          temp_color = Color(255, 255, 0);
+        } else if (temp_aussen_rund < 20) {
+          temp_color = Color(255, 140, 0);
+        } else if (temp_aussen_rund < 25) {
+          temp_color = Color(255, 215, 0);
+        } else if (temp_aussen_rund < 30) {
+          temp_color = Color(255, 255, 255);
+        } else {
+          temp_color = Color(255, 255, 224);
+        }
+        it.printf(0, 88, id(my_font_Coffin_gross), temp_color, "%d°", temp_aussen_rund);
+      } else {
+        it.printf(0, 88, id(my_font_Coffin_gross), Color(255, 0, 0), "N/A");
+      }
+
+      // Luftfeuchtigkeit Außen in Hellblau
+      if (id(sensor_luxmeter_aussen_luftfeuchtigkeit).has_state()) {
+        float humidity = id(sensor_luxmeter_aussen_luftfeuchtigkeit).state;
+        it.printf(260, 210, id(my_font_Coffin), Color(135, 206, 250), "%.0f%%", humidity);
+      } else {
+        it.printf(260, 210, id(my_font_Coffin), Color(255, 0, 0), "N/A");
+      }
+
+      // Uhrzeit
+      if (time.is_valid()) {
+        it.printf(255, 360, id(my_font_miniminicabaret), Color(255, 255, 0), "%02d:%02d",
+          time.hour, time.minute);
+      }
+
+      // Blauer Text über den Sensoren
+      it.printf(0, 250, id(my_font_Coffin_klein), Color(34, 104, 155), "Luftdruck          Windspeed       Luxmeter");
+
+      // Luftdruck mit farblicher Kodierung
+      if (id(sensor_luxmeter_aussen_luftdruck).has_state()) {
+        float druck = id(sensor_luxmeter_aussen_luftdruck).state;
+        Color farbe = Color(0, 255, 0);
+        if (druck < 1000) {
+          farbe = Color(255, 255, 0);
+        } else if (druck > 1030) {
+          farbe = Color(255, 0, 0);
+        }
+        it.printf(6, 270, id(my_font_Coffin_klein), farbe, "%d hPa", (int)druck);
+      } else {
+        it.printf(6, 270, id(my_font_Coffin_klein), Color(255, 0, 0), "N/A");
+      }
+
+      // Windgeschwindigkeit in Cyan
+      if (id(wind_speed_kmh).has_state()) {
+        float wind_speed = id(wind_speed_kmh).state;
+        it.printf(130, 270, id(my_font_Coffin_klein), Color(0, 255, 255), "%.1f km/h", wind_speed);
+      } else {
+        it.printf(130, 270, id(my_font_Coffin_klein), Color(255, 0, 0), "N/A");
+      }
+
+      // Umgebungslicht in Braun
+      if (id(aussenfuhler_umgebungslicht).has_state()) {
+        float licht = id(aussenfuhler_umgebungslicht).state;
+        it.printf(235, 270, id(my_font_Coffin_klein), Color(210, 105, 30), "%.1f Lux", licht);
+      } else {
+        it.printf(235, 270, id(my_font_Coffin_klein), Color(255, 0, 0), "N/A");
+      }
+
+      // Temperatur und Luftfeuchtigkeit Schlafzimmer
+      if (id(sensor_thermo_hygrometer_1_temperatur).has_state()) {
+        float temp_schlafzimmer = id(sensor_thermo_hygrometer_1_temperatur).state;
+        it.printf(0, 295, id(my_font_Coffin_miniklein), Color(75, 188, 137), "Schlafzimmer oben:        %.1f°C", temp_schlafzimmer);
+      } else {
+        it.printf(0, 295, id(my_font_Coffin_miniklein), Color(255, 0, 0), "Schlafzimmer oben: N/A");
+      }
+      if (id(sensor_thermo_hygrometer_1_luftfeuchtigkeit).has_state()) {
+        float humidity_schlafzimmer = id(sensor_thermo_hygrometer_1_luftfeuchtigkeit).state;
+        it.printf(200, 295, id(my_font_Coffin_miniklein), Color(75, 188, 137), "%.0f%%", humidity_schlafzimmer);
+      } else {
+        it.printf(200, 295, id(my_font_Coffin_miniklein), Color(255, 0, 0), "N/A");
+      }
+
+      // Temperatur und Luftfeuchtigkeit Badezimmer
+      if (id(sensor_thermo_hygrometer_4_temperatur).has_state()) {
+        float temp_badezimmer = id(sensor_thermo_hygrometer_4_temperatur).state;
+        it.printf(0, 310, id(my_font_Coffin_miniklein), Color(75, 188, 137), "Bad:                               %.1f°C", temp_badezimmer);
+      } else {
+        it.printf(0, 310, id(my_font_Coffin_miniklein), Color(255, 0, 0), "Bad: N/A");
+      }
+      if (id(sensor_thermo_hygrometer_4_luftfeuchtigkeit).has_state()) {
+        float humidity_badezimmer = id(sensor_thermo_hygrometer_4_luftfeuchtigkeit).state;
+        it.printf(200, 310, id(my_font_Coffin_miniklein), Color(75, 188, 137), "%.0f%%", humidity_badezimmer);
+      } else {
+        it.printf(200, 310, id(my_font_Coffin_miniklein), Color(255, 0, 0), "N/A");
+      }
+
+      // Temperatur und Luftfeuchtigkeit Schlafzimmer Mutti
+      if (id(sensor_thermo_hygrometer_2_temperatur).has_state()) {
+        float temp_schlafzimmer_mutti = id(sensor_thermo_hygrometer_2_temperatur).state;
+        it.printf(0, 325, id(my_font_Coffin_miniklein), Color(75, 188, 137), "Schlafzimmer Mutti:        %.1f°C", temp_schlafzimmer_mutti);
+      } else {
+        it.printf(0, 325, id(my_font_Coffin_miniklein), Color(255, 0, 0), "Schlafzimmer Mutti: N/A");
+      }
+      if (id(sensor_thermo_hygrometer_2_luftfeuchtigkeit).has_state()) {
+        float humidity_schlafzimmer_mutti = id(sensor_thermo_hygrometer_2_luftfeuchtigkeit).state;
+        it.printf(200, 325, id(my_font_Coffin_miniklein), Color(75, 188, 137), "%.0f%%", humidity_schlafzimmer_mutti);
+      } else {
+        it.printf(200, 325, id(my_font_Coffin_miniklein), Color(255, 0, 0), "N/A");
+      }
+
+      // Temperatur und Luftfeuchtigkeit Werkstatt Ossi
+      if (id(sensor_thermo_hygrometer_5_temperatur).has_state()) {
+        float temp_werkstatt = id(sensor_thermo_hygrometer_5_temperatur).state;
+        it.printf(0, 340, id(my_font_Coffin_miniklein), Color(75, 188, 137), "Werkstatt Ossi:              %.1f°C", temp_werkstatt);
+      } else {
+        it.printf(0, 340, id(my_font_Coffin_miniklein), Color(255, 0, 0), "Werkstatt Ossi: N/A");
+      }
+      if (id(sensor_thermo_hygrometer_5_luftfeuchtigkeit).has_state()) {
+        float humidity_werkstatt = id(sensor_thermo_hygrometer_5_luftfeuchtigkeit).state;
+        it.printf(200, 340, id(my_font_Coffin_miniklein), Color(75, 188, 137), "%.0f%%", humidity_werkstatt);
+      } else {
+        it.printf(200, 340, id(my_font_Coffin_miniklein), Color(255, 0, 0), "N/A");
+      }
+
+      // Temperatur und Luftfeuchtigkeit Heizraum Pumpe
+      if (id(sensor_thermo_hygrometer_6_temperatur).has_state()) {
+        float temp_heizraum = id(sensor_thermo_hygrometer_6_temperatur).state;
+        it.printf(0, 355, id(my_font_Coffin_miniklein), Color(75, 188, 137), "Heizraum Pumpe:           %.1f°C", temp_heizraum);
+      } else {
+        it.printf(0, 355, id(my_font_Coffin_miniklein), Color(255, 0, 0), "Heizraum Pumpe: N/A");
+      }
+      if (id(sensor_thermo_hygrometer_6_luftfeuchtigkeit).has_state()) {
+        float humidity_heizraum = id(sensor_thermo_hygrometer_6_luftfeuchtigkeit).state;
+        it.printf(200, 355, id(my_font_Coffin_miniklein), Color(75, 188, 137), "%.0f%%", humidity_heizraum);
+      } else {
+        it.printf(200, 355, id(my_font_Coffin_miniklein), Color(255, 0, 0), "N/A");
+      }
+
+      // Temperatur und Luftfeuchtigkeit Retroraum Mak
+      if (id(sensor_thermo_hygrometer_7_temperatur).has_state()) {
+        float temp_retroraum = id(sensor_thermo_hygrometer_7_temperatur).state;
+        it.printf(0, 370, id(my_font_Coffin_miniklein), Color(75, 188, 137), "Retroraum:                    %.1f°C", temp_retroraum);
+      } else {
+        it.printf(0, 370, id(my_font_Coffin_miniklein), Color(255, 0, 0), "Retroraum: N/A");
+      }
+      if (id(sensor_thermo_hygrometer_7_luftfeuchtigkeit).has_state()) {
+        float humidity_retroraum = id(sensor_thermo_hygrometer_7_luftfeuchtigkeit).state;
+        it.printf(200, 370, id(my_font_Coffin_miniklein), Color(75, 188, 137), "%.0f%%", humidity_retroraum);
+      } else {
+        it.printf(200, 370, id(my_font_Coffin_miniklein), Color(255, 0, 0), "N/A");
+      }
+
+      // Text "Server" in Weiß
+      it.printf(240, 292, id(my_font_minicabaret), Color(201, 135, 113), "Server");
+
+      // Stromverbrauch Mini PC
+      if (id(sensor_shellyplusplugs_e465b8b6b9e0_switch_0_power).has_state()) {
+        float current_consumption = id(sensor_shellyplusplugs_e465b8b6b9e0_switch_0_power).state;
+        it.printf(250, 320, id(my_font_cabaret), Color(226, 190, 141), "%.0fW", current_consumption);
+      } else {
+        it.printf(250, 320, id(my_font_cabaret), Color(255, 0, 0), "N/A");
+      }
+
+      // Spannung Steckdose Kuchl
+      if (id(sensor_kuchl_steckdose_switch_0_voltage).has_state()) {
+        float voltage_kuchl = id(sensor_kuchl_steckdose_switch_0_voltage).state;
+        it.printf(10, 390, id(my_font_groscabaret), Color(127, 146, 163), "%.1fV", voltage_kuchl);
+      } else {
+        it.printf(10, 390, id(my_font_groscabaret), Color(255, 0, 0), "N/A");
+      }
+
+      // Strom Steckdose Kuchl
+      if (id(sensor_kuchl_steckdose_switch_0_current).has_state()) {
+        float current_kuchl = id(sensor_kuchl_steckdose_switch_0_current).state;
+        it.printf(135, 390, id(my_font_groscabaret), Color(240, 42, 16), "%.2fA", current_kuchl);
+      } else {
+        it.printf(135, 390, id(my_font_groscabaret), Color(255, 0, 0), "N/A");
+      }
+
+      // Leistung Steckdose Kuchl
+      if (id(sensor_kuchl_steckdose_switch_0_power).has_state()) {
+        float power_kuchl = id(sensor_kuchl_steckdose_switch_0_power).state;
+        it.printf(245, 390, id(my_font_groscabaret), Color(176, 185, 28), "%.1fW", power_kuchl);
+      } else {
+        it.printf(245, 390, id(my_font_groscabaret), Color(255, 0, 0), "N/A");
+      }
+
+      // Bitcoin-Wert in Gelb
+      if (id(bitcoin_preis).has_state()) {
+        float bitcoin = id(bitcoin_preis).state;
+        it.printf(35, 437, id(my_font_groscabaret), Color(243, 214, 119), "Bitcoin: %.0f EUR", bitcoin);
+      } else {
+        it.printf(35, 437, id(my_font_groscabaret), Color(255, 0, 0), "Bitcoin: N/A");
+      }

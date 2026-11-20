@@ -1,0 +1,37 @@
+# Vorlage der Geraete-YAML (im ESPHome Builder), echte Schluessel stehen nur dort.
+esphome:
+  name: wetterstation-display
+  friendly_name: Wetterstation-Display
+
+esp32:
+  board: esp32-s3-devkitc-1
+  framework:
+    type: arduino
+
+logger:
+
+api:
+  encryption:
+    key: !secret wetterstation_api_key
+
+ota:
+  - platform: esphome
+    password: !secret wetterstation_ota_passwort
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  ap:
+    ssid: "Wetterstation-Display"
+    password: !secret wetterstation_ap_passwort
+
+captive_portal:
+
+# Anzeige, Schriften, Sensoren, Taster und LEDs kommen von GitHub.
+# Aenderungen dort -> hier nur "Installieren" druecken.
+packages:
+  anzeige:
+    url: https://github.com/Eggaossi/Wetterstation-Display
+    ref: main
+    files: [esphome/anzeige.yaml]
+    refresh: 0s
