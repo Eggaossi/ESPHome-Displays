@@ -370,8 +370,16 @@ display:
             it.filled_circle(x, y, 2, MESSING);
             it.draw_pixel_at(x - 1, y - 1, MESSING_H);
           };
+          // Mittelgruen per Schachbrett aus den zwei Gruenstufen (8-Bit hat nichts dazwischen)
+          const Color BAND_HELL   = Color(0, 73, 0);
+          auto gruen_flaeche = [&](int x, int y, int w, int h) {
+            it.filled_rectangle(x, y, w, h, BAND);
+            for (int yy = y; yy < y + h; yy++)
+              for (int xx = x + ((yy + x) & 1); xx < x + w; xx += 2)
+                it.draw_pixel_at(xx, yy, BAND_HELL);
+          };
           auto band = [&](int y, int h) {
-            it.filled_rectangle(8, y, 304, h, BAND);
+            gruen_flaeche(8, y, 304, h);
             it.horizontal_line(8, y, 304, MESSING_D);
             it.horizontal_line(8, y + h - 1, 304, MESSING_D);
           };
@@ -476,7 +484,7 @@ display:
           it.print(304, 242 - LO, id(rc13), MESSING, TextAlign::TOP_RIGHT, "Feuchte");
           auto zeile = [&](int nr, const char *name, bool t_ok, float t, bool h_ok, float h) {
             int y = 260 + nr * 17;
-            if (nr % 2 == 1) it.filled_rectangle(8, y - 1, 304, 17, BAND);
+            if (nr % 2 == 1) gruen_flaeche(8, y - 1, 304, 17);
             it.print(16, y + LO, id(rc14), nr == 0 ? MESSING_H : WEISS, TextAlign::TOP_LEFT, name);
             if (t_ok) it.printf(236, y, id(rc14), WEISS, TextAlign::TOP_RIGHT, "%.1f°C", t);
             else      it.print(236, y, id(rc14), ROT, TextAlign::TOP_RIGHT, "--");

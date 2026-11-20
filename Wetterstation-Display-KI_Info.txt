@@ -132,5 +132,7 @@ Rahmen (seit 20.11. dezent): eine duenne dunkelgoldene Linie, je Ecke zwei klein
   (Die frueheren Hauswetter-Fassungen Mokka/schwarz stehen nur in der Git-Historie.)
 20.11.2026: Versatz nach TOP_LEFT-Fix noch ca. 4 px (links hoeher) -> in Gruen
   linksbuendige Texte neben rechtsbuendigen um LO=4 px nach unten.
+20.11.2026: Gruen "passt jetzt", Wunsch etwas heller -> Baender und Streifen als
+  Schachbrett aus (0,36,0) und (0,73,0) = Mittelgruen (gruen_flaeche()).
 Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
   Thermo-Hygrometer 5 (Werkstatt) Batterie 0 %.
