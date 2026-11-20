@@ -7,7 +7,8 @@ Was:      "Wetterstation by Ossi" - ESPHome-Display im lila Gehaeuse,
 Hardware: ESP32-S3 (board esp32-s3-devkitc-1, Arduino-Framework),
           Display ST7796 320x480 SPI, color_palette 8bit
           SPI: CLK GPIO18, MOSI GPIO17; CS GPIO7, DC GPIO15, RST GPIO16
-          Taster 1/2/3: GPIO11/10/9 (Pullup, invertiert), nur Log
+          Taster 1/2/3: GPIO11/10/9 (Pullup, invertiert); Taster 1 = naechste
+          Seite (Hauptseite <-> Farbtest), 2 und 3 nur Log
           LEDs 1/2/3: GPIO14/13/12 (in HA als Licht)
 Netz:     im IP-Plan .34 (ESP-32-Bereich), Hostname wetterstation-display
 
@@ -56,5 +57,12 @@ Rahmen: Gold doppelt, gestufte Ecken, Rauten oben/unten (wie Heimnetz-App).
   Aktuell: Mokka + Roboto Bold, vom Nutzer "schon besser" (per Copy/Paste
   aufgespielt, lief). Umstellung auf GitHub-Package am 20.11.2026 vom Nutzer
   eingespielt und installiert ("soo drauf") -> Weg ueber GitHub funktioniert.
+20.11.2026 07:02 Foto Mokka: Hintergrund wirkt trotz B=0 dunkelblau, Mokka-Karten
+  lila, Gelb (255,255,0) erscheint WEISS, Orange fast weiss. -> Display stellt
+  Farben grundsaetzlich falsch dar (nicht nur "zu viel Blau"). Nutzer: wirkt
+  wie Western-Stil (Cabaret-Titel), will einen anderen Stil.
+  Farbtest-Seite eingebaut (12 Felder mit Name + RGB, Taster 1). Naechster
+  Schritt: Foto vom Farbtest, dann Ursache (color_order/invert/8-Bit-Palette)
+  klaeren, erst danach neuen Stil bauen.
 Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
   Thermo-Hygrometer 5 (Werkstatt) Batterie 0 %.

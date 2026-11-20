@@ -128,6 +128,9 @@ binary_sensor:
       - delayed_on: 50ms
     on_press:
       - logger.log: "Wetterstation-Taster 1 wurde gedrückt!"
+      # Taster 1: naechste Seite (Hauptseite <-> Farbtest)
+      - display.page.show_next: anzeige_display
+      - component.update: anzeige_display
   - platform: gpio
     pin:
       number: GPIO10
@@ -265,200 +268,230 @@ display:
     rotation: 0
     invert_colors: false
     update_interval: 5s
-    lambda: |-
-      // ===== Mokka-Farben: alle ohne Blauanteil, damit nichts blaeulich wirkt =====
-      const Color HINTERGRUND = Color(36, 0, 0);       // dunkles Mokka
-      const Color KARTE       = Color(73, 36, 0);      // Karten: Milchkaffee dunkel
-      const Color GOLD        = Color(255, 182, 0);
-      const Color GOLD_DUNKEL = Color(146, 109, 0);
-      const Color ORANGE      = Color(255, 146, 0);
-      const Color WEISS       = Color(255, 255, 255);
-      const Color GRAU        = Color(219, 182, 0);    // helles Ocker fuer Nebentexte
-      const Color GRUEN       = Color(73, 219, 0);
-      const Color GELB        = Color(255, 255, 0);
-      const Color ROT         = Color(255, 36, 0);
-      const Color KORALLE     = Color(255, 109, 0);
+    id: anzeige_display
+    pages:
+      - id: seite_haupt
+        lambda: |-
+          // ===== Mokka-Farben: alle ohne Blauanteil, damit nichts blaeulich wirkt =====
+          const Color HINTERGRUND = Color(36, 0, 0);       // dunkles Mokka
+          const Color KARTE       = Color(73, 36, 0);      // Karten: Milchkaffee dunkel
+          const Color GOLD        = Color(255, 182, 0);
+          const Color GOLD_DUNKEL = Color(146, 109, 0);
+          const Color ORANGE      = Color(255, 146, 0);
+          const Color WEISS       = Color(255, 255, 255);
+          const Color GRAU        = Color(219, 182, 0);    // helles Ocker fuer Nebentexte
+          const Color GRUEN       = Color(73, 219, 0);
+          const Color GELB        = Color(255, 255, 0);
+          const Color ROT         = Color(255, 36, 0);
+          const Color KORALLE     = Color(255, 109, 0);
 
-      it.fill(HINTERGRUND);
+          it.fill(HINTERGRUND);
 
-      // ===== Helfer =====
-      // abgerundete Karte
-      auto karte = [&](int x, int y, int w, int h, Color c) {
-        int r = 6;
-        it.filled_rectangle(x + r, y, w - 2 * r, h, c);
-        it.filled_rectangle(x, y + r, w, h - 2 * r, c);
-        it.filled_circle(x + r, y + r, r, c);
-        it.filled_circle(x + w - r - 1, y + r, r, c);
-        it.filled_circle(x + r, y + h - r - 1, r, c);
-        it.filled_circle(x + w - r - 1, y + h - r - 1, r, c);
-      };
-      auto raute = [&](int cx, int cy, int r, Color c) {
-        it.filled_triangle(cx - r, cy, cx + r, cy, cx, cy - r, c);
-        it.filled_triangle(cx - r, cy, cx + r, cy, cx, cy + r, c);
-      };
-      // gestufte Ecke: 3 verschachtelte Winkel (dx/dy = Richtung)
-      auto ecke = [&](int x, int y, int dx, int dy) {
-        for (int k = 0; k < 3; k++) {
-          int o = 6 + k * 4;
-          int len = 18 - k * 5;
-          int px = x + dx * o;
-          int py = y + dy * o;
-          it.line(px, py, px + dx * len, py, k == 0 ? GOLD : GOLD_DUNKEL);
-          it.line(px, py, px, py + dy * len, k == 0 ? GOLD : GOLD_DUNKEL);
-        }
-      };
+          // ===== Helfer =====
+          // abgerundete Karte
+          auto karte = [&](int x, int y, int w, int h, Color c) {
+            int r = 6;
+            it.filled_rectangle(x + r, y, w - 2 * r, h, c);
+            it.filled_rectangle(x, y + r, w, h - 2 * r, c);
+            it.filled_circle(x + r, y + r, r, c);
+            it.filled_circle(x + w - r - 1, y + r, r, c);
+            it.filled_circle(x + r, y + h - r - 1, r, c);
+            it.filled_circle(x + w - r - 1, y + h - r - 1, r, c);
+          };
+          auto raute = [&](int cx, int cy, int r, Color c) {
+            it.filled_triangle(cx - r, cy, cx + r, cy, cx, cy - r, c);
+            it.filled_triangle(cx - r, cy, cx + r, cy, cx, cy + r, c);
+          };
+          // gestufte Ecke: 3 verschachtelte Winkel (dx/dy = Richtung)
+          auto ecke = [&](int x, int y, int dx, int dy) {
+            for (int k = 0; k < 3; k++) {
+              int o = 6 + k * 4;
+              int len = 18 - k * 5;
+              int px = x + dx * o;
+              int py = y + dy * o;
+              it.line(px, py, px + dx * len, py, k == 0 ? GOLD : GOLD_DUNKEL);
+              it.line(px, py, px, py + dy * len, k == 0 ? GOLD : GOLD_DUNKEL);
+            }
+          };
 
-      // ===== Goldrahmen mit Stufenecken und Rauten =====
-      it.rectangle(0, 0, 320, 480, GOLD_DUNKEL);
-      it.rectangle(2, 2, 316, 476, GOLD);
-      ecke(0, 0, 1, 1);
-      ecke(319, 0, -1, 1);
-      ecke(0, 479, 1, -1);
-      ecke(319, 479, -1, -1);
-      raute(160, 2, 5, GOLD);
-      raute(160, 477, 5, GOLD);
+          // ===== Goldrahmen mit Stufenecken und Rauten =====
+          it.rectangle(0, 0, 320, 480, GOLD_DUNKEL);
+          it.rectangle(2, 2, 316, 476, GOLD);
+          ecke(0, 0, 1, 1);
+          ecke(319, 0, -1, 1);
+          ecke(0, 479, 1, -1);
+          ecke(319, 479, -1, -1);
+          raute(160, 2, 5, GOLD);
+          raute(160, 477, 5, GOLD);
 
-      // ===== Kopf: Titel, Untertitel, Uhr als Knopf =====
-      it.print(16, 12, id(my_font_cabaret), ORANGE, "Wetterstation");
-      auto time = id(sntp_time).now();
-      if (time.is_valid()) {
-        const char* wochentage[] = {"Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"};
-        it.printf(18, 50, id(rb14), GRAU, "%s, %02d.%02d.%04d",
-          wochentage[(time.day_of_week + 5) % 7], time.day_of_month, time.month, time.year);
-        karte(224, 14, 82, 42, KARTE);
-        it.printf(265, 20, id(rb28), WEISS, TextAlign::TOP_CENTER, "%02d:%02d", time.hour, time.minute);
-      } else {
-        it.print(18, 50, id(rb14), GRAU, "warte auf Zeit...");
-      }
+          // ===== Kopf: Titel, Untertitel, Uhr als Knopf =====
+          it.print(16, 12, id(my_font_cabaret), ORANGE, "Wetterstation");
+          auto time = id(sntp_time).now();
+          if (time.is_valid()) {
+            const char* wochentage[] = {"Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"};
+            it.printf(18, 50, id(rb14), GRAU, "%s, %02d.%02d.%04d",
+              wochentage[(time.day_of_week + 5) % 7], time.day_of_month, time.month, time.year);
+            karte(224, 14, 82, 42, KARTE);
+            it.printf(265, 20, id(rb28), WEISS, TextAlign::TOP_CENTER, "%02d:%02d", time.hour, time.minute);
+          } else {
+            it.print(18, 50, id(rb14), GRAU, "warte auf Zeit...");
+          }
 
-      // ===== Abschnitt Aussen (rechts: Innenwerte Kueche) =====
-      it.print(16, 70, id(rb16), ORANGE, "Aussen");
-      if (id(sensor_thermo_hygrometer_3_temperatur).has_state())
-        it.printf(262, 70, id(rb16), GRAU, TextAlign::TOP_RIGHT, "Innen %.1f°C", id(sensor_thermo_hygrometer_3_temperatur).state);
-      if (id(sensor_thermo_hygrometer_3_luftfeuchtigkeit).has_state()) {
-        float hi = id(sensor_thermo_hygrometer_3_luftfeuchtigkeit).state;
-        Color hf = GRUEN;
-        if (hi >= 70) hf = ROT;
-        else if (hi >= 60) hf = GELB;
-        it.printf(304, 70, id(rb16), hf, TextAlign::TOP_RIGHT, "%.0f%%", hi);
-      }
+          // ===== Abschnitt Aussen (rechts: Innenwerte Kueche) =====
+          it.print(16, 70, id(rb16), ORANGE, "Aussen");
+          if (id(sensor_thermo_hygrometer_3_temperatur).has_state())
+            it.printf(262, 70, id(rb16), GRAU, TextAlign::TOP_RIGHT, "Innen %.1f°C", id(sensor_thermo_hygrometer_3_temperatur).state);
+          if (id(sensor_thermo_hygrometer_3_luftfeuchtigkeit).has_state()) {
+            float hi = id(sensor_thermo_hygrometer_3_luftfeuchtigkeit).state;
+            Color hf = GRUEN;
+            if (hi >= 70) hf = ROT;
+            else if (hi >= 60) hf = GELB;
+            it.printf(304, 70, id(rb16), hf, TextAlign::TOP_RIGHT, "%.0f%%", hi);
+          }
 
-      // ===== Karte: grosse Aussentemperatur + Aussenwerte =====
-      karte(14, 92, 292, 170, KARTE);
-      if (id(sensor_luxmeter_lux_korrigierte_temperatur).has_state()) {
-        float temp_aussen = id(sensor_luxmeter_lux_korrigierte_temperatur).state;
-        int t = (int) roundf(temp_aussen);
-        Color temp_color;
-        if (t < -15)      temp_color = Color(0, 0, 255);
-        else if (t < -10) temp_color = Color(0, 146, 255);
-        else if (t < -5)  temp_color = Color(0, 219, 255);
-        else if (t < 0)   temp_color = Color(146, 255, 255);
-        else if (t < 5)   temp_color = Color(255, 255, 255);
-        else if (t < 10)  temp_color = Color(182, 255, 85);
-        else if (t < 15)  temp_color = Color(255, 255, 0);
-        else if (t < 20)  temp_color = Color(255, 182, 0);
-        else if (t < 25)  temp_color = Color(255, 146, 0);
-        else if (t < 30)  temp_color = Color(255, 73, 0);
-        else              temp_color = Color(255, 0, 0);
-        it.printf(160, 82, id(my_font_Coffin_gross), temp_color, TextAlign::TOP_CENTER, "%d°", t);
-      } else {
-        it.print(160, 82, id(my_font_Coffin_gross), ROT, TextAlign::TOP_CENTER, "--");
-      }
+          // ===== Karte: grosse Aussentemperatur + Aussenwerte =====
+          karte(14, 92, 292, 170, KARTE);
+          if (id(sensor_luxmeter_lux_korrigierte_temperatur).has_state()) {
+            float temp_aussen = id(sensor_luxmeter_lux_korrigierte_temperatur).state;
+            int t = (int) roundf(temp_aussen);
+            Color temp_color;
+            if (t < -15)      temp_color = Color(0, 0, 255);
+            else if (t < -10) temp_color = Color(0, 146, 255);
+            else if (t < -5)  temp_color = Color(0, 219, 255);
+            else if (t < 0)   temp_color = Color(146, 255, 255);
+            else if (t < 5)   temp_color = Color(255, 255, 255);
+            else if (t < 10)  temp_color = Color(182, 255, 85);
+            else if (t < 15)  temp_color = Color(255, 255, 0);
+            else if (t < 20)  temp_color = Color(255, 182, 0);
+            else if (t < 25)  temp_color = Color(255, 146, 0);
+            else if (t < 30)  temp_color = Color(255, 73, 0);
+            else              temp_color = Color(255, 0, 0);
+            it.printf(160, 82, id(my_font_Coffin_gross), temp_color, TextAlign::TOP_CENTER, "%d°", t);
+          } else {
+            it.print(160, 82, id(my_font_Coffin_gross), ROT, TextAlign::TOP_CENTER, "--");
+          }
 
-      auto feld = [&](int nr, const char* symbol, bool ok, Color wf, const char* text) {
-        int x = 20 + nr * 72;
-        it.print(x, 240, id(mdi_icons_klein), GOLD, symbol);
-        it.print(x + 20, 242, id(rb13), ok ? wf : ROT, ok ? text : "--");
-      };
-      char buf[16];
+          auto feld = [&](int nr, const char* symbol, bool ok, Color wf, const char* text) {
+            int x = 20 + nr * 72;
+            it.print(x, 240, id(mdi_icons_klein), GOLD, symbol);
+            it.print(x + 20, 242, id(rb13), ok ? wf : ROT, ok ? text : "--");
+          };
+          char buf[16];
 
-      bool ok = id(sensor_luxmeter_aussen_luftfeuchtigkeit).has_state();
-      snprintf(buf, sizeof(buf), "%.0f%%", id(sensor_luxmeter_aussen_luftfeuchtigkeit).state);
-      feld(0, "\U000F058E", ok, WEISS, buf);
+          bool ok = id(sensor_luxmeter_aussen_luftfeuchtigkeit).has_state();
+          snprintf(buf, sizeof(buf), "%.0f%%", id(sensor_luxmeter_aussen_luftfeuchtigkeit).state);
+          feld(0, "\U000F058E", ok, WEISS, buf);
 
-      ok = id(sensor_luxmeter_aussen_luftdruck).has_state();
-      float druck = id(sensor_luxmeter_aussen_luftdruck).state;
-      Color druck_farbe = WEISS;                 // gelb unter 1000, rot ueber 1030
-      if (druck < 1000) druck_farbe = GELB;
-      else if (druck > 1030) druck_farbe = ROT;
-      snprintf(buf, sizeof(buf), "%d hPa", (int) druck);
-      feld(1, "\U000F029A", ok, druck_farbe, buf);
+          ok = id(sensor_luxmeter_aussen_luftdruck).has_state();
+          float druck = id(sensor_luxmeter_aussen_luftdruck).state;
+          Color druck_farbe = WEISS;                 // gelb unter 1000, rot ueber 1030
+          if (druck < 1000) druck_farbe = GELB;
+          else if (druck > 1030) druck_farbe = ROT;
+          snprintf(buf, sizeof(buf), "%d hPa", (int) druck);
+          feld(1, "\U000F029A", ok, druck_farbe, buf);
 
-      ok = id(wind_speed_kmh).has_state();
-      snprintf(buf, sizeof(buf), "%.1f km/h", id(wind_speed_kmh).state);
-      feld(2, "\U000F059D", ok, WEISS, buf);
+          ok = id(wind_speed_kmh).has_state();
+          snprintf(buf, sizeof(buf), "%.1f km/h", id(wind_speed_kmh).state);
+          feld(2, "\U000F059D", ok, WEISS, buf);
 
-      ok = id(aussenfuhler_umgebungslicht).has_state();
-      snprintf(buf, sizeof(buf), "%.1f lx", id(aussenfuhler_umgebungslicht).state);
-      feld(3, "\U000F05A8", ok, WEISS, buf);
+          ok = id(aussenfuhler_umgebungslicht).has_state();
+          snprintf(buf, sizeof(buf), "%.1f lx", id(aussenfuhler_umgebungslicht).state);
+          feld(3, "\U000F05A8", ok, WEISS, buf);
 
-      // ===== Abschnitt Raumklima: eine Karte pro Raum, Punkt rechts =====
-      it.print(16, 268, id(rb16), ORANGE, "Raumklima");
-      it.print(232, 270, id(rb14), GRAU, TextAlign::TOP_RIGHT, "Temp");
-      it.print(304, 270, id(rb14), GRAU, TextAlign::TOP_RIGHT, "Feuchte");
+          // ===== Abschnitt Raumklima: eine Karte pro Raum, Punkt rechts =====
+          it.print(16, 268, id(rb16), ORANGE, "Raumklima");
+          it.print(232, 270, id(rb14), GRAU, TextAlign::TOP_RIGHT, "Temp");
+          it.print(304, 270, id(rb14), GRAU, TextAlign::TOP_RIGHT, "Feuchte");
 
-      auto zeile = [&](int nr, const char* name, bool t_ok, float t, bool h_ok, float h) {
-        int y = 288 + nr * 18;
-        karte(14, y, 292, 17, KARTE);
-        it.print(22, y + 1, id(rb14), WEISS, name);
-        if (t_ok) it.printf(232, y + 1, id(rb14), WEISS, TextAlign::TOP_RIGHT, "%.1f°C", t);
-        else      it.print(232, y + 1, id(rb14), ROT, TextAlign::TOP_RIGHT, "--");
-        Color hf = GRAU;
-        if (h_ok) {
-          hf = GRUEN;
-          if (h >= 70) hf = ROT;
-          else if (h >= 60) hf = GELB;
-          it.printf(284, y + 1, id(rb14), hf, TextAlign::TOP_RIGHT, "%.0f%%", h);
-        } else {
-          it.print(284, y + 1, id(rb14), ROT, TextAlign::TOP_RIGHT, "--");
-        }
-        it.filled_circle(296, y + 8, 4, hf);
-      };
+          auto zeile = [&](int nr, const char* name, bool t_ok, float t, bool h_ok, float h) {
+            int y = 288 + nr * 18;
+            karte(14, y, 292, 17, KARTE);
+            it.print(22, y + 1, id(rb14), WEISS, name);
+            if (t_ok) it.printf(232, y + 1, id(rb14), WEISS, TextAlign::TOP_RIGHT, "%.1f°C", t);
+            else      it.print(232, y + 1, id(rb14), ROT, TextAlign::TOP_RIGHT, "--");
+            Color hf = GRAU;
+            if (h_ok) {
+              hf = GRUEN;
+              if (h >= 70) hf = ROT;
+              else if (h >= 60) hf = GELB;
+              it.printf(284, y + 1, id(rb14), hf, TextAlign::TOP_RIGHT, "%.0f%%", h);
+            } else {
+              it.print(284, y + 1, id(rb14), ROT, TextAlign::TOP_RIGHT, "--");
+            }
+            it.filled_circle(296, y + 8, 4, hf);
+          };
 
-      zeile(0, "Schlafzimmer oben",
-        id(sensor_thermo_hygrometer_1_temperatur).has_state(), id(sensor_thermo_hygrometer_1_temperatur).state,
-        id(sensor_thermo_hygrometer_1_luftfeuchtigkeit).has_state(), id(sensor_thermo_hygrometer_1_luftfeuchtigkeit).state);
-      zeile(1, "Bad",
-        id(sensor_thermo_hygrometer_4_temperatur).has_state(), id(sensor_thermo_hygrometer_4_temperatur).state,
-        id(sensor_thermo_hygrometer_4_luftfeuchtigkeit).has_state(), id(sensor_thermo_hygrometer_4_luftfeuchtigkeit).state);
-      zeile(2, "Schlafzimmer Mutti",
-        id(sensor_thermo_hygrometer_2_temperatur).has_state(), id(sensor_thermo_hygrometer_2_temperatur).state,
-        id(sensor_thermo_hygrometer_2_luftfeuchtigkeit).has_state(), id(sensor_thermo_hygrometer_2_luftfeuchtigkeit).state);
-      zeile(3, "Werkstatt Ossi",
-        id(sensor_thermo_hygrometer_5_temperatur).has_state(), id(sensor_thermo_hygrometer_5_temperatur).state,
-        id(sensor_thermo_hygrometer_5_luftfeuchtigkeit).has_state(), id(sensor_thermo_hygrometer_5_luftfeuchtigkeit).state);
-      zeile(4, "Heizraum Pumpe",
-        id(sensor_thermo_hygrometer_6_temperatur).has_state(), id(sensor_thermo_hygrometer_6_temperatur).state,
-        id(sensor_thermo_hygrometer_6_luftfeuchtigkeit).has_state(), id(sensor_thermo_hygrometer_6_luftfeuchtigkeit).state);
-      zeile(5, "Retroraum",
-        id(sensor_thermo_hygrometer_7_temperatur).has_state(), id(sensor_thermo_hygrometer_7_temperatur).state,
-        id(sensor_thermo_hygrometer_7_luftfeuchtigkeit).has_state(), id(sensor_thermo_hygrometer_7_luftfeuchtigkeit).state);
+          zeile(0, "Schlafzimmer oben",
+            id(sensor_thermo_hygrometer_1_temperatur).has_state(), id(sensor_thermo_hygrometer_1_temperatur).state,
+            id(sensor_thermo_hygrometer_1_luftfeuchtigkeit).has_state(), id(sensor_thermo_hygrometer_1_luftfeuchtigkeit).state);
+          zeile(1, "Bad",
+            id(sensor_thermo_hygrometer_4_temperatur).has_state(), id(sensor_thermo_hygrometer_4_temperatur).state,
+            id(sensor_thermo_hygrometer_4_luftfeuchtigkeit).has_state(), id(sensor_thermo_hygrometer_4_luftfeuchtigkeit).state);
+          zeile(2, "Schlafzimmer Mutti",
+            id(sensor_thermo_hygrometer_2_temperatur).has_state(), id(sensor_thermo_hygrometer_2_temperatur).state,
+            id(sensor_thermo_hygrometer_2_luftfeuchtigkeit).has_state(), id(sensor_thermo_hygrometer_2_luftfeuchtigkeit).state);
+          zeile(3, "Werkstatt Ossi",
+            id(sensor_thermo_hygrometer_5_temperatur).has_state(), id(sensor_thermo_hygrometer_5_temperatur).state,
+            id(sensor_thermo_hygrometer_5_luftfeuchtigkeit).has_state(), id(sensor_thermo_hygrometer_5_luftfeuchtigkeit).state);
+          zeile(4, "Heizraum Pumpe",
+            id(sensor_thermo_hygrometer_6_temperatur).has_state(), id(sensor_thermo_hygrometer_6_temperatur).state,
+            id(sensor_thermo_hygrometer_6_luftfeuchtigkeit).has_state(), id(sensor_thermo_hygrometer_6_luftfeuchtigkeit).state);
+          zeile(5, "Retroraum",
+            id(sensor_thermo_hygrometer_7_temperatur).has_state(), id(sensor_thermo_hygrometer_7_temperatur).state,
+            id(sensor_thermo_hygrometer_7_luftfeuchtigkeit).has_state(), id(sensor_thermo_hygrometer_7_luftfeuchtigkeit).state);
 
-      // ===== Abschnitt Strom (rechts: Server) =====
-      it.print(16, 398, id(rb16), ORANGE, "Strom Kueche");
-      if (id(sensor_shellyplusplugs_e465b8b6b9e0_switch_0_power).has_state())
-        it.printf(304, 398, id(rb16), GRAU, TextAlign::TOP_RIGHT, "Server %.0fW",
-          id(sensor_shellyplusplugs_e465b8b6b9e0_switch_0_power).state);
+          // ===== Abschnitt Strom (rechts: Server) =====
+          it.print(16, 398, id(rb16), ORANGE, "Strom Kueche");
+          if (id(sensor_shellyplusplugs_e465b8b6b9e0_switch_0_power).has_state())
+            it.printf(304, 398, id(rb16), GRAU, TextAlign::TOP_RIGHT, "Server %.0fW",
+              id(sensor_shellyplusplugs_e465b8b6b9e0_switch_0_power).state);
 
-      karte(14, 418, 292, 26, KARTE);
-      it.print(20, 419, id(mdi_icons), GOLD, "\U000F0241");
-      if (id(sensor_kuchl_steckdose_switch_0_voltage).has_state())
-        it.printf(48, 421, id(rb18), WEISS, "%.1fV", id(sensor_kuchl_steckdose_switch_0_voltage).state);
-      else
-        it.print(48, 421, id(rb18), ROT, "--");
-      if (id(sensor_kuchl_steckdose_switch_0_current).has_state())
-        it.printf(170, 421, id(rb18), KORALLE, TextAlign::TOP_CENTER, "%.2fA", id(sensor_kuchl_steckdose_switch_0_current).state);
-      else
-        it.print(170, 421, id(rb18), ROT, TextAlign::TOP_CENTER, "--");
-      if (id(sensor_kuchl_steckdose_switch_0_power).has_state())
-        it.printf(298, 421, id(rb18), GRUEN, TextAlign::TOP_RIGHT, "%.1fW", id(sensor_kuchl_steckdose_switch_0_power).state);
-      else
-        it.print(298, 421, id(rb18), ROT, TextAlign::TOP_RIGHT, "--");
+          karte(14, 418, 292, 26, KARTE);
+          it.print(20, 419, id(mdi_icons), GOLD, "\U000F0241");
+          if (id(sensor_kuchl_steckdose_switch_0_voltage).has_state())
+            it.printf(48, 421, id(rb18), WEISS, "%.1fV", id(sensor_kuchl_steckdose_switch_0_voltage).state);
+          else
+            it.print(48, 421, id(rb18), ROT, "--");
+          if (id(sensor_kuchl_steckdose_switch_0_current).has_state())
+            it.printf(170, 421, id(rb18), KORALLE, TextAlign::TOP_CENTER, "%.2fA", id(sensor_kuchl_steckdose_switch_0_current).state);
+          else
+            it.print(170, 421, id(rb18), ROT, TextAlign::TOP_CENTER, "--");
+          if (id(sensor_kuchl_steckdose_switch_0_power).has_state())
+            it.printf(298, 421, id(rb18), GRUEN, TextAlign::TOP_RIGHT, "%.1fW", id(sensor_kuchl_steckdose_switch_0_power).state);
+          else
+            it.print(298, 421, id(rb18), ROT, TextAlign::TOP_RIGHT, "--");
 
-      // ===== Bitcoin =====
-      karte(28, 448, 264, 24, KARTE);
-      it.print(36, 448, id(mdi_icons), GOLD, "\U000F0813");
-      if (id(bitcoin_preis).has_state())
-        it.printf(170, 450, id(rb18), GOLD, TextAlign::TOP_CENTER, "%.0f EUR", id(bitcoin_preis).state);
-      else
-        it.print(170, 450, id(rb18), ROT, TextAlign::TOP_CENTER, "--");
+          // ===== Bitcoin =====
+          karte(28, 448, 264, 24, KARTE);
+          it.print(36, 448, id(mdi_icons), GOLD, "\U000F0813");
+          if (id(bitcoin_preis).has_state())
+            it.printf(170, 450, id(rb18), GOLD, TextAlign::TOP_CENTER, "%.0f EUR", id(bitcoin_preis).state);
+          else
+            it.print(170, 450, id(rb18), ROT, TextAlign::TOP_CENTER, "--");
+      - id: seite_farbtest
+        lambda: |-
+          // ===== Farbtest: so zeigt das Display die Farben wirklich =====
+          it.fill(Color(0, 0, 0));
+          struct Probe { const char* name; int r, g, b; };
+          const Probe proben[12] = {
+            {"1 Schwarz 0,0,0",       0,   0,   0},
+            {"2 Weiss 255,255,255", 255, 255, 255},
+            {"3 Rot 255,0,0",       255,   0,   0},
+            {"4 Gruen 0,255,0",       0, 255,   0},
+            {"5 Blau 0,0,255",        0,   0, 255},
+            {"6 Gelb 255,255,0",    255, 255,   0},
+            {"7 Orange 255,146,0",  255, 146,   0},
+            {"8 Gold 255,182,0",    255, 182,   0},
+            {"9 Mokka 73,36,0",      73,  36,   0},
+            {"10 Braun 36,0,0",      36,   0,   0},
+            {"11 Grau 146,146,170", 146, 146, 170},
+            {"12 Petrol 0,73,85",     0,  73,  85},
+          };
+          for (int i = 0; i < 12; i++) {
+            int x = (i % 2) * 160 + 4;
+            int y = (i / 2) * 78 + 12;
+            it.print(x, y, id(rb14), Color(255, 255, 255), proben[i].name);
+            it.filled_rectangle(x, y + 18, 152, 52, Color(proben[i].r, proben[i].g, proben[i].b));
+            it.rectangle(x, y + 18, 152, 52, Color(255, 255, 255));
+          }
+          it.print(160, 0, id(rb13), Color(255, 255, 255), TextAlign::TOP_CENTER, "FARBTEST - Taster 1 = zurueck");
