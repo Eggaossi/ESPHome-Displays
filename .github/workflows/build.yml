@@ -67,10 +67,11 @@ jobs:
             fi
             rm -f fw/$d/fehler.txt
             NAME=$(grep -m1 '^  name:' displays/$d/$d.yaml | awk '{print $2}')
-            ENV=displays/$d/.esphome/build/$NAME/.pioenvs/$NAME
-            BIN=$ENV/firmware.ota.bin; [ -f $BIN ] || BIN=$ENV/firmware.bin
-            cp $BIN fw/$d/firmware.ota.bin
-            [ -f $ENV/firmware.factory.bin ] && cp $ENV/firmware.factory.bin fw/$d/firmware.factory.bin
+            BIN=$(find displays/$d/.esphome/build/$NAME -name firmware.ota.bin | head -1)
+            FAC=$(find displays/$d/.esphome/build/$NAME -name firmware.factory.bin | head -1)
+            if [ -z "$BIN" ]; then echo "FEHLER: firmware.ota.bin nicht gefunden" > fw/$d/fehler.txt; FEHLER=1; continue; fi
+            cp "$BIN" fw/$d/firmware.ota.bin
+            [ -n "$FAC" ] && cp "$FAC" fw/$d/firmware.factory.bin
             MD5=$(md5sum fw/$d/firmware.ota.bin | cut -d' ' -f1)
             cat > fw/$d/manifest.json <<JSON
           {"name": "$d", "version": "${{ github.run_number }}", "builds": [{"chipFamily": "ESP32-S3",
