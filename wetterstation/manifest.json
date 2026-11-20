@@ -1,0 +1,3 @@
+{"name": "wetterstation", "version": "28", "builds": [{"chipFamily": "ESP32-S3",
+  "ota": {"path": "https://raw.githubusercontent.com/Eggaossi/ESPHome-Displays/firmware/wetterstation/firmware.ota.bin",
+          "md5": "8fdabb8364fbff97c8df76ba1550ca65", "summary": "Build 28 (aufgehoben) Design gruen"}}]}
