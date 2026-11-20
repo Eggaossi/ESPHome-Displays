@@ -158,17 +158,12 @@ display:
       // ===== Design Messgeraet (320x240) =====
       const Color WEISS(255, 255, 255), GRAU(146, 146, 85), LINIE(73, 73, 85), SCHWARZ(0, 0, 0);
 
-      // --- Farbverlauf der Skala 400..2400 ppm: gruen -> gelbgruen -> gelb -> orange -> rot ---
+      // --- Farben der Skala 400..2400 ppm (kraeftig, ohne blasse Zwischentoene - am Display wirkt hell sonst weiss) ---
       auto skalenfarbe = [](float v) -> Color {
-        float t = (std::min(std::max(v, 400.0f), 2400.0f) - 400.0f) / 2000.0f;
-        const float P[5] = {0.0f, 0.3f, 0.5f, 0.75f, 1.0f};
-        const int R[5] = {0, 146, 255, 255, 255}, G[5] = {219, 255, 219, 109, 0};
-        for (int i = 0; i < 4; i++) {
-          if (t <= P[i + 1]) {
-            float k = (t - P[i]) / (P[i + 1] - P[i]);
-            return Color(R[i] + (R[i + 1] - R[i]) * k, G[i] + (G[i + 1] - G[i]) * k, 0);
-          }
-        }
+        if (v < 800) return Color(0, 219, 0);
+        if (v < 1000) return Color(109, 219, 0);
+        if (v < 1400) return Color(219, 219, 0);
+        if (v < 2000) return Color(255, 109, 0);
         return Color(255, 0, 0);
       };
 
@@ -205,22 +200,35 @@ display:
       };
 
       // ================= Links: Skalenbogen mit CO2 =================
-      const int CX = 104, CY = 124, RA = 98, DI = 12;      // Mitte, Aussenradius, Dicke
+      const int CX = 104, CY = 126, RA = 96, DI = 14;      // Mitte, Aussenradius, Dicke
       const float START = 150.0f, SWEEP = 240.0f;
       bool hat_co2 = id(co2_value).has_state() && !isnan(id(co2_value).state);
       int co2 = hat_co2 ? (int) id(co2_value).state : 0;
-      for (int i = 0; i < 60; i++) {
-        float v0 = 400.0f + 2000.0f * i / 60.0f;
-        float a0 = (START + SWEEP * i / 60.0f) * M_PI / 180.0f;
-        float a1 = (START + SWEEP * (i + 1) / 60.0f - 1.2f) * M_PI / 180.0f;
-        Color c = skalenfarbe(v0 + 15);
-        if (!hat_co2 || v0 > co2) c = Color(c.r / 4, c.g / 4, 0);
-        int x1 = CX + RA * cosf(a0), y1 = CY + RA * sinf(a0), x2 = CX + RA * cosf(a1), y2 = CY + RA * sinf(a1);
-        int x3 = CX + (RA - DI) * cosf(a1), y3 = CY + (RA - DI) * sinf(a1), x4 = CX + (RA - DI) * cosf(a0), y4 = CY + (RA - DI) * sinf(a0);
-        it.filled_triangle(x1, y1, x2, y2, x3, y3, c);
-        it.filled_triangle(x1, y1, x3, y3, x4, y4, c);
+      // Bogen Pixel fuer Pixel: Winkel und Abstand je Punkt -> glatte Kanten, gleichmaessige Fugen
+      const int STUECKE = 30;
+      const float FUGE = 2.0f;                       // Grad
+      float g_zeiger = hat_co2 ? SWEEP * (std::min(std::max(co2, 400), 2400) - 400) / 2000.0f : -100.0f;
+      const int RI = RA - DI, RZI = RI - 4, RZA = RA + 4;   // Zeiger ragt 4 px ueber den Bogen
+      for (int dy = -RZA; dy <= RZA; dy++) {
+        for (int dx = -RZA; dx <= RZA; dx++) {
+          int d2 = dx * dx + dy * dy;
+          if (d2 < RZI * RZI || d2 > RZA * RZA) continue;
+          float g = atan2f(dy, dx) * 180.0f / M_PI - START;
+          while (g < 0) g += 360.0f;
+          if (g > SWEEP + 2.0f) continue;
+          if (fabsf(g - g_zeiger) <= 1.4f) { it.draw_pixel_at(CX + dx, CY + dy, WEISS); continue; }
+          if (d2 < RI * RI || d2 > RA * RA || g > SWEEP) continue;
+          float breite = SWEEP / STUECKE;
+          int i = (int) (g / breite);
+          if (g - i * breite > breite - FUGE) continue;   // Fuge
+          float v_mitte = 400.0f + 2000.0f * (i + 0.5f) / STUECKE;
+          Color c = skalenfarbe(v_mitte);
+          if (!hat_co2 || v_mitte > co2) c = Color(c.r / 5, c.g / 5, 0);
+          it.draw_pixel_at(CX + dx, CY + dy, c);
+        }
       }
       for (int v = 400; v <= 2400; v += 400) {
+        if (v == 800 || v == 2000) continue;   // stoessen sonst an die grosse Zahl
         float a = (START + SWEEP * (v - 400) / 2000.0f) * M_PI / 180.0f;
         int rr = RA - DI - 14;
         it.printf(CX + rr * cosf(a), CY + rr * sinf(a), id(rb10), GRAU, TextAlign::CENTER, "%d", v);
@@ -232,10 +240,6 @@ display:
       const char* schild = "--";
       Color schild_farbe = GRAU;
       if (hat_co2) {
-        float a = (START + SWEEP * (std::min(std::max(co2, 400), 2400) - 400) / 2000.0f) * M_PI / 180.0f;
-        int px = CX + (RA - DI / 2) * cosf(a), py = CY + (RA - DI / 2) * sinf(a);
-        it.filled_circle(px, py, 7, WEISS);
-        it.circle(px, py, 8, SCHWARZ);
         char buf[8];
         snprintf(buf, sizeof(buf), "%d", co2);
         lcd(CX + 58, CY - 30, 22, 58, 5, buf, skalenfarbe(co2), 6, true);

@@ -71,3 +71,9 @@ Hotspot (Fallback-AP) "Co-Ossi-Stube Fallback Hotspot", Passwort = OTA_PASSWORD.
 20.11.2026 ~16:10: Nutzer hat die einmalige HA-Datei installiert. Danach kam die Luftsaeule (Build 48) von selbst
   aufs Display -> SELBST-UPDATE GETESTET. Ab jetzt in HA NICHT mehr "Installieren" (OTA-Passwort ist jetzt
   OTA_PASSWORD aus GitHub). Messgeraet noch nicht gewaehlt/gebaut.
+
+20.11.2026 Messgeraet Build 50 am Geraet GETESTET (laeuft). Nutzer: Bogen "nicht richtig schoen" (Foto: Dreiecks-Stuecke
+  ausgefranst, helle Gruentoene fast weiss). Neu: Bogen Pixel fuer Pixel (atan2 je Punkt im Ring, 30 Stuecke, 2 Grad Fuge),
+  kraeftige Farben ohne Zwischentoene (0,219,0 / 109,219,0 / 219,219,0 / 255,109,0 / 255,0,0), inaktiv /5, Zeiger =
+  weisses Stueck 2.8 Grad ueber den Bogen hinaus statt Punkt. Skalenzahlen 800 und 2000 weg (stiessen an die Zahl).
+  Radiale Linien ausprobiert -> Punktmuster, verworfen.
