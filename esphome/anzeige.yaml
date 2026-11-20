@@ -366,7 +366,9 @@ display:
             else if (t < 25)  temp_color = Color(255, 146, 0);
             else if (t < 30)  temp_color = Color(255, 73, 0);
             else              temp_color = Color(255, 0, 0);
-            it.printf(160, 82, id(my_font_Coffin_gross), temp_color, TextAlign::TOP_CENTER, "%d°", t);
+            // 3x leicht versetzt zeichnen = kraeftigere Ziffer (Coffin ist oben sehr duenn)
+            for (int dx = -2; dx <= 2; dx++)
+              it.printf(160 + dx, 82, id(my_font_Coffin_gross), temp_color, TextAlign::TOP_CENTER, "%d°", t);
           } else {
             it.print(160, 82, id(my_font_Coffin_gross), ROT, TextAlign::TOP_CENTER, "--");
           }

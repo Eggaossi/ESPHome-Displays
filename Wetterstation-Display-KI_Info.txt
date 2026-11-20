@@ -64,5 +64,9 @@ Rahmen: Gold doppelt, gestufte Ecken, Rauten oben/unten (wie Heimnetz-App).
   Farbtest-Seite eingebaut (12 Felder mit Name + RGB, Taster 1). Naechster
   Schritt: Foto vom Farbtest, dann Ursache (color_order/invert/8-Bit-Palette)
   klaeren, erst danach neuen Stil bauen.
+20.11.2026 07:07: Foto bei besserem Licht -> Mokka stimmt (Farbproblem war
+  nur die Kamera im Dunkeln), Nutzer zufrieden. Grosse "1" wirkte zu duenn
+  (Coffin oben schmal) -> Ziffer 5x um je 1 px versetzt gezeichnet (4 px
+  kraeftiger). Farbtest-Seite (Taster 1) bleibt drin.
 Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
   Thermo-Hygrometer 5 (Werkstatt) Batterie 0 %.
