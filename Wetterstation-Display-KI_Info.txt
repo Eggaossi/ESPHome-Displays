@@ -80,5 +80,11 @@ Rahmen (seit 20.11. dezent): eine duenne dunkelgoldene Linie, je Ecke zwei klein
   Titel Cabaret, grosse Temp Coffin (5x versetzt), kleine Texte Roboto Black/
   Bold, dezenter Rahmen mit zwei Eckwinkeln. Weitere Designs ebenfalls unter
   designs/ ablegen; aktiv ist immer esphome/anzeige.yaml.
+20.11.2026: Nutzer: "mach ein cooles Design von dir" -> Entwurf "Nixie" in
+  designs/anzeige_nixie.yaml (+ vorschau_nixie.png): Bernstein auf Schwarz,
+  Aussentemp mit 1 Nachkommastelle in Nixie-Roehren (Glas, Gitter, dunkle
+  Ersatz-8, Leuchten durch mehrfaches Zeichnen, Neon-Punkt), Uhr leuchtend,
+  Raumklima mit Kueche (innen) als erste Zeile. Noch NICHT aktiv, wartet auf
+  Ja des Nutzers.
 Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
   Thermo-Hygrometer 5 (Werkstatt) Batterie 0 %.
