@@ -4,3 +4,5 @@ gruen=Gruen
 simple=Simple
 artdeco=Art deco
 holz=Holz und Messing
+original=Original
+western=Western

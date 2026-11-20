@@ -256,3 +256,10 @@ Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
   unveraendert, Rumpf (Sensoren, Taster, Update) wie die anderen Designs. Braucht Ananda.ttf, Coffin.ttf, Cabaret.ttf als
   displays/wetterstation/fonts/*.ttf. Noch NICHT in designs.txt, bis die Schriften da sind (Nutzer schickt sie).
   Lambda per g++-Nachbildung uebersetzt: OK.
+2026-11-20 EIGENE SCHRIFTEN (Ananda = Billy Argel "Personal Use Only", Cabaret, Coffin = "All rights reserved"):
+  NICHT offen ins oeffentliche Repo. Liegen verschluesselt in fonts_verschluesselt/eigene_schriften.tar.gz.enc
+  (tar.gz mit fonts/Ananda.ttf, Cabaret.ttf, Coffin.ttf, Roboto-Regular.ttf; openssl aes-256-cbc -pbkdf2).
+  Schluessel nur im GitHub-Secret FONTS_KEY (und beim Nutzer). Workflow entschluesselt nach displays/<d>/fonts/ und fonts/.
+  .gitignore: fonts/*.ttf, displays/*/fonts/. Original und Western nutzen 'fonts/X.ttf' (relativ zur Geraete-YAML).
+  Original: Rundung der Aussentemperatur korrigiert (alt: int(roundf(t*2)/2) -> 1.6 zeigte 1), sonst unveraendert.
+  designs.txt: jetzt auch original und western.

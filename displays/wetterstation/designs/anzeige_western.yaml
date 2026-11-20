@@ -15,51 +15,51 @@ time:
     timezone: Europe/Berlin
 
 font:
-  - file: '/config/esphome/fonts/Ananda.ttf'
+  - file: 'fonts/Ananda.ttf'
     id: my_font_ananda
     size: 26
-  - file: '/config/esphome/fonts/Ananda.ttf'
+  - file: 'fonts/Ananda.ttf'
     id: my_font_cabaret_klein
     size: 24
-  - file: '/config/esphome/fonts/Coffin.ttf'
+  - file: 'fonts/Coffin.ttf'
     id: my_font_Coffin
     size: 28
-  - file: '/config/esphome/fonts/Coffin.ttf'
+  - file: 'fonts/Coffin.ttf'
     id: my_font_Coffin_miniklein
     size: 15
-  - file: '/config/esphome/fonts/Coffin.ttf'
+  - file: 'fonts/Coffin.ttf'
     id: my_font_Coffin_klein
     size: 18
-  - file: '/config/esphome/fonts/Coffin.ttf'
+  - file: 'fonts/Coffin.ttf'
     id: my_font_Coffin_benu
     size: 20
   # Riesige Aussentemperatur: nur die noetigen Zeichen, spart viel Speicher
-  - file: '/config/esphome/fonts/Coffin.ttf'
+  - file: 'fonts/Coffin.ttf'
     id: my_font_Coffin_gross
     size: 200
     glyphs: "-0123456789°"
-  - file: '/config/esphome/fonts/Coffin.ttf'
+  - file: 'fonts/Coffin.ttf'
     id: my_font_Coffin_extra
     size: 32
-  - file: '/config/esphome/fonts/Cabaret.ttf'
+  - file: 'fonts/Cabaret.ttf'
     id: my_font_cabaret
     size: 37
-  - file: '/config/esphome/fonts/Cabaret.ttf'
+  - file: 'fonts/Cabaret.ttf'
     id: my_font_minicabaret
     size: 26
-  - file: '/config/esphome/fonts/Cabaret.ttf'
+  - file: 'fonts/Cabaret.ttf'
     id: my_font_miniminicabaret
     size: 22
-  - file: '/config/esphome/fonts/Cabaret.ttf'
+  - file: 'fonts/Cabaret.ttf'
     id: my_font_groscabaret
     size: 40
-  - file: '/config/esphome/fonts/Roboto-Regular.ttf'
+  - file: 'fonts/Roboto-Regular.ttf'
     id: my_font
     size: 25
-  - file: '/config/esphome/fonts/Roboto-Regular.ttf'
+  - file: 'fonts/Roboto-Regular.ttf'
     id: my_font_medium
     size: 35
-  - file: '/config/esphome/fonts/Roboto-Regular.ttf'
+  - file: 'fonts/Roboto-Regular.ttf'
     id: my_font_large
     size: 50
   # Gut lesbare Schrift fuer kleine Texte (Roboto Bold, ESPHome laedt sie selbst)

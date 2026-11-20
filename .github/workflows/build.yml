@@ -2,7 +2,7 @@ name: Displays bauen
 on:
   push:
     branches: [main]
-    paths: ['displays/**', 'tools/**', '.github/workflows/build.yml']
+    paths: ['displays/**', 'tools/**', 'fonts_verschluesselt/**', '.github/workflows/build.yml']
   workflow_dispatch:
 permissions: { contents: write }
 concurrency: { group: firmware, cancel-in-progress: false }
@@ -22,6 +22,19 @@ jobs:
             ~/.cache/vorschau
           key: esphome-${{ runner.os }}-${{ hashFiles('displays/*/*.yaml') }}
           restore-keys: esphome-${{ runner.os }}-
+      - name: Eigene Schriften entschluesseln
+        # Ananda/Coffin/Cabaret sind nur fuer den privaten Gebrauch lizenziert -> im Repo nur verschluesselt.
+        # Schluessel steht im Secret FONTS_KEY. Ziel: displays/<d>/fonts/ (fuer ESPHome) und fonts/ (fuer die Vorschau).
+        env:
+          FONTS_KEY: ${{ secrets.FONTS_KEY }}
+        run: |
+          if [ -n "$FONTS_KEY" ]; then
+            openssl enc -d -aes-256-cbc -pbkdf2 -pass "pass:$FONTS_KEY" -in fonts_verschluesselt/eigene_schriften.tar.gz.enc | tar -xzf - -C .
+            for d in displays/*/; do mkdir -p "$d/fonts"; cp fonts/*.ttf "$d/fonts/"; done
+            ls fonts
+          else
+            echo "Kein FONTS_KEY: Designs mit eigenen Schriften (Original, Western) koennen nicht gebaut werden"
+          fi
       - name: Werkzeuge fuer Vorschau
         run: pip install pyyaml pillow
       - name: Geaenderte Displays bestimmen

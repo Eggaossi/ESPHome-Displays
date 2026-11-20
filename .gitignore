@@ -2,3 +2,5 @@ secrets.yaml
 .esphome/
 __pycache__/
 *.whl
+fonts/*.ttf
+displays/*/fonts/

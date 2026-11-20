@@ -263,7 +263,7 @@ display:
           // Temperatur Außen mit erweitertem Farbspektrum
           if (id(sensor_luxmeter_lux_korrigierte_temperatur).has_state()) {
             float temp_aussen = id(sensor_luxmeter_lux_korrigierte_temperatur).state;
-            int temp_aussen_rund = roundf(temp_aussen * 2) / 2;
+            int temp_aussen_rund = (int) roundf(temp_aussen);  // korrigiert: vorher roundf(t*2)/2 als int -> 1.6 wurde 1
             Color temp_color;
             if (temp_aussen_rund < -15) {
               temp_color = Color(0, 0, 139);
