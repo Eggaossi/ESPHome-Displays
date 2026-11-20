@@ -59,6 +59,16 @@ jobs:
           FEHLER=0
           for d in ${{ steps.welche.outputs.liste }}; do
             mkdir -p fw/$d
+            # Design aus design.txt aktivieren (wird von der App oder am Handy auf github.com geaendert)
+            DES=""
+            if [ -f displays/$d/design.txt ]; then
+              DES=$(tr -d ' \r\n' < displays/$d/design.txt)
+              if [ ! -f displays/$d/designs/anzeige_$DES.yaml ]; then
+                echo "FEHLER: Design '$DES' gibt es nicht (displays/$d/designs/anzeige_$DES.yaml)" > fw/$d/fehler.txt
+                FEHLER=1; continue
+              fi
+              python3 tools/design_aktivieren.py displays/$d designs/anzeige_$DES.yaml
+            fi
             esphome -s fw_version ${{ github.run_number }} compile displays/$d/$d.yaml > fw/$d/build.log 2>&1
             if [ $? -ne 0 ]; then
               echo "FEHLER Build ${{ github.run_number }} ($GITHUB_SHA)" > fw/$d/fehler.txt
@@ -78,7 +88,8 @@ jobs:
             "ota": {"path": "https://raw.githubusercontent.com/${{ github.repository }}/firmware/$d/firmware.ota.bin",
                     "md5": "$MD5", "summary": "Build ${{ github.run_number }} von ${GITHUB_SHA::7}"}}]}
           JSON
-            echo "Build ${{ github.run_number }} von ${GITHUB_SHA::7}" > fw/$d/version.txt
+            echo "Build ${{ github.run_number }} von ${GITHUB_SHA::7} Design $DES" > fw/$d/version.txt
+            echo "$DES" > fw/$d/design.txt
             tail -n 5 fw/$d/build.log
           done
           echo "FEHLER=$FEHLER" >> $GITHUB_ENV

@@ -199,3 +199,13 @@ Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
   per fett_r() zweimal mit 1 px Versatz gedruckt, weil die "1" am Display duenner wirkte (lokal mit PIL 2 px, am Geraet duenner - nicht lokal nachvollziehbar).
 
 2026-11-20 Amiga2 (Build 15 Foto: 1 passt): Raumnamen auch fett (2x mit 1 px Versatz), GRAU 73,73,85 -> 73,73,0 (wirkte blau).
+
+2026-11-20 DESIGN-WAHL UEBER design.txt (Vorbereitung fuer App):
+  displays/wetterstation/design.txt enthaelt den Design-Namen (z.B. amiga2 = designs/anzeige_amiga2.yaml).
+  Der GitHub-Build aktiviert vor dem Bauen dieses Design (tools/design_aktivieren.py).
+  Design wechseln = nur design.txt aendern (App, oder am Handy auf github.com) -> ca. 3 min spaeter am Display.
+  Firmware-Zweig: <display>/design.txt = aktuell gebautes Design, version.txt nennt es auch.
+  Unbekannter Name -> fehler.txt, Display behaelt alte Firmware.
+  Hinweis: anzeige.yaml im main-Zweig ist dann nur noch ein Stand, massgeblich ist design.txt.
+  Verfuegbare Designs: amiga1, amiga2, gruen, simple, nixie (Entwurf); western braucht noch eigene Schriften im Repo.
+  Naechster Schritt: App (eigene oder Bereich in Projekt-Zentrale) liest designs/ ueber GitHub-API, zeigt vorschau_*.png, schreibt design.txt.
