@@ -265,3 +265,7 @@ Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
   designs.txt: jetzt auch original und western.
   20.11.2026: Secret FONTS_KEY vom Nutzer eingetragen.
 2026-11-20 Original: Aussentemperatur mittig (160, TOP_CENTER) und 5x versetzt gezeichnet (kraeftiger, wie Western). Farben wie im Original.
+2026-11-20 Zweites Display im Repo: displays/raumluft-stube (CO/CO2-Melder Stube, ST7789V quer 320x240), siehe
+  dort Raumluft-Stube-KI_Info.txt. tools/vorschau.py: Displaygroesse jetzt aus model/rotation (Wetterstation bleibt
+  320x480), Teil-Sensoren mit eigener id (scd4x co2/temperature/humidity) werden mit Beispielwerten belegt.
+  build.yml: neues Secret RAUMLUFT_STUBE_API_KEY in secrets.yaml.

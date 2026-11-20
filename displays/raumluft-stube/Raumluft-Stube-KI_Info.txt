@@ -1,0 +1,48 @@
+═══════════════════════════════════════════════════════════════
+  Raumluft-Stube-KI_Info.txt
+═══════════════════════════════════════════════════════════════
+
+Was:      "Raumluft Stube" - ESPHome-Display in der Stube mit eigenen Sensoren:
+          CO-Melder (Kohlenmonoxid), CO2, Temperatur, Luftfeuchte; dazu Aussentemperatur aus HA.
+          Ordner im Repo: displays/raumluft-stube (Name vom Nutzer gewaehlt, 20.11.2026).
+          Geraet in HA heisst weiter co-ossi-stube / "CO-Ossi-Stube" (NICHT umbenennen, sonst
+          aendern sich Hostname und Entitaeten in HA).
+Hardware: ESP32-S3 (board esp32-s3-devkitc-1, Arduino-Framework)
+          Display ST7789V 240x320 SPI, rotation 90 -> quer 320x240, color_palette 8bit
+          SPI: CLK GPIO18, MOSI GPIO17; CS GPIO7, DC GPIO15, RST GPIO16
+          I2C: SDA GPIO4, SCL GPIO5
+          ZE15-CO (Winsen, elektrochemisch) analog an GPIO1 (attenuation 12db):
+            0 ppm bei 0,350 V, 500 ppm bei 2,0 V (lineare Kalibrierung des Nutzers, nicht aendern)
+          SCD4x (Sensirion SCD40/41) I2C 0x62: CO2, Temperatur, Feuchte (alle 15 s)
+          Aussentemperatur: sensor.luxmeter_lux_korrigierte_temperatur (HA)
+HA-Entitaeten: CO Raw, CO-Wert, Stube-CO2-Wert, Stube-Temperatur, Stube-Luftfeuchtigkeit,
+          ZE15 Sensor Fehler, Firmware GitHub (Update), Jetzt Update holen (Knopf).
+
+── Aufbau (wie Wetterstation) ──────────────────────────────────
+raumluft-stube.yaml   Geraet: Board, WLAN, Logger DEBUG, Selbst-Update (alle 30 s, sofort einspielen,
+                      Reserve jede Minute). Schluessel aus GitHub-Secrets:
+                      WIFI_SSID, WIFI_PASSWORD, OTA_PASSWORD (gemeinsam mit Wetterstation),
+                      RAUMLUFT_STUBE_API_KEY (= bisheriger api-Key des Geraets in HA).
+design.txt            aktives Design (original)
+designs.txt           Designs fuer die App HA-Displays (id=Name)
+designs/anzeige_<id>.yaml  Design = Sensoren + Schriften + Zeichnung (Sensoren stehen in jedem Design)
+anzeige.yaml          erzeugt mit tools/design_aktivieren.py
+Schriften: Coffin, Cabaret (+ Ananda, Roboto-Regular) aus fonts_verschluesselt (Secret FONTS_KEY).
+Vorschau: tools/vorschau.py erkennt die Displaygroesse jetzt aus model/rotation (hier 320x240).
+OTA-Passwort: GitHub-Firmware nutzt das gemeinsame OTA_PASSWORD (nicht mehr das alte des Geraets).
+  Das Selbst-Update (http_request) braucht kein Passwort. Ein spaeteres "Installieren" in HA
+  muesste das gemeinsame Passwort nutzen.
+Hotspot (Fallback-AP) "Co-Ossi-Stube Fallback Hotspot", Passwort = OTA_PASSWORD.
+
+── Stand ────────────────────────────────────────────────────────
+20.11.2026: Ins Repo aufgenommen. Design "Original" = Anzeige des Nutzers aus HA, Sensoren und
+  Zeichnung unveraendert; dazu HA-Knopf "Jetzt Update holen" (script update_jetzt, wie Wetterstation).
+  esphome config (2026.11.0) lokal OK. Vorschau lokal gezeichnet (ohne die eigenen Schriften).
+  NICHT gebaut und NICHT am Geraet getestet.
+  Noch zu tun: Nutzer traegt Secret RAUMLUFT_STUBE_API_KEY ein, dann Build abwarten, dann EINMAL
+  in HA "Installieren" mit der einmaligen Geraete-Datei (Schluessel direkt drin, Anzeige als
+  remote package displays/raumluft-stube/anzeige.yaml, liegt NICHT im Repo).
+
+── Offen/Ideen ──────────────────────────────────────────────────
+- Weitere Designs (jedes anders: Farben, Rahmen, Schrift), Display ist nur 320x240.
+- Datum/Uhr stehen bei y=-17 (Cabaret 70, oberer Rand der Schrift absichtlich abgeschnitten).

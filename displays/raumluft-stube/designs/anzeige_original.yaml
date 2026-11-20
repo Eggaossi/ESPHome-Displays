@@ -1,0 +1,321 @@
+# =====================================================================
+#  Raumluft Stube by Ossi - Anzeige-Teil (Package fuer ESPHome)
+#  DESIGN "Original": die Anzeige des Nutzers (Stand 20.11.2026, aus HA co-ossi-stube),
+#  Sensoren und Zeichnung unveraendert uebernommen. Braucht die eigenen Schriften
+#  Coffin und Cabaret (fonts/*.ttf neben der Geraete-YAML, beim GitHub-Build entschluesselt).
+#  KEINE Passwoerter/Schluessel (Repo oeffentlich).
+# =====================================================================
+
+time:
+  - platform: sntp
+    id: sntp_time
+    timezone: Europe/Berlin
+    servers:
+      - 0.pool.ntp.org
+      - 1.pool.ntp.org
+      - de.pool.ntp.org
+
+# Schriftarten-Konfiguration
+font:
+  - file: 'fonts/Ananda.ttf'
+    id: my_font_ananda
+    size: 18
+  - file: 'fonts/Ananda.ttf'
+    id: my_font_cabaret_klein
+    size: 24
+  - file: 'fonts/Coffin.ttf'
+    id: my_font_Coffin
+    size: 34
+  - file: 'fonts/Coffin.ttf'
+    id: my_font_Coffin_miniklein
+    size: 15
+  - file: 'fonts/Coffin.ttf'
+    id: my_font_Coffin_klein
+    size: 18
+  - file: 'fonts/Coffin.ttf'
+    id: my_font_Coffin_mittel
+    size: 28
+  - file: 'fonts/Coffin.ttf'
+    id: my_font_Coffin_gross
+    size: 140
+  - file: 'fonts/Coffin.ttf'
+    id: my_font_Coffin_extra
+    size: 32
+  - file: 'fonts/Cabaret.ttf'
+    id: my_font_cabaret
+    size: 30
+  - file: 'fonts/Cabaret.ttf'
+    id: my_font_minicabaret
+    size: 26
+  - file: 'fonts/Cabaret.ttf'
+    id: my_font_groscabaret
+    size: 70
+  - file: 'fonts/Roboto-Regular.ttf'
+    id: my_font
+    size: 25
+  - file: 'fonts/Roboto-Regular.ttf'
+    id: my_font_medium
+    size: 35
+  - file: 'fonts/Roboto-Regular.ttf'
+    id: my_font_large
+    size: 50
+
+# Knopf in HA: sofort nach neuer Firmware schauen
+button:
+  - platform: template
+    name: "Jetzt Update holen"
+    on_press:
+      - script.execute: update_jetzt
+
+script:
+  - id: update_jetzt
+    then:
+      - component.update: fw_update
+      - delay: 10s
+      - if:
+          condition:
+            lambda: 'return id(fw_update).state == update::UPDATE_STATE_AVAILABLE;'
+          then:
+            - update.perform: fw_update
+
+# I2C Konfiguration
+i2c:
+  sda: GPIO4
+  scl: GPIO5
+  scan: true
+
+# SPI Konfiguration
+spi:
+  clk_pin: GPIO18
+  mosi_pin: GPIO17
+
+# Binary Sensor für Fehlererkennung
+binary_sensor:
+  - platform: template
+    name: "ZE15 Sensor Fehler"
+    id: sensor_error
+    lambda: |-
+      if (id(outside_temp).has_state()) {
+        float temp_aussen = id(outside_temp).state;
+        if (temp_aussen > 100 || temp_aussen < -100) {
+          return true;  // Außentemperatur Fehler
+        }
+      }
+      
+      if (id(temperature_value).has_state()) {
+        float temp_innen = id(temperature_value).state;
+        if (temp_innen > 100 || temp_innen < -100) {
+          return true;  // Innentemperatur Fehler
+        }
+      }
+      
+      if (id(co_value).has_state()) {
+        if (isnan(id(co_value).state)) {
+          return true;  // CO Fehler
+        }
+      }
+      
+      if (id(humidity_value).has_state()) {
+        float humidity = id(humidity_value).state;
+        if (humidity < 0 || humidity > 100) {
+          return true;  // Luftfeuchtigkeits Fehler
+        }
+      }
+      
+      return false;  // Kein Fehler
+
+# Sensor Konfigurationen
+sensor:
+  - platform: adc
+    pin: GPIO1
+    name: "CO Raw"
+    id: co_raw_value
+    update_interval: 5s
+    attenuation: 12db
+    accuracy_decimals: 3
+    unit_of_measurement: "V"
+
+  - platform: template
+    name: "CO-Wert"
+    id: co_value
+    unit_of_measurement: "ppm"
+    accuracy_decimals: 1
+    update_interval: 5s
+    lambda: |-
+      if (id(co_raw_value).has_state()) {
+        float raw = id(co_raw_value).state;
+        // Lineare Kalibrierung von 0 ppm (bei 0.350V) bis 500 ppm (bei 2.0V)
+        if (raw <= 0.350f) return 0.0f;
+        return (raw - 0.350f) * (500.0f / (2.0f - 0.350f));
+      }
+      return 0.0f;
+
+  # SCD4x Sensor
+  - platform: scd4x
+    co2:
+      id: co2_value
+      name: "Stube-CO2-Wert"
+      accuracy_decimals: 1
+    temperature:
+      id: temperature_value
+      name: "Stube-Temperatur"
+      accuracy_decimals: 1
+    humidity:
+      id: humidity_value
+      name: "Stube-Luftfeuchtigkeit"
+      accuracy_decimals: 1
+    address: 0x62
+    update_interval: 15s
+
+  # Home Assistant Sensor
+  - platform: homeassistant
+    id: outside_temp
+    entity_id: sensor.luxmeter_lux_korrigierte_temperatur
+    name: "Außentemperatur"
+
+# Display Konfiguration
+display:
+  - platform: ili9xxx
+    model: ST7789v
+    cs_pin: GPIO7
+    dc_pin: GPIO15
+    reset_pin: GPIO16
+    color_palette: 8BIT
+    rotation: 90
+    invert_colors: false
+    update_interval: 15s
+    lambda: |-
+      // Variablen für die Temperaturanzeige
+      float temp_aussen;
+      int temp_aussen_rund;
+      Color temp_color;
+
+      // Datumsanzeige in Gelb (Format: DD.MM.YY)
+      auto time = id(sntp_time).now();
+      if (time.is_valid()) {
+        it.printf(0, -17, id(my_font_groscabaret), Color(210, 243, 119), "%02d.%02d.%02d", 
+          time.day_of_month, time.month, time.year % 100);
+      }
+
+      // Uhrzeitanzeige in Gelb (Format: H:MM)
+      if (time.is_valid()) {
+        int display_hour = time.hour % 12;
+        if (display_hour == 0) display_hour = 12;
+        it.printf(210,-17, id(my_font_groscabaret), Color(210, 243, 119), "%d:%02d",
+          display_hour, time.minute);
+      }
+
+      // Wochentagsanzeige in Weiß
+      const char* weekdays[] = {"Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"};
+      if (time.is_valid()) {
+        it.printf(0, 60, id(my_font_Coffin_mittel), Color(255, 255, 255), "%s", 
+          weekdays[(time.day_of_week + 5) % 7]);
+      }
+
+      // Verbesserte Außentemperaturanzeige mit besserer Sichtbarkeit
+      if (id(outside_temp).has_state()) {
+        temp_aussen = id(outside_temp).state;
+        
+        if (temp_aussen > 100 || temp_aussen < -100) {
+          it.printf(100, 60, id(my_font_Coffin_gross), Color(255, 0, 0), "ERR");
+        } else {
+          temp_aussen_rund = int(roundf(temp_aussen));
+          
+          if (temp_aussen_rund < -15) {
+            temp_color = Color(0, 0, 128);      // Dunkelblau
+          } else if (temp_aussen_rund < -10) {
+            temp_color = Color(0, 0, 192);      // Blau
+          } else if (temp_aussen_rund < -5) {
+            temp_color = Color(0, 128, 255);    // Hellblau
+          } else if (temp_aussen_rund < 0) {
+            temp_color = Color(0, 192, 192);    // Cyan
+          } else if (temp_aussen_rund < 5) {
+            temp_color = Color(0, 255, 128);    // Blaugrün
+          } else if (temp_aussen_rund < 10) {
+            temp_color = Color(192, 255, 64);   // Gelbgrün
+          } else if (temp_aussen_rund < 15) {
+            temp_color = Color(255, 255, 0);    // Gelb
+          } else if (temp_aussen_rund < 20) {
+            temp_color = Color(255, 128, 0);    // Orange
+          } else if (temp_aussen_rund < 25) {
+            temp_color = Color(255, 200, 0);    // Goldgelb
+          } else if (temp_aussen_rund < 30) {
+            temp_color = Color(255, 255, 255);  // Weiß - sehr gut sichtbar
+          } else {
+            temp_color = Color(255, 255, 128);  // Hellgelb für extreme Hitze
+          }
+        
+          it.printf(120, 70, id(my_font_Coffin_gross), temp_color, "%d°", temp_aussen_rund);
+        }
+      }
+
+      // CO-Wert und Raw-Wert Anzeige
+      if (id(co_value).has_state() && id(co_raw_value).has_state()) {
+        float co = id(co_value).state;
+        float co_raw = id(co_raw_value).state;
+        
+        if (!isnan(co) && !isnan(co_raw)) {
+          Color co_color;
+          
+          if (co < 25) {
+            co_color = Color(28, 185, 115);      // Grün für normal (<25ppm)
+          } else if (co < 50) {
+            co_color = Color(255, 255, 0);       // Gelb für erhöht (25-50ppm)
+          } else if (co < 100) {
+            co_color = Color(255, 165, 0);       // Orange für hoch (50-100ppm)
+          } else {
+            co_color = Color(255, 0, 0);         // Rot für gefährlich (>100ppm)
+          }
+
+          // CO Überschrift in Weiß
+          it.printf(0, 148, id(my_font_Coffin_miniklein), Color(255, 255, 255), "CO-Melder");
+          // CO Wert und Einheit
+          it.printf(0, 168, id(my_font_Coffin), co_color, "%.1f", co);
+          it.printf(65, 168, id(my_font_Coffin_klein), co_color, "ppm");
+
+        } else {
+          it.printf(0, 168, id(my_font_Coffin), Color(255, 0, 0), "ERR");
+        }
+      }
+
+      // Innentemperaturanzeige in Grün
+      if (id(temperature_value).has_state()) {
+        float temp_innen = id(temperature_value).state;
+        if (temp_innen > 100 || temp_innen < -100) {
+          it.printf(0, 203, id(my_font_Coffin), Color(255, 0, 0), "ERR");
+        } else {
+          int temp_innen_rund = int(roundf(temp_innen));
+          it.printf(0, 203, id(my_font_Coffin), Color(0, 255, 0), "%d°C", temp_innen_rund);
+        }
+      }
+
+      // CO2-Wert anzeigen
+      if (id(co2_value).has_state()) {
+        int co2 = static_cast<int>(id(co2_value).state);
+        Color co2_color;
+
+        if (co2 < 800) {
+          co2_color = Color(28, 185, 115);      // Grün für ausgezeichnet
+        } else if (co2 >= 800 && co2 < 1000) {
+          co2_color = Color(210, 243, 119);     // Hellgrün für gut
+        } else if (co2 >= 1000 && co2 < 1400) {
+          co2_color = Color(255, 255, 0);       // Gelb für mäßig
+        } else if (co2 >= 1400 && co2 < 2000) {
+          co2_color = Color(255, 165, 0);       // Orange für schlecht
+        } else {
+          co2_color = Color(255, 0, 0);         // Rot für sehr schlecht
+        }
+
+        it.printf(90, 203, id(my_font_Coffin), co2_color, "%d ppm", co2);
+      }
+
+      // Luftfeuchtigkeitsanzeige in Lila
+      if (id(humidity_value).has_state()) {
+        float humidity = id(humidity_value).state;
+        if (humidity < 0 || humidity > 100) {
+          it.printf(215, 203, id(my_font_Coffin), Color(255, 0, 0), "ERR");
+        } else {
+          int humidity_rund = int(roundf(humidity));
+          it.printf(258, 203, id(my_font_Coffin), Color(187, 94, 199), "%d%%", humidity_rund);
+        }
+      }

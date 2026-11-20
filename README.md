@@ -21,4 +21,8 @@ bei Fehlern `fehler.txt` und `build.log`.
 
 ## GitHub-Secrets (Settings -> Secrets and variables -> Actions)
 `WIFI_SSID`, `WIFI_PASSWORD`, `OTA_PASSWORD`, je Display ein API-Schluessel
-(z.B. `WETTERSTATION_API_KEY`).
+(`WETTERSTATION_API_KEY`, `RAUMLUFT_STUBE_API_KEY`), `FONTS_KEY` fuer die eigenen Schriften.
+
+## Displays
+- `wetterstation` - Wetterstation (ST7796 320x480)
+- `raumluft-stube` - CO-Melder, CO2, Temperatur, Feuchte in der Stube (ST7789V quer 320x240), HA-Geraet `co-ossi-stube`

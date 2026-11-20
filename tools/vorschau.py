@@ -7,7 +7,8 @@ Aufruf:  python3 tools/vorschau.py <design.yaml> <ausgabe.png> [--cache <ordner>
 So geht es:
   1. Die Display-lambda (erste Seite) wird mit einer kleinen Nachbildung von ESPHome (it.print, printf,
      filled_rectangle, filled_circle, ...) als normales C++-Programm uebersetzt (g++) und ausgefuehrt.
-  2. Das Programm schreibt eine Liste der Zeichenbefehle; Python zeichnet sie mit Pillow auf 320x480.
+  2. Das Programm schreibt eine Liste der Zeichenbefehle; Python zeichnet sie mit Pillow (Groesse aus
+     model/rotation bzw. dimensions des Displays, z.B. ST7796 320x480, ST7789V quer 320x240).
   3. Schriften wie auf dem Geraet: 1-Bit (ohne Kantenglaettung), gleiche Groesse und Staerke.
      Google-Schriften kommen aus dem Repo google/fonts, MDI-Symbole aus Templarian/MaterialDesign-Webfont,
      eigene Schriften (/config/esphome/fonts/X.ttf) aus fonts/X.ttf im Repo, falls vorhanden.
@@ -20,7 +21,11 @@ from PIL import Image, ImageDraw, ImageFont
 
 HIER = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(HIER)
-B, H = 320, 480
+B, H = 320, 480   # wird in main() aus der Display-Konfiguration gesetzt
+
+# Grundgroesse (Breite x Hoehe bei rotation 0) der ili9xxx-Modelle
+MODELLE = {"st7796": (320, 480), "ili9488": (320, 480), "ili9486": (320, 480), "st7789v": (240, 320),
+           "ili9341": (240, 320), "ili9342": (320, 240), "ili9481": (320, 480)}
 
 GFONTS = {
     "roboto": "ofl/roboto/Roboto%5Bwdth,wght%5D.ttf",
@@ -110,7 +115,11 @@ def schrift(eintrag, cache):
 def beispiel(name):
     """Beispielwert eines Sensors aus seinem Namen."""
     n = name.lower()
-    if "korrigierte_temperatur" in n or ("aussen" in n and "temp" in n): return 1.6
+    if "korrigierte_temperatur" in n or (("aussen" in n or "outside" in n) and "temp" in n): return 1.6
+    if "co2" in n: return 650
+    if "co_raw" in n: return 0.38
+    if n.startswith("co_") or n == "co": return 2.4
+    if "humidity" in n: return 47
     # Raeume: je Sensor etwas anders, aber immer gleich (aus dem Namen gerechnet)
     h = int(hashlib.md5(n.encode()).hexdigest(), 16)
     if "temperatur" in n or n.endswith("_temp"): return round(14 + (h % 70) / 10, 1)
@@ -156,7 +165,7 @@ static vector<uint32_t> utf8(const char *s) { vector<uint32_t> v; const unsigned
     p++; while (n-- > 0 && *p) { c = (c << 6) | (*p & 63); p++; } v.push_back(c); } return v; }
 static void hexaus(const char *s) { for (const unsigned char *p = (const unsigned char *) s; *p; p++) printf("%02x", *p); }
 struct Display {
-  int get_width() { return 320; } int get_height() { return 480; }
+  int get_width() { return BREITE; } int get_height() { return HOEHE; }
   void fill(Color c) { ::printf("F %d %d %d\n", c.r, c.g, c.b); }
   void clear() { fill(Color(0, 0, 0)); }
   void draw_pixel_at(int x, int y, Color c = COLOR_ON) { ::printf("P %d %d %d %d %d\n", x, y, c.r, c.g, c.b); }
@@ -205,6 +214,24 @@ struct Etwas { bool state = false; bool has_state() const { return false; } bool
 '''
 
 
+def groesse(cfg):
+    """Breite x Hoehe des Displays aus der Konfiguration (Vorgabe 320x480)."""
+    disp = cfg.get("display")
+    if isinstance(disp, dict): disp = [disp]
+    for d in disp or []:
+        if not isinstance(d, dict): continue
+        dim = d.get("dimensions")
+        if isinstance(dim, dict) and dim.get("width"):
+            b, h = int(dim["width"]), int(dim["height"])
+        elif isinstance(dim, str) and "x" in dim:
+            b, h = map(int, dim.lower().split("x"))
+        else:
+            b, h = MODELLE.get(str(d.get("model", "")).lower(), (320, 480))
+        if int(d.get("rotation", 0) or 0) in (90, 270): b, h = h, b
+        return b, h
+    return 320, 480
+
+
 def lambda_suchen(cfg):
     disp = cfg.get("display")
     if isinstance(disp, dict): disp = [disp]
@@ -222,6 +249,8 @@ def main():
         i = args.index("--cache"); cache = args[i + 1]; del args[i:i + 2]
     quelle, ziel = args[0], args[1]
     cfg = yaml.load(open(quelle, encoding="utf-8"), Lader)
+    global B, H
+    B, H = groesse(cfg)
     code = lambda_suchen(cfg)
     if not code: sys.exit("keine Display-lambda gefunden")
 
@@ -256,8 +285,14 @@ def main():
     erledigt = {e["id"] for e in cfg.get("font") or [] if isinstance(e, dict) and e.get("id") in benutzt}
 
     # Sensoren, Globals, Zeit
+    # auch Teil-Sensoren mit eigener id (z.B. scd4x: co2/temperature/humidity)
+    sensoren = []
     for e in cfg.get("sensor") or []:
-        if isinstance(e, dict) and e.get("id") in benutzt and e["id"] not in erledigt:
+        if not isinstance(e, dict): continue
+        sensoren.append(e)
+        sensoren += [v for v in e.values() if isinstance(v, dict) and v.get("id")]
+    for e in sensoren:
+        if e.get("id") in benutzt and e["id"] not in erledigt:
             decl.append(f"Sensor {e['id']}{{{float(beispiel(e['id']))}f}};"); erledigt.add(e["id"])
     for e in cfg.get("text_sensor") or []:
         if isinstance(e, dict) and e.get("id") in benutzt and e["id"] not in erledigt:
@@ -284,7 +319,7 @@ def main():
         if n in globs or n in fids: return n + punkt
         return (n + punkt) if punkt else f"(&{n})"
     code = re.sub(r"\bid\((\w+)\)(\.?)", ersetze, code)
-    prog = MOCK + "\n".join(decl) + "\nvoid zeichne(Display &it) {\n" + code + "\n}\nint main() { Display d; zeichne(d); return 0; }\n"
+    prog = f"#define BREITE {B}\n#define HOEHE {H}\n" + MOCK + "\n".join(decl) + "\nvoid zeichne(Display &it) {\n" + code + "\n}\nint main() { Display d; zeichne(d); return 0; }\n"
     with tempfile.TemporaryDirectory() as tmp:
         cpp = os.path.join(tmp, "v.cpp"); exe = os.path.join(tmp, "v")
         open(cpp, "w", encoding="utf-8").write(prog)
