@@ -1,6 +1,6 @@
 # =====================================================================
 #  Wetterstation by Ossi - Anzeige-Teil (Package fuer ESPHome)
-#  DESIGN "Hauswetter" (Entwurf, 20.11.2026): Racing-Gruen, Messing, Anton
+#  DESIGN "Gruen" (vom Nutzer benannt, 20.11.2026): Racing-Gruen, Messing, Anton
 #  Wird von der Geraete-YAML im ESPHome Builder per "packages:" geholt.
 #  Hier stehen: Zeit, Schriften, Taster, LEDs, Sensoren aus Home Assistant
 #  und die Display-Zeichnung. KEINE Passwoerter/Schluessel (Repo oeffentlich).

@@ -127,5 +127,8 @@ Rahmen (seit 20.11. dezent): eine duenne dunkelgoldene Linie, je Ecke zwei klein
   Ob das den Versatz behebt: noch NICHT am Geraet bestaetigt.
 20.11.2026: Nutzer "etwas dunkleres Gruen": 8-Bit hat nur Gruenstufen 0/36/73 ->
   Baender jetzt (0,36,0) mit feiner Messinglinie oben/unten, Hintergrund schwarz.
+20.11.2026 08:09: Nutzer: "Heissen wir es Gruen" -> designs/anzeige_gruen.yaml, AKTIV.
+  Gespeicherte Designs: Gruen (aktiv), Simple, Western; Nixie nur Entwurf.
+  (Die frueheren Hauswetter-Fassungen Mokka/schwarz stehen nur in der Git-Historie.)
 Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
   Thermo-Hygrometer 5 (Werkstatt) Batterie 0 %.
