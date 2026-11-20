@@ -249,3 +249,5 @@ Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
 2026-11-20 Holz (Build 30 am Geraet GETESTET, laeuft): Zahl im Zifferblatt rutschte am Geraet nach unten ueber den Rand,
   Grad-Zeichen riesig hohl. Jetzt BASELINE_CENTER (Grundlinie gleich in Vorschau und Geraet), Playfair 48 ohne Grad-Glyphe,
   Grad-Kringel als zwei Kreise. Merker: TOP-Ausrichtung grosser Schriften weicht zwischen Vorschau und Geraet ab -> BASELINE nehmen.
+2026-11-20 Art deco (Build 31 am Geraet GETESTET, laeuft; Schwarz wirkt am Display dunkelblau): "Kurs in Euro" und "Build" lagen
+  unten auf den gestuften Ecken -> Build nach oben unter die Uhr, Bitcoin-Block 8 px hoeher und Text ab x=26.

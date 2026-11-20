@@ -137,7 +137,7 @@ ARTDECO = r'''          // =========== Design "Art deco": Schwarz, Gold, Champag
             snprintf(lbuf, sizeof(lbuf), "%02d.%02d.%04d", time.day_of_month, time.month, time.year);
             links(24, 29, id(js13), MATT, lbuf);
             snprintf(lbuf, sizeof(lbuf), "%02d:%02d", time.hour, time.minute);
-            fett(296, 14, id(js26), CHAMP, TextAlign::TOP_RIGHT, lbuf);
+            fett(296, 9, id(js26), CHAMP, TextAlign::TOP_RIGHT, lbuf);
           }
           it.print(160, 30, id(fe14), GOLD, TextAlign::TOP_CENTER, "OSSI'S");
           trenner(44, "WETTERSTATION");
@@ -225,15 +225,16 @@ ARTDECO = r'''          // =========== Design "Art deco": Schwarz, Gold, Champag
           }
 
           // ----- Bitcoin -----
-          it.horizontal_line(12, 428, 296, DGOLD);
-          it.horizontal_line(12, 431, 296, GOLD);
-          it.print(16, 438, id(fe18), GOLD, TextAlign::TOP_LEFT, "BITCOIN");
-          it.print(16, 457, id(js13), MATT, TextAlign::TOP_LEFT, "Kurs in Euro");
+          it.horizontal_line(12, 422, 296, DGOLD);
+          it.horizontal_line(12, 425, 296, GOLD);
+          it.print(26, 430, id(fe18), GOLD, TextAlign::TOP_LEFT, "BITCOIN");
+          it.print(26, 448, id(js13), MATT, TextAlign::TOP_LEFT, "Kurs in Euro");
           if (id(bitcoin_preis).has_state()) {
             snprintf(lbuf, sizeof(lbuf), "%.0f EUR", id(bitcoin_preis).state);
-            fett(303, 436, id(js26), CHAMP, TextAlign::TOP_RIGHT, lbuf);
+            fett(296, 429, id(js26), CHAMP, TextAlign::TOP_RIGHT, lbuf);
           }
-          it.printf(300, 462, id(js13), DGOLD, TextAlign::TOP_RIGHT, "Build %s", ESPHOME_PROJECT_VERSION);
+          // Build-Nummer oben unter der Uhr (unten lag sie auf dem Geraet ueber der Ecke)
+          it.printf(296, 33, id(js13), DGOLD, TextAlign::TOP_RIGHT, "Build %s", ESPHOME_PROJECT_VERSION);
 '''
 
 # ======================================================================================
