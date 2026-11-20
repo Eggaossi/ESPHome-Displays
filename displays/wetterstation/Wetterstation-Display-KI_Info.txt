@@ -178,5 +178,9 @@ Rahmen (seit 20.11. dezent): eine duenne dunkelgoldene Linie, je Ecke zwei klein
   in HA "Installieren" (kompiliert dort sofort mit remote package, ohne Cache).
 20.11.2026: Nutzer: "Amiga passt, der erste" -> Amiga1 abgenommen.
   Naechste Idee: Amiga2 hell wie Micro-SD Cloner Pro (Beige/Mint, Karten).
+20.11.2026 ~09:30: SELBST-UPDATE GETESTET: Build 6 per HA-Update-Knopf, danach Build 7 von
+  selbst angekommen (Nutzer hat nichts getan). Die zuerst in HA gebaute Version
+  (10-min-Intervall) hatte nicht von selbst eingespielt, Ursache unklar; falls es
+  wieder hakt: on_update_available + update.is_available nutzen.
 Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
   Thermo-Hygrometer 5 (Werkstatt) Batterie 0 %.
