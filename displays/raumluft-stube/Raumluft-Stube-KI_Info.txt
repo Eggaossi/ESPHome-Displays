@@ -51,3 +51,11 @@ Hotspot (Fallback-AP) "Co-Ossi-Stube Fallback Hotspot", Passwort = OTA_PASSWORD.
 ── Offen/Ideen ──────────────────────────────────────────────────
 - Weitere Designs (jedes anders: Farben, Rahmen, Schrift), Display ist nur 320x240.
 - Datum/Uhr stehen bei y=-17 (Cabaret 70, oberer Rand der Schrift absichtlich abgeschnitten).
+
+20.11.2026 Design "Luftsaeule" (designs/anzeige_luftsaeule.yaml, in designs.txt): Entwurf F vom Nutzer gewaehlt
+  ("schoen einpassen"). Aufbau wie Original (Datum/Uhr Cabaret 70, Wochentag, grosse Aussentemp Coffin 140 mittig
+  BASELINE_CENTER bei 208/196, bei Breite > 174 px automatisch Coffin 100), links CO-Melder + "Luft: <grund>",
+  rechts CO2-Saeule 400..2400 ppm (Zonen 1000/1400/2000), unten Wertezeile wie Original (Feuchte rechtsbuendig).
+  Luftguete = schlechtester Wert: CO2 >=1000/1400/2000, Feuchte <30/>70, CO >=25/50. Masse aus Original-Vorschau
+  gemessen (Coffin 140: "2°" 111x97 px). Entwuerfe A-G (nur Bilder) im Chat; Alarmseite D noch offen.
+  esphome config OK, Vorschau-lambda per g++ OK. NICHT am Geraet, noch nicht aktiv (design.txt = original).
