@@ -110,5 +110,7 @@ Rahmen (seit 20.11. dezent): eine duenne dunkelgoldene Linie, je Ecke zwei klein
   Werte rechts daneben, NEU Tages-Tiefst/Hoechst (globals hz_min/hz_max/hz_tag,
   restore_value, Reset bei Datumswechsel, nur eigener Fuehler), Raumklima mit
   Kueche (innen) zuerst, Strom, Bitcoin gross. Noch NICHT aktiv.
+20.11.2026: Hauswetter zum Testen aktiv (Name noch offen, Nutzer benennt nach dem Ansehen).
+  Zurueck zu Simple: designs/anzeige_simple.yaml nach esphome/anzeige.yaml.
 Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
   Thermo-Hygrometer 5 (Werkstatt) Batterie 0 %.
