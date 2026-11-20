@@ -2,7 +2,7 @@
 #  Wetterstation by Ossi - Geraete-Datei (wird von GitHub gebaut)
 #  Passwoerter/Schluessel kommen aus den GitHub-Secrets (secrets.yaml
 #  wird beim Bauen erzeugt). Anzeige: anzeige.yaml (aktives Design).
-#  Selbst-Update: das Geraet prueft alle 2 min das Manifest im Zweig
+#  Selbst-Update: das Geraet prueft alle 30 s das Manifest im Zweig
 #  "firmware" und spielt eine neue Version selbst ein.
 # =====================================================================
 substitutions:
@@ -41,18 +41,22 @@ update:
     id: fw_update
     name: Firmware GitHub
     source: ${manifest_url}
-    update_interval: 2min
+    update_interval: 30s
+    # neue Version gefunden -> sofort selbst einspielen
+    on_update_available:
+      then:
+        - logger.log: "Neue Firmware auf GitHub - spiele sie ein"
+        - update.perform: fw_update
 
-# neue Version gefunden -> selbst einspielen
+# Reserve, falls der Ausloeser oben einmal nicht greift
 interval:
   - interval: 1min
     startup_delay: 1min
     then:
       - if:
           condition:
-            lambda: 'return id(fw_update).state == update::UPDATE_STATE_AVAILABLE;'
+            update.is_available: fw_update
           then:
-            - logger.log: "Neue Firmware auf GitHub - spiele sie ein"
             - update.perform: fw_update
 
 wifi:

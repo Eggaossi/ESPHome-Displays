@@ -187,5 +187,8 @@ Rahmen (seit 20.11. dezent): eine duenne dunkelgoldene Linie, je Ecke zwei klein
   Zurueck zu Amiga1: tools/design_aktivieren.py ... designs/anzeige_amiga1.yaml
 20.11.2026: Amiga2 am Display fast weiss -> kraeftiger: Hintergrund (146,219,85), Karten (219,219,85),
   Leiste (146,182,85). Kein HA-Cloud-Abo -> Claude wartet auf Build und sagt "fertig", Nutzer drueckt Taster 2.
+20.11.2026: Nutzer will es automatisch und schnell, kein HA-Cloud-Abo -> Geraet prueft
+  alle 30 s (update_interval 30s), on_update_available -> update.perform sofort,
+  Reserve: interval 1 min mit update.is_available. Erwartung: ca. 2,5 min Bauen + bis 30 s.
 Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
   Thermo-Hygrometer 5 (Werkstatt) Batterie 0 %.
