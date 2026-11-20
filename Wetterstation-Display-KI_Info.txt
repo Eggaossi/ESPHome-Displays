@@ -144,5 +144,9 @@ Rahmen (seit 20.11. dezent): eine duenne dunkelgoldene Linie, je Ecke zwei klein
   Bereiche als Workbench-Fenster mit Schliess-/Tiefenknopf, Schrift VT323 (gfonts),
   Boing-Ball gezeichnet, Temp orange. Noch NICHT aktiv.
 20.11.2026: Amiga zum Ausprobieren aktiv. Zurueck: designs/anzeige_gruen.yaml nach esphome/anzeige.yaml.
+20.11.2026: Nutzer: blaues Amiga-Design heisst "Amiga1", Blau weniger knallig ->
+  BLAU (0,73,85) statt (0,85,170). designs/anzeige_amiga1.yaml, aktiv.
+  Naechste Idee des Nutzers: Amiga-Design wie sein Micro-SD Cloner Pro (hell,
+  Beige/Mint, abgerundete Karten, klare Schrift) - noch offen.
 Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
   Thermo-Hygrometer 5 (Werkstatt) Batterie 0 %.

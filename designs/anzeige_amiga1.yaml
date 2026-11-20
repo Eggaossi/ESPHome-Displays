@@ -1,6 +1,6 @@
 # =====================================================================
 #  Wetterstation by Ossi - Anzeige-Teil (Package fuer ESPHome)
-#  DESIGN "Amiga" (Entwurf, 20.11.2026): Workbench 1.3, VT323, Boing-Ball
+#  DESIGN "Amiga1" (vom Nutzer benannt, 20.11.2026): Workbench 1.3, VT323, Boing-Ball
 #  Wird von der Geraete-YAML im ESPHome Builder per "packages:" geholt.
 #  Hier stehen: Zeit, Schriften, Taster, LEDs, Sensoren aus Home Assistant
 #  und die Display-Zeichnung. KEINE Passwoerter/Schluessel (Repo oeffentlich).
@@ -325,8 +325,8 @@ display:
     pages:
       - id: seite_haupt
         lambda: |-
-          // =========== Design "Amiga": Workbench 1.3 - Blau, Weiss, Schwarz, Orange ===========
-          const Color BLAU    = Color(0, 85, 170);
+          // =========== Design "Amiga1": Workbench 1.3 - Blau, Weiss, Schwarz, Orange ===========
+          const Color BLAU    = Color(0, 73, 85);      // gedaempftes Workbench-Blau (0,85,170 war zu knallig)
           const Color WEISS   = Color(255, 255, 255);
           const Color SCHWARZ = Color(0, 0, 0);
           const Color ORANGE  = Color(255, 146, 0);
