@@ -104,5 +104,11 @@ Rahmen (seit 20.11. dezent): eine duenne dunkelgoldene Linie, je Ecke zwei klein
   umbenannt in designs/anzeige_simple.yaml. AKTIV: Simple.
   Gespeicherte Designs: Simple (aktiv), Western, Nixie (abgelehnt, nur Entwurf).
   Umschalten: gewuenschte designs/anzeige_<name>.yaml nach esphome/anzeige.yaml.
+20.11.2026: Nutzer will Design "wie ich es hatte, grosse aber nicht zu grosse
+  Aussentemp, und anders" -> Entwurf "Heute" (designs/anzeige_heute.yaml +
+  Vorschau): Datum links/Uhr rechts, Aussentemp 92 px farbig (Nachkomma klein),
+  Werte rechts daneben, NEU Tages-Tiefst/Hoechst (globals hz_min/hz_max/hz_tag,
+  restore_value, Reset bei Datumswechsel, nur eigener Fuehler), Raumklima mit
+  Kueche (innen) zuerst, Strom, Bitcoin gross. Noch NICHT aktiv.
 Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
   Thermo-Hygrometer 5 (Werkstatt) Batterie 0 %.
