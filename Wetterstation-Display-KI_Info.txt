@@ -7,8 +7,7 @@ Was:      "Wetterstation by Ossi" - ESPHome-Display im lila Gehaeuse,
 Hardware: ESP32-S3 (board esp32-s3-devkitc-1, Arduino-Framework),
           Display ST7796 320x480 SPI, color_palette 8bit
           SPI: CLK GPIO18, MOSI GPIO17; CS GPIO7, DC GPIO15, RST GPIO16
-          Taster 1/2/3: GPIO11/10/9 (Pullup, invertiert); Taster 1 = naechste
-          Seite (Hauptseite <-> Farbtest), 2 und 3 nur Log
+          Taster 1/2/3: GPIO11/10/9 (Pullup, invertiert), nur Log
           LEDs 1/2/3: GPIO14/13/12 (in HA als Licht)
 Netz:     im IP-Plan .34 (ESP-32-Bereich), Hostname wetterstation-display
 
@@ -94,5 +93,10 @@ Rahmen (seit 20.11. dezent): eine duenne dunkelgoldene Linie, je Ecke zwei klein
   Kaesten Aussen / Innen (Kueche), Luftdruck-Wind-Licht, Raumklima, Strom, Bitcoin;
   schwarz, graue Rahmen, Amber-Ueberschriften. Aussen-Feuchte ohne Ampel (normal
   hoch), innen mit Ampel. Noch NICHT aktiv, wartet auf Ja.
+20.11.2026 07:30 Farbtest bei Tageslicht: Farben stimmen weitgehend, ABER
+  Grau 146,146,170 erscheint deutlich BLAU, Petrol 0,73,85 dunkelblau, Orange
+  wirkt hellbraun. Regel: Blauanteil klein halten (neutrales Grau z.B.
+  146,146,85). Farbtest-Seite und Taster-1-Funktion danach entfernt (Wunsch).
+  Entwurf Klassisch entsprechend angepasst (Grau/Rahmen ohne Blaustich).
 Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
   Thermo-Hygrometer 5 (Werkstatt) Batterie 0 %.

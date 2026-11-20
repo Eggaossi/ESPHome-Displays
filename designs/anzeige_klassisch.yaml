@@ -144,9 +144,6 @@ binary_sensor:
       - delayed_on: 50ms
     on_press:
       - logger.log: "Wetterstation-Taster 1 wurde gedrückt!"
-      # Taster 1: naechste Seite (Hauptseite <-> Farbtest)
-      - display.page.show_next: anzeige_display
-      - component.update: anzeige_display
   - platform: gpio
     pin:
       number: GPIO10
@@ -291,8 +288,8 @@ display:
           // =========== Design "Klassisch": wie eine normale Wetterstation ===========
           const Color SCHWARZ = Color(0, 0, 0);
           const Color WEISS   = Color(255, 255, 255);
-          const Color GRAU    = Color(146, 146, 170);
-          const Color RAHMEN  = Color(73, 73, 85);
+          const Color GRAU    = Color(146, 146, 85);   // B klein halten, Display zeigt Blau sehr stark
+          const Color RAHMEN  = Color(109, 109, 85);
           const Color AMBER   = Color(255, 182, 0);
           const Color ORANGE  = Color(255, 146, 0);
           const Color GRUEN   = Color(73, 219, 0);
@@ -378,7 +375,7 @@ display:
           it.print(304, 249, id(rb13), GRAU, TextAlign::TOP_RIGHT, "Feuchte");
           auto zeile = [&](int nr, const char *name, bool t_ok, float t, bool h_ok, float h) {
             int y = 266 + nr * 17;
-            if (nr > 0) it.horizontal_line(14, y - 2, 292, Color(36, 36, 85));
+            if (nr > 0) it.horizontal_line(14, y - 2, 292, Color(73, 73, 0));
             it.print(14, y, id(rb14), WEISS, name);
             if (t_ok) it.printf(236, y, id(rb14), WEISS, TextAlign::TOP_RIGHT, "%.1f°C", t);
             else      it.print(236, y, id(rb14), ROT, TextAlign::TOP_RIGHT, "--");
@@ -428,30 +425,3 @@ display:
             it.printf(304, 440, id(rb18), WEISS, TextAlign::TOP_RIGHT, "%.0f EUR", id(bitcoin_preis).state);
           else
             it.print(304, 440, id(rb18), ROT, TextAlign::TOP_RIGHT, "--");
-      - id: seite_farbtest
-        lambda: |-
-          // ===== Farbtest: so zeigt das Display die Farben wirklich =====
-          it.fill(Color(0, 0, 0));
-          struct Probe { const char* name; int r, g, b; };
-          const Probe proben[12] = {
-            {"1 Schwarz 0,0,0",       0,   0,   0},
-            {"2 Weiss 255,255,255", 255, 255, 255},
-            {"3 Rot 255,0,0",       255,   0,   0},
-            {"4 Gruen 0,255,0",       0, 255,   0},
-            {"5 Blau 0,0,255",        0,   0, 255},
-            {"6 Gelb 255,255,0",    255, 255,   0},
-            {"7 Orange 255,146,0",  255, 146,   0},
-            {"8 Gold 255,182,0",    255, 182,   0},
-            {"9 Mokka 73,36,0",      73,  36,   0},
-            {"10 Braun 36,0,0",      36,   0,   0},
-            {"11 Grau 146,146,170", 146, 146, 170},
-            {"12 Petrol 0,73,85",     0,  73,  85},
-          };
-          for (int i = 0; i < 12; i++) {
-            int x = (i % 2) * 160 + 4;
-            int y = (i / 2) * 78 + 12;
-            it.print(x, y, id(rb14), Color(255, 255, 255), proben[i].name);
-            it.filled_rectangle(x, y + 18, 152, 52, Color(proben[i].r, proben[i].g, proben[i].b));
-            it.rectangle(x, y + 18, 152, 52, Color(255, 255, 255));
-          }
-          it.print(160, 0, id(rb13), Color(255, 255, 255), TextAlign::TOP_CENTER, "FARBTEST - Taster 1 = zurueck");
