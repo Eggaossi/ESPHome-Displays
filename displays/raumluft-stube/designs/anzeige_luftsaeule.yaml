@@ -226,7 +226,7 @@ display:
         if (h12 == 0) h12 = 12;
         it.printf(319, -17, id(my_font_groscabaret), GELBGRUEN, TextAlign::TOP_RIGHT, "%d:%02d", h12, time.minute);
         const char* weekdays[] = {"Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"};
-        it.printf(0, 58, id(my_font_Coffin_mittel), WEISS, "%s", weekdays[(time.day_of_week + 5) % 7]);
+        it.printf(0, 64, id(my_font_Coffin_mittel), WEISS, "%s", weekdays[(time.day_of_week + 5) % 7]);
       }
 
       // --- Linke Spalte: CO-Melder ---
@@ -249,7 +249,7 @@ display:
       if (id(outside_temp).has_state()) {
         float ta = id(outside_temp).state;
         if (ta > 100 || ta < -100) {
-          it.print(208, 196, id(my_font_Coffin_gross_schmal), Color(255, 0, 0), TextAlign::BASELINE_CENTER, "ERR");
+          it.print(208, 190, id(my_font_Coffin_gross_schmal), Color(255, 0, 0), TextAlign::BASELINE_CENTER, "ERR");
         } else {
           int tr = int(roundf(ta));
           Color tc;
@@ -269,9 +269,9 @@ display:
           // passt die grosse Schrift nicht in die Mitte (176 px), die schmalere nehmen
           auto f = id(my_font_Coffin_gross);
           int bx, by, bw, bh;
-          it.get_text_bounds(208, 196, t, f, TextAlign::BASELINE_CENTER, &bx, &by, &bw, &bh);
+          it.get_text_bounds(208, 190, t, f, TextAlign::BASELINE_CENTER, &bx, &by, &bw, &bh);
           if (bw > 174) f = id(my_font_Coffin_gross_schmal);
-          for (int dx = 0; dx < 3; dx++) it.print(208 + dx, 196, f, tc, TextAlign::BASELINE_CENTER, t);
+          for (int dx = 0; dx < 3; dx++) it.print(208 + dx, 190, f, tc, TextAlign::BASELINE_CENTER, t);
         }
       }
 

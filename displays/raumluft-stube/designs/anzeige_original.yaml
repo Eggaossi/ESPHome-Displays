@@ -208,7 +208,7 @@ display:
       // Wochentagsanzeige in Weiß
       const char* weekdays[] = {"Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"};
       if (time.is_valid()) {
-        it.printf(0, 60, id(my_font_Coffin_mittel), Color(255, 255, 255), "%s", 
+        it.printf(0, 66, id(my_font_Coffin_mittel), Color(255, 255, 255), "%s", 
           weekdays[(time.day_of_week + 5) % 7]);
       }
 
@@ -217,7 +217,7 @@ display:
         temp_aussen = id(outside_temp).state;
         
         if (temp_aussen > 100 || temp_aussen < -100) {
-          it.printf(100, 60, id(my_font_Coffin_gross), Color(255, 0, 0), "ERR");
+          it.printf(100, 54, id(my_font_Coffin_gross), Color(255, 0, 0), "ERR");
         } else {
           temp_aussen_rund = int(roundf(temp_aussen));
           
@@ -245,7 +245,7 @@ display:
             temp_color = Color(255, 255, 128);  // Hellgelb für extreme Hitze
           }
         
-          it.printf(120, 70, id(my_font_Coffin_gross), temp_color, "%d°", temp_aussen_rund);
+          it.printf(120, 64, id(my_font_Coffin_gross), temp_color, "%d°", temp_aussen_rund);
         }
       }
 

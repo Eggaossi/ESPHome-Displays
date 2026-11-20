@@ -112,3 +112,7 @@ Hotspot (Fallback-AP) "Co-Ossi-Stube Fallback Hotspot", Passwort = OTA_PASSWORD.
   Designs fuer dieses Display: Original, Luftsaeule, Luftsaeule Bogen (AKTIV), Messgeraet, Messgeraet Pixel,
   Pixel Klassik, Klassik Anton. Merker: Nutzer mag die eigenen Schriften (Cabaret/Coffin) am liebsten; Datum, Uhr,
   Aussen- und Innentemperatur muessen immer gross sein; bei jedem Design Extremwerte (-12/-25 Grad usw.) pruefen.
+
+20.11.2026 ~17:00 (Foto Luftsaeule Bogen): "Freitag klebt von weitem fast am Datum" -> in Original, Luftsaeule und
+  Luftsaeule Bogen Wochentag 6 px tiefer (Original y 66, sonst 64) und Aussentemperatur 6 px hoeher (Original TOP 64,
+  sonst Grundlinie 190). Gilt als Regel fuer diesen Aufbau.
