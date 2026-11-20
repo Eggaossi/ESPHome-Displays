@@ -364,12 +364,12 @@ display:
       - id: seite_haupt
         lambda: |-
           // =========== Design "Amiga2": hell wie der Micro-SD Cloner (Mint, Creme, Dunkelblau) ===========
-          const Color MINT     = Color(109, 182, 0);     // Hintergrund (Build 11 noch zu hell, eine Stufe dunkler, ohne Blau)
-          const Color CREME    = Color(182, 182, 85);    // Karten Beige (dunkler)
-          const Color LEISTE   = Color(73, 146, 0);      // Statusleiste, Kartenrand
+          const Color MINT     = Color(73, 182, 0);      // Hintergrund (109,182,0 wirkte am Display gelb -> weniger Rot)
+          const Color CREME    = Color(146, 146, 85);    // Karten (182,182,85 wirkte am Display fast weiss)
+          const Color LEISTE   = Color(36, 109, 0);      // Statusleiste, Kartenrand (73,146,0 wirkte hellgruen)
           const Color NAVY     = Color(36, 36, 0);       // Ueberschriften, Werte: Dunkelgrau statt Blau (Nutzerwunsch Build 14)
           const Color GRAU     = Color(73, 73, 0);       // Unterzeilen: ohne Blau (73,73,85 wirkte am Display blau)
-          const Color KORALLE  = Color(219, 73, 85);     // Akzent (wie Ein/Aus-Knopf am Cloner)
+          const Color KORALLE  = Color(219, 36, 0);      // Akzent Rot (219,73,85 wirkte am Display rosa)
           const Color GRUEN    = Color(0, 146, 0);
           const Color OCKER    = Color(182, 109, 0);
           const Color ROT      = Color(219, 0, 0);
