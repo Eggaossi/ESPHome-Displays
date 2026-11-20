@@ -235,3 +235,14 @@ Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
   Bitcoin/Kueche rosa, Schrift schwarz. Geaendert: MINT 73,182,0  CREME 146,146,85  LEISTE 36,109,0  KORALLE 219,36,0.
   Regel fuer dieses Display: Blau 85 macht helle Flaechen weisslich/rosa, hohe R+G wirken gelb/weiss -> Werte eher niedrig.
   Statusleiste: Datum, Uhr, Innen jetzt CREME (hell) auf dunkler LEISTE.
+
+2026-11-20 ZWEI NEUE DESIGNS (Entwurf, Nutzer: "Art deco" und "B Holz und Messing", "mal schon anders"):
+  anzeige_artdeco.yaml: Schwarz/Gold/Champagner, Rahmen mit gestuften Ecken und Faechern oben/unten, Trennlinien
+    mit Rauten, Aussentemperatur Limelight 130 (96 bei breiten Werten), Titel Federo, Werte Josefin Sans 700 (fett-Trick).
+  anzeige_holz.yaml: Nussholz mit Maserung, Messingschilder mit Nieten, Thermometer als Zeigerinstrument (-20..40,
+    Zeiger rot, Zahl Playfair Display 900), Aussenwerte auf kleinen Schildern, Raumklima auf grossem Schild
+    (Roboto Slab, Gravur-Farbe), Titel Cinzel.
+  Beide erzeugt mit tools/neue_designs_artdeco_holz.py (aus amiga2: gleiche Sensoren, Taster, Update-Skript).
+  Beide in designs.txt (App). Lambda nutzt id(sensor) als Zeiger (Raum-Liste) - wie ESPHome: id(x) -> Zeiger.
+  tools/vorschau.py setzt id() jetzt wie ESPHome um (id(x). -> Objekt, id(x) allein -> Zeiger, Globals als Wert).
+  NICHT am Geraet getestet, nur Vorschau. C++ der lambda per g++ gegen Nachbildung uebersetzt.

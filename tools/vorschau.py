@@ -28,6 +28,13 @@ GFONTS = {
     "anton": "ofl/anton/Anton-Regular.ttf",
     "vt323": "ofl/vt323/VT323-Regular.ttf",
     "rubik": "ofl/rubik/Rubik%5Bwght%5D.ttf",
+    "limelight": "ofl/limelight/Limelight-Regular.ttf",
+    "federo": "ofl/federo/Federo-Regular.ttf",
+    "poiret one": "ofl/poiretone/PoiretOne-Regular.ttf",
+    "josefin sans": "ofl/josefinsans/JosefinSans%5Bwght%5D.ttf",
+    "playfair display": "ofl/playfairdisplay/PlayfairDisplay%5Bwght%5D.ttf",
+    "roboto slab": "apache/robotoslab/RobotoSlab%5Bwght%5D.ttf",
+    "cinzel": "ofl/cinzel/Cinzel%5Bwght%5D.ttf",
 }
 GF_URL = "https://raw.githubusercontent.com/google/fonts/main/"
 
@@ -190,11 +197,11 @@ struct ESPTime { int second = 0, minute = 30, hour = 11, day_of_week = 6, day_of
     t.tm_mday = day_of_month; t.tm_mon = month - 1; t.tm_year = year - 1900; t.tm_wday = day_of_week - 1; return ::strftime(b, n, fmt, &t); }
   string strftime(const char *fmt) { char b[64]; strftime(b, sizeof(b), fmt); return b; } };
 struct ZeitQuelle { ESPTime now() { return ESPTime(); } ESPTime utcnow() { return ESPTime(); } };
-struct Sensor { float state; bool has_state() const { return true; } float get_state() const { return state; } };
+namespace sensor { struct Sensor { float state; bool has_state() const { return true; } float get_state() const { return state; } }; }
+using sensor::Sensor;
 struct TextSensor { string state; bool has_state() const { return true; } };
 struct BinarySensor { bool state; bool has_state() const { return true; } };
 struct Etwas { bool state = false; bool has_state() const { return false; } bool is_on() const { return false; } };
-#define id(x) (x)
 '''
 
 
@@ -268,6 +275,15 @@ def main():
     for n in sorted(benutzt - erledigt):
         decl.append(f"Etwas {n};")
 
+    # id() wie ESPHome umsetzen: id(x).foo -> x->foo (bei uns Objekt: x.foo), id(x) allein -> Zeiger auf x;
+    # Globals immer als Wert, Schriften sind bei uns schon Zeiger
+    globs = {e["id"] for e in cfg.get("globals") or [] if isinstance(e, dict)}
+    fids = {e["id"] for e in cfg.get("font") or [] if isinstance(e, dict)}
+    def ersetze(m):
+        n, punkt = m.group(1), m.group(2)
+        if n in globs or n in fids: return n + punkt
+        return (n + punkt) if punkt else f"(&{n})"
+    code = re.sub(r"\bid\((\w+)\)(\.?)", ersetze, code)
     prog = MOCK + "\n".join(decl) + "\nvoid zeichne(Display &it) {\n" + code + "\n}\nint main() { Display d; zeichne(d); return 0; }\n"
     with tempfile.TemporaryDirectory() as tmp:
         cpp = os.path.join(tmp, "v.cpp"); exe = os.path.join(tmp, "v")

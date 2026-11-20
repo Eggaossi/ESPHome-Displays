@@ -1,0 +1,465 @@
+# =====================================================================
+#  Wetterstation by Ossi - Anzeige-Teil (Package fuer ESPHome)
+#  DESIGN "Holz und Messing" (Entwurf, 20.11.2026): alte Wetterstation: Nussholz, Messingschilder mit Nieten, Zeiger-Thermometer; Playfair, Cinzel, Roboto Slab
+#  Wird von der Geraete-YAML per "packages:" geholt (Auswahl ueber design.txt / App HA-Displays).
+#  Hier stehen: Zeit, Schriften, Taster, LEDs, Sensoren aus Home Assistant
+#  und die Display-Zeichnung. KEINE Passwoerter/Schluessel (Repo oeffentlich).
+# =====================================================================
+
+globals:
+  # Tages-Tiefst/Hoechst der Aussentemperatur (bleibt auch nach Neustart)
+  - id: hz_min
+    type: float
+    restore_value: true
+    initial_value: '1000'
+  - id: hz_max
+    type: float
+    restore_value: true
+    initial_value: '-1000'
+  - id: hz_tag
+    type: int
+    restore_value: true
+    initial_value: '0'
+
+time:
+  - platform: sntp
+    id: sntp_time
+    timezone: Europe/Berlin
+
+font:
+  - file:
+      type: gfonts
+      family: Playfair Display
+      weight: 900
+    id: hm_temp
+    size: 54
+    glyphs: "-0123456789°"
+  - file:
+      type: gfonts
+      family: Cinzel
+      weight: 700
+    id: hm_titel
+    size: 15
+  - file:
+      type: gfonts
+      family: Cinzel
+      weight: 700
+    id: hm_label
+    size: 13
+  - file:
+      type: gfonts
+      family: Roboto Slab
+      weight: 600
+    id: rs11
+    size: 11
+  - file:
+      type: gfonts
+      family: Roboto Slab
+      weight: 800
+    id: rs14
+    size: 14
+  - file:
+      type: gfonts
+      family: Roboto Slab
+      weight: 700
+    id: rs16
+    size: 16
+  - file:
+      type: gfonts
+      family: Roboto Slab
+      weight: 700
+    id: rs20
+    size: 20
+  - file:
+      type: gfonts
+      family: Roboto Slab
+      weight: 800
+    id: rs24
+    size: 24
+  - file:
+      type: web
+      url: "https://github.com/Templarian/MaterialDesign-Webfont/raw/master/fonts/materialdesignicons-webfont.ttf"
+    id: mdi_icons_klein
+    size: 18
+    glyphs:
+      - "\U000F058E"  # water-percent
+      - "\U000F029A"  # gauge
+      - "\U000F059D"  # weather-windy
+      - "\U000F05A8"  # white-balance-sunny
+
+# Knopf in Home Assistant: sofort nach neuer Firmware schauen und einspielen
+button:
+  - platform: template
+    name: "Jetzt Update holen"
+    on_press:
+      - script.execute: update_jetzt
+
+script:
+  - id: update_jetzt
+    then:
+      - component.update: fw_update
+      - delay: 10s
+      - if:
+          condition:
+            lambda: 'return id(fw_update).state == update::UPDATE_STATE_AVAILABLE;'
+          then:
+            - update.perform: fw_update
+
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO11
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "Wetterstation-Taster 1"
+    id: wetterstation_taster_1
+    filters:
+      - delayed_on: 50ms
+    on_press:
+      - logger.log: "Wetterstation-Taster 1 wurde gedrückt!"
+  - platform: gpio
+    pin:
+      number: GPIO10
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "Wetterstation-Taster 2"
+    id: wetterstation_taster_2
+    filters:
+      - delayed_on: 50ms
+    on_press:
+      - logger.log: "Wetterstation-Taster 2 wurde gedrückt!"
+      # Taster 2: sofort nach neuer Firmware auf GitHub schauen
+      - script.execute: update_jetzt
+  - platform: gpio
+    pin:
+      number: GPIO9
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "Wetterstation-Taster 3"
+    id: wetterstation_taster_3
+    filters:
+      - delayed_on: 50ms
+    on_press:
+      - logger.log: "Wetterstation-Taster 3 wurde gedrückt!"
+
+output:
+  - platform: gpio
+    pin: GPIO14
+    id: wetterstation_led_1
+  - platform: gpio
+    pin: GPIO13
+    id: wetterstation_led_2
+  - platform: gpio
+    pin: GPIO12
+    id: wetterstation_led_3
+
+light:
+  - platform: binary
+    name: "Wetterstation-LED 1"
+    output: wetterstation_led_1
+  - platform: binary
+    name: "Wetterstation-LED 2"
+    output: wetterstation_led_2
+  - platform: binary
+    name: "Wetterstation-LED 3"
+    output: wetterstation_led_3
+
+sensor:
+  - platform: homeassistant
+    id: sensor_thermo_hygrometer_3_temperatur
+    entity_id: sensor.thermo_hygrometer_3_temperatur
+  - platform: homeassistant
+    id: sensor_thermo_hygrometer_3_luftfeuchtigkeit
+    entity_id: sensor.thermo_hygrometer_3_luftfeuchtigkeit
+  - platform: homeassistant
+    id: sensor_luxmeter_lux_korrigierte_temperatur
+    entity_id: sensor.luxmeter_lux_korrigierte_temperatur
+  - platform: homeassistant
+    id: sensor_luxmeter_aussen_luftfeuchtigkeit
+    entity_id: sensor.luxmeter_aussen_luftfeuchtigkeit
+  - platform: homeassistant
+    id: sensor_luxmeter_aussen_luftdruck
+    entity_id: sensor.luxmeter_aussen_luftdruck
+  - platform: homeassistant
+    id: aussenfuhler_umgebungslicht
+    entity_id: sensor.luxmeter_aussen_helligkeit
+  - platform: homeassistant
+    id: sensor_thermo_hygrometer_1_temperatur
+    entity_id: sensor.thermo_hygrometer_1_temperatur
+  - platform: homeassistant
+    id: sensor_thermo_hygrometer_1_luftfeuchtigkeit
+    entity_id: sensor.thermo_hygrometer_1_luftfeuchtigkeit
+  - platform: homeassistant
+    id: sensor_thermo_hygrometer_4_temperatur
+    entity_id: sensor.thermo_hygrometer_4_temperatur
+  - platform: homeassistant
+    id: sensor_thermo_hygrometer_4_luftfeuchtigkeit
+    entity_id: sensor.thermo_hygrometer_4_luftfeuchtigkeit
+  - platform: homeassistant
+    id: sensor_thermo_hygrometer_2_temperatur
+    entity_id: sensor.thermo_hygrometer_2_temperatur
+  - platform: homeassistant
+    id: sensor_thermo_hygrometer_2_luftfeuchtigkeit
+    entity_id: sensor.thermo_hygrometer_2_luftfeuchtigkeit
+  - platform: homeassistant
+    id: sensor_thermo_hygrometer_5_temperatur
+    entity_id: sensor.thermo_hygrometer_5_temperatur
+  - platform: homeassistant
+    id: sensor_thermo_hygrometer_5_luftfeuchtigkeit
+    entity_id: sensor.thermo_hygrometer_5_luftfeuchtigkeit
+  - platform: homeassistant
+    id: sensor_thermo_hygrometer_6_temperatur
+    entity_id: sensor.thermo_hygrometer_6_temperatur
+  - platform: homeassistant
+    id: sensor_thermo_hygrometer_6_luftfeuchtigkeit
+    entity_id: sensor.thermo_hygrometer_6_luftfeuchtigkeit
+  - platform: homeassistant
+    id: sensor_thermo_hygrometer_7_temperatur
+    entity_id: sensor.thermo_hygrometer_7_temperatur
+  - platform: homeassistant
+    id: sensor_thermo_hygrometer_7_luftfeuchtigkeit
+    entity_id: sensor.thermo_hygrometer_7_luftfeuchtigkeit
+  - platform: homeassistant
+    id: sensor_shellyplusplugs_e465b8b6b9e0_switch_0_power
+    entity_id: sensor.shellyplusplugs_e465b8b6b9e0_switch_0_power
+  - platform: homeassistant
+    id: sensor_kuchl_steckdose_switch_0_voltage
+    entity_id: sensor.kuchl_steckdose_switch_0_voltage
+  - platform: homeassistant
+    id: sensor_kuchl_steckdose_switch_0_current
+    entity_id: sensor.kuchl_steckdose_switch_0_current
+  - platform: homeassistant
+    id: sensor_kuchl_steckdose_switch_0_power
+    entity_id: sensor.kuchl_steckdose_switch_0_power
+  - platform: homeassistant
+    id: bitcoin_preis
+    entity_id: sensor.bitcoin_preis
+  - platform: homeassistant
+    name: "Windgeschwindigkeit vom Windmesser"
+    id: wind_speed_kmh
+    entity_id: sensor.windmesser_windspeed_km_h
+    unit_of_measurement: "km/h"
+    accuracy_decimals: 1
+
+spi:
+  clk_pin: GPIO18
+  mosi_pin: GPIO17
+
+
+display:
+  - platform: ili9xxx
+    model: ST7796
+    cs_pin: GPIO7
+    dc_pin: GPIO15
+    reset_pin: GPIO16
+    color_palette: 8bit
+    rotation: 0
+    invert_colors: false
+    update_interval: 5s
+    id: anzeige_display
+    pages:
+      - id: seite_haupt
+        lambda: |-
+          // =========== Design "Holz und Messing": alte Wetterstation, Nussholz, Messingschilder, Zeigerinstrument ===========
+          const Color HOLZ     = Color(73, 36, 0);       // dunkles Nussholz
+          const Color MASER    = Color(109, 36, 0);      // Holzmaserung
+          const Color DUNKEL   = Color(36, 0, 0);        // Fugen, Gravur
+          const Color MESSING  = Color(182, 146, 0);     // Schilder
+          const Color MESS_H   = Color(219, 182, 0);     // Messing-Glanzkante
+          const Color MESS_D   = Color(109, 73, 0);      // Messing-Schattenkante
+          const Color CREME    = Color(219, 219, 85);    // Zifferblatt, Schrift auf Holz
+          const Color GRAVUR   = Color(36, 36, 0);       // Schrift auf Messing (eingraviert)
+          const Color ZEIGER   = Color(182, 0, 0);
+          const Color GRUEN    = Color(0, 109, 0);
+          const Color OCKER    = Color(146, 73, 0);
+          const Color ROT      = Color(182, 0, 0);
+          it.fill(HOLZ);
+
+          auto time = id(sntp_time).now();
+          char lbuf[48];
+          // ----- Tages-Tiefst/Hoechst (eigene Rechnung, Reset bei Datumswechsel) -----
+          bool ta_ok = id(sensor_luxmeter_lux_korrigierte_temperatur).has_state();
+          float ta = id(sensor_luxmeter_lux_korrigierte_temperatur).state;
+          if (time.is_valid() && time.day_of_month != id(hz_tag)) {
+            id(hz_tag) = time.day_of_month;
+            id(hz_min) = 1000;
+            id(hz_max) = -1000;
+          }
+          if (ta_ok) {
+            if (ta < id(hz_min)) id(hz_min) = ta;
+            if (ta > id(hz_max)) id(hz_max) = ta;
+          }
+          struct Raum { const char *name; sensor::Sensor *t; sensor::Sensor *h; };
+          Raum raeume[] = {
+            {"Kueche (innen)", id(sensor_thermo_hygrometer_3_temperatur), id(sensor_thermo_hygrometer_3_luftfeuchtigkeit)},
+            {"Schlafzimmer oben", id(sensor_thermo_hygrometer_1_temperatur), id(sensor_thermo_hygrometer_1_luftfeuchtigkeit)},
+            {"Bad", id(sensor_thermo_hygrometer_4_temperatur), id(sensor_thermo_hygrometer_4_luftfeuchtigkeit)},
+            {"Schlafzimmer Mutti", id(sensor_thermo_hygrometer_2_temperatur), id(sensor_thermo_hygrometer_2_luftfeuchtigkeit)},
+            {"Werkstatt Ossi", id(sensor_thermo_hygrometer_5_temperatur), id(sensor_thermo_hygrometer_5_luftfeuchtigkeit)},
+            {"Heizraum Pumpe", id(sensor_thermo_hygrometer_6_temperatur), id(sensor_thermo_hygrometer_6_luftfeuchtigkeit)},
+            {"Retroraum", id(sensor_thermo_hygrometer_7_temperatur), id(sensor_thermo_hygrometer_7_luftfeuchtigkeit)},
+          };
+          const char *wt[] = {"Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"};
+          // Text linksbuendig ueber TOP_RIGHT zeichnen (gleiche Hoehe wie rechtsbuendiger Text)
+          auto links = [&](int x, int y, esphome::display::BaseFont *f, Color c, const char *t) {
+            int bx, by, bw, bh;
+            it.get_text_bounds(x, y, t, f, TextAlign::TOP_LEFT, &bx, &by, &bw, &bh);
+            it.print(x + bw, y, f, c, TextAlign::TOP_RIGHT, t);
+          };
+          // fett: zweimal mit 1 px Versatz (sonst ist die "1" duenner)
+          auto fett = [&](int x, int y, esphome::display::BaseFont *f, Color c, TextAlign a, const char *t) {
+            it.print(x, y, f, c, a, t);
+            it.print(x + 1, y, f, c, a, t);
+          };
+
+          auto feuchte_farbe = [&](float h) -> Color {
+            if (h >= 70) return ROT;
+            if (h >= 60) return OCKER;
+            return GRUEN;
+          };
+          // Holzmaserung: ein paar leicht wellige Linien
+          for (int i = 0; i < 16; i++) {
+            int y0 = 12 + i * 30 + (i % 3) * 4;
+            for (int x = 0; x < 320; x += 8) {
+              int dy = ((x / 8 + i) % 5 == 0) ? 1 : 0;
+              it.horizontal_line(x, y0 + dy, 8, MASER);
+            }
+          }
+          // Niete
+          auto niet = [&](int x, int y) {
+            it.filled_circle(x, y, 3, MESS_D);
+            it.filled_circle(x, y, 2, MESS_H);
+            it.draw_pixel_at(x - 1, y - 1, CREME);
+          };
+          // Messingschild mit Glanz- und Schattenkante und vier Nieten
+          auto schild = [&](int x, int y, int w, int h) {
+            it.filled_rectangle(x + 2, y + 2, w, h, DUNKEL);            // Schatten aufs Holz
+            it.filled_rectangle(x, y, w, h, MESSING);
+            it.horizontal_line(x, y, w, MESS_H);  it.vertical_line(x, y, h, MESS_H);
+            it.horizontal_line(x, y + h - 1, w, MESS_D);  it.vertical_line(x + w - 1, y, h, MESS_D);
+            niet(x + 6, y + 6);  niet(x + w - 7, y + 6);  niet(x + 6, y + h - 7);  niet(x + w - 7, y + h - 7);
+          };
+
+          // ----- Kopf: Datum und Uhr auf Holz, Namensschild in der Mitte -----
+          if (time.is_valid()) {
+            links(10, 6, id(rs14), CREME, wt[(time.day_of_week + 5) % 7]);
+            snprintf(lbuf, sizeof(lbuf), "%02d.%02d.", time.day_of_month, time.month);
+            links(10, 23, id(rs14), CREME, lbuf);
+            snprintf(lbuf, sizeof(lbuf), "%02d:%02d", time.hour, time.minute);
+            fett(309, 9, id(rs24), CREME, TextAlign::TOP_RIGHT, lbuf);
+          }
+          schild(78, 5, 164, 36);
+          it.print(160, 9, id(hm_label), GRAVUR, TextAlign::TOP_CENTER, "OSSI'S");
+          it.print(160, 21, id(hm_titel), GRAVUR, TextAlign::TOP_CENTER, "WETTERSTATION");
+
+          // ----- Thermometer als Zeigerinstrument (-20 bis +40 Grad) -----
+          const int cx = 90, cy = 128, r = 70;
+          it.filled_circle(cx + 2, cy + 3, r + 7, DUNKEL);
+          it.filled_circle(cx, cy, r + 7, MESS_D);
+          it.filled_circle(cx, cy, r + 5, MESSING);
+          it.circle(cx, cy, r + 3, MESS_H);
+          it.filled_circle(cx, cy, r, CREME);
+          // Skala: 270 Grad Bogen, -20 unten links, +40 unten rechts
+          for (int v = -20; v <= 40; v += 5) {
+            float a = (135.0f + (v + 20) * 270.0f / 60.0f) * 3.14159f / 180.0f;
+            int l = (v % 10 == 0) ? 9 : 5;
+            float ca = cosf(a), sa = sinf(a);
+            it.line(cx + (int) ((r - 2) * ca), cy + (int) ((r - 2) * sa), cx + (int) ((r - 2 - l) * ca), cy + (int) ((r - 2 - l) * sa), GRAVUR);
+            if (v % 20 == 0) {
+              snprintf(lbuf, sizeof(lbuf), "%d", v);
+              it.print(cx + (int) ((r - 20) * ca), cy + (int) ((r - 20) * sa) - 6, id(rs11), GRAVUR, TextAlign::TOP_CENTER, lbuf);
+            }
+          }
+          // Frostbereich unter 0 blau-grau ist am Display zu grell, deshalb nur ein roter Bogen ab 30 Grad
+          for (int v = 30; v <= 40; v++) {
+            float a = (135.0f + (v + 20) * 270.0f / 60.0f) * 3.14159f / 180.0f;
+            it.draw_pixel_at(cx + (int) ((r - 3) * cosf(a)), cy + (int) ((r - 3) * sinf(a)), ROT);
+            it.draw_pixel_at(cx + (int) ((r - 4) * cosf(a)), cy + (int) ((r - 4) * sinf(a)), ROT);
+          }
+          if (ta_ok) {
+            float v = ta < -20 ? -20 : (ta > 40 ? 40 : ta);
+            float a = (135.0f + (v + 20) * 270.0f / 60.0f) * 3.14159f / 180.0f;
+            int zx = cx + (int) ((r - 12) * cosf(a)), zy = cy + (int) ((r - 12) * sinf(a));
+            it.line(cx, cy, zx, zy, ZEIGER);  it.line(cx + 1, cy, zx + 1, zy, ZEIGER);  it.line(cx, cy + 1, zx, zy + 1, ZEIGER);
+            it.filled_circle(cx, cy, 5, MESS_D);
+            it.filled_circle(cx, cy, 3, MESSING);
+            snprintf(lbuf, sizeof(lbuf), "%d°", (int) roundf(ta));
+            it.print(cx, cy + 10, id(hm_temp), GRAVUR, TextAlign::TOP_CENTER, lbuf);
+          } else {
+            it.print(cx, cy + 20, id(rs16), ROT, TextAlign::TOP_CENTER, "keine Daten");
+          }
+          if (id(hz_min) < 999) {
+            snprintf(lbuf, sizeof(lbuf), "heute %.1f° bis %.1f°", id(hz_min), id(hz_max));
+            it.print(cx, 208, id(rs14), CREME, TextAlign::TOP_CENTER, lbuf);
+          }
+
+          // ----- Aussenwerte rechts auf kleinen Schildern -----
+          auto wert = [&](int nr, const char *symbol, bool ok, Color wf, const char *text) {
+            int y = 50 + nr * 41;
+            schild(178, y, 134, 34);
+            it.print(190, y + 8, id(mdi_icons_klein), GRAVUR, TextAlign::TOP_LEFT, symbol);
+            if (ok) { int bx, by, bw, bh; it.get_text_bounds(212, y + 8, text, id(rs16), TextAlign::TOP_LEFT, &bx, &by, &bw, &bh);
+                      it.print(212 + bw, y + 8, id(rs16), wf, TextAlign::TOP_RIGHT, text); }
+            else it.print(212, y + 8, id(rs16), ROT, TextAlign::TOP_LEFT, "--");
+          };
+          char buf[16];
+          snprintf(buf, sizeof(buf), "%.0f %%", id(sensor_luxmeter_aussen_luftfeuchtigkeit).state);
+          wert(0, "\U000F058E", id(sensor_luxmeter_aussen_luftfeuchtigkeit).has_state(), GRAVUR, buf);
+          float druck = id(sensor_luxmeter_aussen_luftdruck).state;
+          snprintf(buf, sizeof(buf), "%d hPa", (int) druck);
+          wert(1, "\U000F029A", id(sensor_luxmeter_aussen_luftdruck).has_state(), druck < 1000 ? OCKER : (druck > 1030 ? ROT : GRAVUR), buf);
+          snprintf(buf, sizeof(buf), "%.1f km/h", id(wind_speed_kmh).state);
+          wert(2, "\U000F059D", id(wind_speed_kmh).has_state(), GRAVUR, buf);
+          snprintf(buf, sizeof(buf), "%.1f lx", id(aussenfuhler_umgebungslicht).state);
+          wert(3, "\U000F05A8", id(aussenfuhler_umgebungslicht).has_state(), GRAVUR, buf);
+
+          // ----- Raumklima: grosses Messingschild -----
+          schild(8, 228, 304, 152);
+          it.print(20, 233, id(hm_label), GRAVUR, TextAlign::TOP_LEFT, "RAUMKLIMA");
+          it.print(232, 235, id(rs11), MESS_D, TextAlign::TOP_RIGHT, "Temp");
+          it.print(294, 235, id(rs11), MESS_D, TextAlign::TOP_RIGHT, "Feuchte");
+          it.horizontal_line(18, 250, 284, MESS_D);
+          it.horizontal_line(18, 251, 284, MESS_H);
+          for (int i = 0; i < 7; i++) {
+            int y = 255 + i * 17;
+            Color nf = i == 0 ? ROT : GRAVUR;
+            links(20, y, id(rs14), nf, raeume[i].name);
+            if (raeume[i].t->has_state()) { snprintf(lbuf, sizeof(lbuf), "%.1f°C", raeume[i].t->state); it.print(232, y, id(rs14), GRAVUR, TextAlign::TOP_RIGHT, lbuf); }
+            else it.print(232, y, id(rs14), ROT, TextAlign::TOP_RIGHT, "--");
+            if (raeume[i].h->has_state()) {
+              float h = raeume[i].h->state;
+              snprintf(lbuf, sizeof(lbuf), "%.0f%%", h);
+              it.print(286, y, id(rs14), feuchte_farbe(h), TextAlign::TOP_RIGHT, lbuf);
+              it.filled_circle(295, y + 8, 4, MESS_D);
+              it.filled_circle(295, y + 8, 3, feuchte_farbe(h));
+            } else it.print(286, y, id(rs14), ROT, TextAlign::TOP_RIGHT, "--");
+          }
+
+          // ----- Strom Kueche und Bitcoin auf Holz, getrennt durch eine Messingleiste -----
+          it.filled_rectangle(8, 389, 304, 3, MESSING);
+          it.horizontal_line(8, 389, 304, MESS_H);
+          it.print(10, 396, id(hm_label), MESS_H, TextAlign::TOP_LEFT, "STROM KUECHE");
+          if (id(sensor_shellyplusplugs_e465b8b6b9e0_switch_0_power).has_state()) {
+            snprintf(lbuf, sizeof(lbuf), "Server %.0f W", id(sensor_shellyplusplugs_e465b8b6b9e0_switch_0_power).state);
+            it.print(310, 397, id(rs14), CREME, TextAlign::TOP_RIGHT, lbuf);
+          }
+          if (id(sensor_kuchl_steckdose_switch_0_voltage).has_state()) {
+            snprintf(lbuf, sizeof(lbuf), "%.1f V", id(sensor_kuchl_steckdose_switch_0_voltage).state);
+            links(10, 414, id(rs16), CREME, lbuf);
+          }
+          if (id(sensor_kuchl_steckdose_switch_0_current).has_state()) {
+            snprintf(lbuf, sizeof(lbuf), "%.2f A", id(sensor_kuchl_steckdose_switch_0_current).state);
+            it.print(160, 414, id(rs16), CREME, TextAlign::TOP_CENTER, lbuf);
+          }
+          if (id(sensor_kuchl_steckdose_switch_0_power).has_state()) {
+            snprintf(lbuf, sizeof(lbuf), "%.1f W", id(sensor_kuchl_steckdose_switch_0_power).state);
+            it.print(310, 414, id(rs16), CREME, TextAlign::TOP_RIGHT, lbuf);
+          }
+          it.filled_rectangle(8, 436, 304, 3, MESSING);
+          it.horizontal_line(8, 436, 304, MESS_H);
+          it.print(10, 446, id(hm_label), MESS_H, TextAlign::TOP_LEFT, "BITCOIN");
+          it.printf(10, 462, id(rs11), MESS_H, TextAlign::TOP_LEFT, "Build %s", ESPHOME_PROJECT_VERSION);
+          if (id(bitcoin_preis).has_state()) {
+            snprintf(lbuf, sizeof(lbuf), "%.0f EUR", id(bitcoin_preis).state);
+            fett(309, 444, id(rs24), CREME, TextAlign::TOP_RIGHT, lbuf);
+          }
