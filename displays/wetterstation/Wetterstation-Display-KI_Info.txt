@@ -251,3 +251,8 @@ Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
   Grad-Kringel als zwei Kreise. Merker: TOP-Ausrichtung grosser Schriften weicht zwischen Vorschau und Geraet ab -> BASELINE nehmen.
 2026-11-20 Art deco (Build 31 am Geraet GETESTET, laeuft; Schwarz wirkt am Display dunkelblau): "Kurs in Euro" und "Build" lagen
   unten auf den gestuften Ecken -> Build nach oben unter die Uhr, Bitcoin-Block 8 px hoeher und Text ab x=26.
+
+2026-11-20 DESIGN "Original" vorbereitet (Nutzerwunsch): designs/anzeige_original.yaml = Zeichnung aus alt/...ORIGINAL...yaml
+  unveraendert, Rumpf (Sensoren, Taster, Update) wie die anderen Designs. Braucht Ananda.ttf, Coffin.ttf, Cabaret.ttf als
+  displays/wetterstation/fonts/*.ttf. Noch NICHT in designs.txt, bis die Schriften da sind (Nutzer schickt sie).
+  Lambda per g++-Nachbildung uebersetzt: OK.
