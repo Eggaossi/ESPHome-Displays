@@ -67,3 +67,7 @@ Hotspot (Fallback-AP) "Co-Ossi-Stube Fallback Hotspot", Passwort = OTA_PASSWORD.
   SOFORT LUEFTEN, bei CO >=50 "CO GEFAHR". Rechts: Aussen gross (LCD 34x74, bei Breite >82 px kleiner), Innen + Feuchte,
   CO. Uhr 12 h unten links. Beschriftung Roboto 700/900 (gfonts). DSEG7 (OFL) ausprobiert, schraeg -> nicht genommen.
   esphome config OK, Vorschau-lambda per g++ OK. Firmware erst gebaut, wenn der Nutzer es waehlt. NICHT am Geraet.
+
+20.11.2026 ~16:10: Nutzer hat die einmalige HA-Datei installiert. Danach kam die Luftsaeule (Build 48) von selbst
+  aufs Display -> SELBST-UPDATE GETESTET. Ab jetzt in HA NICHT mehr "Installieren" (OTA-Passwort ist jetzt
+  OTA_PASSWORD aus GitHub). Messgeraet noch nicht gewaehlt/gebaut.
