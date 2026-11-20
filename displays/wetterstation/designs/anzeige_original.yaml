@@ -288,9 +288,11 @@ display:
             } else {
               temp_color = Color(255, 255, 224);
             }
-            it.printf(0, 88, id(my_font_Coffin_gross), temp_color, "%d°", temp_aussen_rund);
+            // mittig und kraeftiger (5x leicht versetzt, Coffin ist oben sehr duenn) - wie bei Western
+            for (int dx = -2; dx <= 2; dx++)
+              it.printf(160 + dx, 88, id(my_font_Coffin_gross), temp_color, TextAlign::TOP_CENTER, "%d°", temp_aussen_rund);
           } else {
-            it.printf(0, 88, id(my_font_Coffin_gross), Color(255, 0, 0), "N/A");
+            it.printf(160, 88, id(my_font_Coffin_gross), Color(255, 0, 0), TextAlign::TOP_CENTER, "--");
           }
 
           // Luftfeuchtigkeit Außen in Hellblau

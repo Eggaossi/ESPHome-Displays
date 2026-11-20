@@ -264,3 +264,4 @@ Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
   Original: Rundung der Aussentemperatur korrigiert (alt: int(roundf(t*2)/2) -> 1.6 zeigte 1), sonst unveraendert.
   designs.txt: jetzt auch original und western.
   20.11.2026: Secret FONTS_KEY vom Nutzer eingetragen.
+2026-11-20 Original: Aussentemperatur mittig (160, TOP_CENTER) und 5x versetzt gezeichnet (kraeftiger, wie Western). Farben wie im Original.
