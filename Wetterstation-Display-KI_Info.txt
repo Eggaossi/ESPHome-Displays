@@ -48,8 +48,8 @@ Raumklima: Hygrometer 1 Schlafzimmer oben, 4 Bad, 2 Schlafzimmer Mutti,
   5 Werkstatt Ossi, 6 Heizraum Pumpe, 7 Retroraum. Feuchte gruen <60,
   gelb ab 60, rot ab 70 (+ Punkt).
 Strom Kueche: Kuchl-Steckdose V/A/W; rechts Server-I9 Watt; Bitcoin.
-Rahmen (seit 20.11. dezent): eine duenne dunkelgoldene Linie, je Ecke ein kleiner
-  Winkel (10 px), kleine Rauten oben/unten.
+Rahmen (seit 20.11. dezent): eine duenne dunkelgoldene Linie, je Ecke zwei kleine
+  verschachtelte Winkel (12 und 7 px, Wunsch Nutzer), kleine Rauten oben/unten.
 
 ── Stand ────────────────────────────────────────────────────────
 20.11.2026: Verschoenerung. Versionen (in alt/):

@@ -303,12 +303,16 @@ display:
             it.filled_triangle(cx - r, cy, cx + r, cy, cx, cy + r, c);
           };
           // gestufte Ecke: 3 verschachtelte Winkel (dx/dy = Richtung)
-          // dezente Ecke: nur ein kurzer Winkel (dx/dy = Richtung)
+          // dezente Ecke: zwei verschachtelte Winkel (dx/dy = Richtung)
           auto ecke = [&](int x, int y, int dx, int dy) {
-            int px = x + dx * 5;
-            int py = y + dy * 5;
-            it.line(px, py, px + dx * 10, py, GOLD_DUNKEL);
-            it.line(px, py, px, py + dy * 10, GOLD_DUNKEL);
+            for (int k = 0; k < 2; k++) {
+              int o = 5 + k * 4;
+              int len = 12 - k * 5;
+              int px = x + dx * o;
+              int py = y + dy * o;
+              it.line(px, py, px + dx * len, py, GOLD_DUNKEL);
+              it.line(px, py, px, py + dy * len, GOLD_DUNKEL);
+            }
           };
 
           // ===== Rahmen dezent: eine duenne Linie, kleine Eckwinkel, kleine Rauten =====
