@@ -112,5 +112,7 @@ Rahmen (seit 20.11. dezent): eine duenne dunkelgoldene Linie, je Ecke zwei klein
   Kueche (innen) zuerst, Strom, Bitcoin gross. Noch NICHT aktiv.
 20.11.2026: Hauswetter zum Testen aktiv (Name noch offen, Nutzer benennt nach dem Ansehen).
   Zurueck zu Simple: designs/anzeige_simple.yaml nach esphome/anzeige.yaml.
+20.11.2026: Nutzer "zu schaebig, Aussentemp groesser, Rahmen und Farben" -> Hauswetter
+  ueberarbeitet: Mokka-Karten, Goldrahmen mit 2 Eckwinkeln, Temp 124 px, Uhr gold. Aktiv.
 Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
   Thermo-Hygrometer 5 (Werkstatt) Batterie 0 %.

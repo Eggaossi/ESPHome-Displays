@@ -113,14 +113,14 @@ font:
       family: Roboto
       weight: 700
     id: hz_temp
-    size: 92
+    size: 124
     glyphs: "-0123456789"
   - file:
       type: gfonts
       family: Roboto
       weight: 700
     id: hz_dez
-    size: 40
+    size: 46
     glyphs: ".0123456789°"
   - file:
       type: gfonts
@@ -307,53 +307,80 @@ display:
     pages:
       - id: seite_haupt
         lambda: |-
-          // =========== Design "Hauswetter": grosse (nicht riesige) Aussentemperatur, Tageswerte ===========
-          const Color SCHWARZ = Color(0, 0, 0);
-          const Color WEISS   = Color(255, 255, 255);
-          const Color GRAU    = Color(146, 146, 85);     // Blauanteil klein halten
-          const Color LINIE   = Color(73, 73, 0);
-          const Color AMBER   = Color(255, 182, 0);
-          const Color GRUEN   = Color(73, 219, 0);
-          const Color GELB    = Color(255, 255, 0);
-          const Color ROT     = Color(255, 36, 0);
-          const Color KORALLE = Color(255, 109, 85);
+          // =========== Design "Hauswetter": Mokka-Karten, Goldrahmen, grosse Aussentemperatur ===========
+          const Color HINTERGRUND = Color(36, 0, 0);
+          const Color KARTE       = Color(73, 36, 0);
+          const Color GOLD        = Color(255, 182, 0);
+          const Color GOLD_DUNKEL = Color(146, 109, 0);
+          const Color OCKER       = Color(219, 182, 0);
+          const Color WEISS       = Color(255, 255, 255);
+          const Color GRUEN       = Color(73, 219, 0);
+          const Color GELB        = Color(255, 255, 0);
+          const Color ROT         = Color(255, 36, 0);
+          const Color KORALLE     = Color(255, 109, 0);
 
-          it.fill(SCHWARZ);
+          it.fill(HINTERGRUND);
 
+          // ----- Helfer -----
+          auto karte = [&](int x, int y, int w, int h) {
+            int r = 6;
+            it.filled_rectangle(x + r, y, w - 2 * r, h, KARTE);
+            it.filled_rectangle(x, y + r, w, h - 2 * r, KARTE);
+            it.filled_circle(x + r, y + r, r, KARTE);
+            it.filled_circle(x + w - r - 1, y + r, r, KARTE);
+            it.filled_circle(x + r, y + h - r - 1, r, KARTE);
+            it.filled_circle(x + w - r - 1, y + h - r - 1, r, KARTE);
+          };
+          auto kopf = [&](int x, int y, const char *txt) {
+            it.filled_rectangle(x, y + 3, 3, 10, GOLD);
+            it.print(x + 8, y, id(rb13), GOLD, txt);
+          };
+          auto ecke = [&](int x, int y, int dx, int dy) {
+            for (int k = 0; k < 2; k++) {
+              int o = 5 + k * 4;
+              int len = 12 - k * 5;
+              int px = x + dx * o;
+              int py = y + dy * o;
+              it.line(px, py, px + dx * len, py, GOLD_DUNKEL);
+              it.line(px, py, px, py + dy * len, GOLD_DUNKEL);
+            }
+          };
           auto feuchte_farbe = [&](float h) -> Color {
             if (h >= 70) return ROT;
             if (h >= 60) return GELB;
             return GRUEN;
           };
           auto temp_farbe = [&](float t) -> Color {
-            if (t < -10) return Color(146, 182, 255);
-            if (t < 0)   return Color(182, 255, 255);
-            if (t < 5)   return Color(219, 255, 219);
-            if (t < 10)  return Color(182, 255, 85);
+            if (t < -10) return Color(182, 219, 255);
+            if (t < 0)   return Color(219, 255, 255);
+            if (t < 5)   return Color(255, 255, 255);
+            if (t < 10)  return Color(219, 255, 85);
             if (t < 15)  return Color(255, 255, 0);
             if (t < 20)  return Color(255, 219, 0);
             if (t < 25)  return Color(255, 182, 0);
             if (t < 30)  return Color(255, 109, 0);
             return Color(255, 36, 0);
           };
-          auto linie = [&](int y) { it.horizontal_line(8, y, 304, LINIE); };
-          auto kopf = [&](int y, const char *txt) {
-            it.filled_rectangle(8, y + 3, 4, 10, AMBER);
-            it.print(17, y, id(rb13), AMBER, txt);
-          };
 
-          // ----- Datum links, Uhr rechts -----
+          // ----- Rahmen: duenne Goldlinie, zwei Winkel je Ecke -----
+          it.rectangle(1, 1, 318, 478, GOLD_DUNKEL);
+          ecke(0, 0, 1, 1);
+          ecke(319, 0, -1, 1);
+          ecke(0, 479, 1, -1);
+          ecke(319, 479, -1, -1);
+
+          // ----- Kopf: Tag/Datum links, Uhr rechts -----
           auto time = id(sntp_time).now();
           if (time.is_valid()) {
             const char *wochentage[] = {"Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"};
-            it.printf(10, 6, id(rb18), WEISS, "%s", wochentage[(time.day_of_week + 5) % 7]);
-            it.printf(10, 28, id(rb14), GRAU, "%02d.%02d.%04d", time.day_of_month, time.month, time.year);
-            it.printf(312, 2, id(hz_uhr), WEISS, TextAlign::TOP_RIGHT, "%02d:%02d", time.hour, time.minute);
+            it.printf(16, 10, id(rb18), WEISS, "%s", wochentage[(time.day_of_week + 5) % 7]);
+            it.printf(16, 31, id(rb14), OCKER, "%02d.%02d.%04d", time.day_of_month, time.month, time.year);
+            it.printf(306, 4, id(hz_uhr), GOLD, TextAlign::TOP_RIGHT, "%02d:%02d", time.hour, time.minute);
           } else {
-            it.print(10, 14, id(rb16), GRAU, "warte auf Zeit...");
+            it.print(16, 18, id(rb16), OCKER, "warte auf Zeit...");
           }
 
-          // ----- Tages-Tiefst/Hoechst (eigene Rechnung, Reset um Mitternacht) -----
+          // ----- Tages-Tiefst/Hoechst (eigene Rechnung, Reset bei Datumswechsel) -----
           bool ta_ok = id(sensor_luxmeter_lux_korrigierte_temperatur).has_state();
           float ta = id(sensor_luxmeter_lux_korrigierte_temperatur).state;
           if (time.is_valid() && time.day_of_month != id(hz_tag)) {
@@ -366,10 +393,9 @@ display:
             if (ta > id(hz_max)) id(hz_max) = ta;
           }
 
-          linie(52);
-
-          // ----- Aussen: Temperatur links, Werte rechts -----
-          kopf(58, "AUSSEN");
+          // ----- Karte Aussen -----
+          karte(10, 56, 300, 160);
+          kopf(18, 62, "AUSSEN");
           if (ta_ok) {
             Color tf = temp_farbe(ta);
             int ganz = (int) truncf(ta);
@@ -378,25 +404,24 @@ display:
             char g[8], z[8];
             if (ta < 0 && ganz == 0) snprintf(g, sizeof(g), "-0"); else snprintf(g, sizeof(g), "%d", ganz);
             snprintf(z, sizeof(z), ".%d°", zehntel);
-            int x1, y1, w, h;
+            int x1, y1, w, h, z1, z2, zw, zh;
             it.get_text_bounds(0, 0, g, id(hz_temp), TextAlign::TOP_LEFT, &x1, &y1, &w, &h);
-            int z1, z2, zw, zh;
             it.get_text_bounds(0, 0, z, id(hz_dez), TextAlign::TOP_LEFT, &z1, &z2, &zw, &zh);
-            int x0 = 104 - (w + zw) / 2;
-            if (x0 < 10) x0 = 10;
-            it.print(x0, 70, id(hz_temp), tf, g);
-            it.print(x0 + w - 4, 80, id(hz_dez), tf, z);
+            int x0 = 112 - (w + zw - 6) / 2;
+            if (x0 < 14) x0 = 14;
+            it.print(x0, 64, id(hz_temp), tf, g);
+            it.print(x0 + w - 6, 82, id(hz_dez), tf, z);
           } else {
-            it.print(104, 110, id(rb18), ROT, TextAlign::TOP_CENTER, "keine Daten");
+            it.print(112, 120, id(rb18), ROT, TextAlign::TOP_CENTER, "keine Daten");
           }
           if (id(hz_min) < 999)
-            it.printf(104, 176, id(rb14), GRAU, TextAlign::TOP_CENTER, "heute  %.1f°  bis  %.1f°", id(hz_min), id(hz_max));
+            it.printf(112, 192, id(rb14), OCKER, TextAlign::TOP_CENTER, "heute  %.1f°  bis  %.1f°", id(hz_min), id(hz_max));
 
-          it.vertical_line(206, 62, 132, LINIE);
+          it.vertical_line(214, 66, 140, GOLD_DUNKEL);
           auto wert = [&](int nr, const char *symbol, bool ok, Color wf, const char *text) {
-            int y = 64 + nr * 33;
-            it.print(214, y + 4, id(mdi_icons_klein), AMBER, symbol);
-            it.print(238, y + 4, id(rb18), ok ? wf : ROT, ok ? text : "--");
+            int y = 66 + nr * 36;
+            it.print(222, y + 6, id(mdi_icons_klein), GOLD, symbol);
+            it.print(244, y + 6, id(rb16), ok ? wf : ROT, ok ? text : "--");
           };
           char buf[16];
           snprintf(buf, sizeof(buf), "%.0f %%", id(sensor_luxmeter_aussen_luftfeuchtigkeit).state);
@@ -411,22 +436,21 @@ display:
           snprintf(buf, sizeof(buf), "%.1f lx", id(aussenfuhler_umgebungslicht).state);
           wert(3, "\U000F05A8", id(aussenfuhler_umgebungslicht).has_state(), WEISS, buf);
 
-          linie(200);
-
-          // ----- Raumklima, Kueche (innen) zuerst -----
-          kopf(206, "RAUMKLIMA");
-          it.print(236, 206, id(rb13), GRAU, TextAlign::TOP_RIGHT, "Temp");
-          it.print(310, 206, id(rb13), GRAU, TextAlign::TOP_RIGHT, "Feuchte");
+          // ----- Karte Raumklima, Kueche (innen) zuerst -----
+          karte(10, 222, 300, 138);
+          kopf(18, 227, "RAUMKLIMA");
+          it.print(236, 227, id(rb13), OCKER, TextAlign::TOP_RIGHT, "Temp");
+          it.print(302, 227, id(rb13), OCKER, TextAlign::TOP_RIGHT, "Feuchte");
           auto zeile = [&](int nr, const char *name, bool t_ok, float t, bool h_ok, float h) {
-            int y = 226 + nr * 18;
-            it.print(17, y, id(rb14), nr == 0 ? AMBER : WEISS, name);
+            int y = 244 + nr * 16;
+            it.print(18, y, id(rb14), nr == 0 ? GOLD : WEISS, name);
             if (t_ok) it.printf(236, y, id(rb14), WEISS, TextAlign::TOP_RIGHT, "%.1f°C", t);
             else      it.print(236, y, id(rb14), ROT, TextAlign::TOP_RIGHT, "--");
             if (h_ok) {
-              it.printf(298, y, id(rb14), feuchte_farbe(h), TextAlign::TOP_RIGHT, "%.0f%%", h);
-              it.filled_circle(306, y + 7, 3, feuchte_farbe(h));
+              it.printf(290, y, id(rb14), feuchte_farbe(h), TextAlign::TOP_RIGHT, "%.0f%%", h);
+              it.filled_circle(298, y + 7, 3, feuchte_farbe(h));
             } else {
-              it.print(298, y, id(rb14), ROT, TextAlign::TOP_RIGHT, "--");
+              it.print(290, y, id(rb14), ROT, TextAlign::TOP_RIGHT, "--");
             }
           };
           zeile(0, "Kueche (innen)",
@@ -451,25 +475,24 @@ display:
             id(sensor_thermo_hygrometer_7_temperatur).has_state(), id(sensor_thermo_hygrometer_7_temperatur).state,
             id(sensor_thermo_hygrometer_7_luftfeuchtigkeit).has_state(), id(sensor_thermo_hygrometer_7_luftfeuchtigkeit).state);
 
-          linie(356);
 
-          // ----- Strom Kueche, Server -----
-          kopf(362, "STROM KUECHE");
+          // ----- Karte Strom Kueche + Server -----
+          karte(10, 366, 300, 52);
+          kopf(18, 371, "STROM KUECHE");
           if (id(sensor_shellyplusplugs_e465b8b6b9e0_switch_0_power).has_state())
-            it.printf(310, 362, id(rb13), GRAU, TextAlign::TOP_RIGHT, "Server %.0f W",
+            it.printf(302, 371, id(rb13), OCKER, TextAlign::TOP_RIGHT, "Server %.0f W",
               id(sensor_shellyplusplugs_e465b8b6b9e0_switch_0_power).state);
           if (id(sensor_kuchl_steckdose_switch_0_voltage).has_state())
-            it.printf(17, 382, id(rb18), WEISS, "%.1f V", id(sensor_kuchl_steckdose_switch_0_voltage).state);
+            it.printf(18, 391, id(rb18), WEISS, "%.1f V", id(sensor_kuchl_steckdose_switch_0_voltage).state);
           if (id(sensor_kuchl_steckdose_switch_0_current).has_state())
-            it.printf(160, 382, id(rb18), KORALLE, TextAlign::TOP_CENTER, "%.2f A", id(sensor_kuchl_steckdose_switch_0_current).state);
+            it.printf(160, 391, id(rb18), KORALLE, TextAlign::TOP_CENTER, "%.2f A", id(sensor_kuchl_steckdose_switch_0_current).state);
           if (id(sensor_kuchl_steckdose_switch_0_power).has_state())
-            it.printf(310, 382, id(rb18), GRUEN, TextAlign::TOP_RIGHT, "%.1f W", id(sensor_kuchl_steckdose_switch_0_power).state);
+            it.printf(302, 391, id(rb18), GRUEN, TextAlign::TOP_RIGHT, "%.1f W", id(sensor_kuchl_steckdose_switch_0_power).state);
 
-          linie(414);
-
-          // ----- Bitcoin -----
-          kopf(428, "BITCOIN");
+          // ----- Karte Bitcoin -----
+          karte(10, 424, 300, 44);
+          kopf(18, 438, "BITCOIN");
           if (id(bitcoin_preis).has_state())
-            it.printf(310, 420, id(rb28), AMBER, TextAlign::TOP_RIGHT, "%.0f EUR", id(bitcoin_preis).state);
+            it.printf(302, 430, id(rb28), GOLD, TextAlign::TOP_RIGHT, "%.0f EUR", id(bitcoin_preis).state);
           else
-            it.print(310, 424, id(rb18), ROT, TextAlign::TOP_RIGHT, "--");
+            it.print(302, 434, id(rb18), ROT, TextAlign::TOP_RIGHT, "--");
