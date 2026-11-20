@@ -1,7 +1,7 @@
-# AKTIVES DESIGN - erzeugt aus designs/anzeige_amiga1.yaml (tools/design_aktivieren.py)
+# AKTIVES DESIGN - erzeugt aus designs/anzeige_amiga2.yaml (tools/design_aktivieren.py)
 # =====================================================================
 #  Wetterstation by Ossi - Anzeige-Teil (Package fuer ESPHome)
-#  DESIGN "Amiga1" (vom Nutzer benannt, 20.11.2026): Workbench 1.3, VT323, Boing-Ball
+#  DESIGN "Amiga2" (Entwurf, 20.11.2026): hell wie der Micro-SD Cloner, Rubik
 #  Wird von der Geraete-YAML im ESPHome Builder per "packages:" geholt.
 #  Hier stehen: Zeit, Schriften, Taster, LEDs, Sensoren aus Home Assistant
 #  und die Display-Zeichnung. KEINE Passwoerter/Schluessel (Repo oeffentlich).
@@ -32,43 +32,61 @@ time:
 font:
   - file:
       type: gfonts
-      family: VT323
-      weight: 400
-    id: vt_gross
-    size: 150
+      family: Rubik
+      weight: 600
+    id: ru_temp
+    size: 112
     glyphs: "-0123456789"
   - file:
       type: gfonts
-      family: VT323
-      weight: 400
-    id: vt_gross_k
-    size: 110
+      family: Rubik
+      weight: 600
+    id: ru_temp_k
+    size: 84
     glyphs: "-0123456789"
   - file:
       type: gfonts
-      family: VT323
-      weight: 400
-    id: vt40
-    size: 40
+      family: Rubik
+      weight: 600
+    id: ru36
+    size: 36
     glyphs: "°"
   - file:
       type: gfonts
-      family: VT323
+      family: Rubik
       weight: 400
-    id: vt20
+    id: ru13
+    size: 13
+  - file:
+      type: gfonts
+      family: Rubik
+      weight: 500
+    id: ru14
+    size: 14
+  - file:
+      type: gfonts
+      family: Rubik
+      weight: 500
+    id: ru20
     size: 20
   - file:
       type: gfonts
-      family: VT323
-      weight: 400
-    id: vt24
-    size: 24
+      family: Rubik
+      weight: 700
+    id: ru16b
+    size: 16
   - file:
       type: gfonts
-      family: VT323
-      weight: 400
-    id: vt32
-    size: 32
+      family: Rubik
+      weight: 700
+    id: ru20b
+    size: 20
+  - file:
+      type: gfonts
+      family: Rubik
+      weight: 700
+    id: ru24b
+    size: 24
   - file:
       type: web
       url: "https://github.com/Templarian/MaterialDesign-Webfont/raw/master/fonts/materialdesignicons-webfont.ttf"
@@ -254,14 +272,18 @@ display:
     pages:
       - id: seite_haupt
         lambda: |-
-          // =========== Design "Amiga1": Workbench 1.3 - Blau, Weiss, Schwarz, Orange ===========
-          const Color BLAU    = Color(0, 73, 85);      // gedaempftes Workbench-Blau (0,85,170 war zu knallig)
-          const Color WEISS   = Color(255, 255, 255);
-          const Color SCHWARZ = Color(0, 0, 0);
-          const Color ORANGE  = Color(255, 146, 0);
-          const Color ROT     = Color(255, 36, 0);
+          // =========== Design "Amiga2": hell wie der Micro-SD Cloner (Mint, Creme, Dunkelblau) ===========
+          const Color MINT     = Color(219, 255, 170);   // Hintergrund
+          const Color CREME    = Color(255, 255, 170);   // Karten
+          const Color LEISTE   = Color(219, 219, 170);   // Statusleiste, Kartenrand
+          const Color NAVY     = Color(0, 36, 85);       // Ueberschriften, Werte
+          const Color GRAU     = Color(73, 73, 85);      // Unterzeilen
+          const Color KORALLE  = Color(219, 73, 85);     // Akzent (wie Ein/Aus-Knopf am Cloner)
+          const Color GRUEN    = Color(0, 146, 0);
+          const Color OCKER    = Color(182, 109, 0);
+          const Color ROT      = Color(219, 0, 0);
 
-          it.fill(BLAU);
+          it.fill(MINT);
 
           // ----- Helfer -----
           auto links = [&](int x, int y, esphome::display::BaseFont *f, Color c, const char *t) {
@@ -270,50 +292,43 @@ display:
             it.print(x + bw, y, f, c, TextAlign::TOP_RIGHT, t);
           };
           char lbuf[40];
-          // Workbench-Fenster: weisser Rahmen, Titelleiste mit Schliess- und Tiefenknopf
-          auto fenster = [&](int x, int y, int w, int h, const char *titel) {
-            it.rectangle(x, y, w, h, WEISS);
-            it.rectangle(x + 1, y + 1, w - 2, h - 2, WEISS);
-            it.filled_rectangle(x, y, w, 16, WEISS);
-            // Schliessknopf links
-            it.rectangle(x + 3, y + 3, 14, 10, BLAU);
-            it.filled_rectangle(x + 8, y + 6, 4, 4, BLAU);
-            it.vertical_line(x + 19, y, 16, BLAU);
-            // Titel
-            links(x + 24, y - 2, id(vt20), BLAU, titel);
-            // Tiefenknoepfe rechts (zwei ueberlappende Rechtecke)
-            it.vertical_line(x + w - 40, y, 16, BLAU);
-            it.rectangle(x + w - 36, y + 3, 12, 8, BLAU);
-            it.filled_rectangle(x + w - 32, y + 6, 12, 8, BLAU);
-            it.vertical_line(x + w - 19, y, 16, BLAU);
-            it.filled_rectangle(x + w - 16, y + 3, 12, 8, BLAU);
-            it.rectangle(x + w - 12, y + 6, 12 - 4, 8, WEISS);
-          };
-          // Boing-Ball (rot/weiss kariert), einfache Kugel-Projektion
-          auto boing = [&](int cx, int cy, int r) {
-            for (int dy = -r; dy <= r; dy++)
-              for (int dx = -r; dx <= r; dx++) {
-                float d2 = (float)(dx * dx + dy * dy) / (r * r);
-                if (d2 > 1.0f) continue;
-                float lat = asinf((float) dy / r);
-                float lon = asinf((float) dx / (r * sqrtf(1.0f - (float)(dy * dy) / (r * r)) + 0.001f)) + 0.35f;
-                int a = (int) floorf(lat / 0.3927f) + (int) floorf(lon / 0.3927f);
-                it.draw_pixel_at(cx + dx, cy + dy, (a & 1) ? WEISS : ROT);
-              }
+          auto karte = [&](int x, int y, int w, int h) {
+            int r = 7;
+            // Rand (leicht dunkler) und Flaeche
+            it.filled_rectangle(x + r, y, w - 2 * r, h, LEISTE);
+            it.filled_rectangle(x, y + r, w, h - 2 * r, LEISTE);
+            it.filled_circle(x + r, y + r, r, LEISTE);  it.filled_circle(x + w - r - 1, y + r, r, LEISTE);
+            it.filled_circle(x + r, y + h - r - 1, r, LEISTE);  it.filled_circle(x + w - r - 1, y + h - r - 1, r, LEISTE);
+            int i = 1; x += i; y += i; w -= 2 * i; h -= 2 * i; r -= 1;
+            it.filled_rectangle(x + r, y, w - 2 * r, h, CREME);
+            it.filled_rectangle(x, y + r, w, h - 2 * r, CREME);
+            it.filled_circle(x + r, y + r, r, CREME);  it.filled_circle(x + w - r - 1, y + r, r, CREME);
+            it.filled_circle(x + r, y + h - r - 1, r, CREME);  it.filled_circle(x + w - r - 1, y + h - r - 1, r, CREME);
           };
           auto feuchte_farbe = [&](float h) -> Color {
             if (h >= 70) return ROT;
-            if (h >= 60) return ORANGE;
-            return WEISS;
+            if (h >= 60) return OCKER;
+            return GRUEN;
           };
 
-          // ----- Bildschirm-Titelleiste wie Workbench -----
-          it.filled_rectangle(0, 0, 320, 22, WEISS);
-          links(4, 0, id(vt24), BLAU, "Wetterstation by Ossi");
+          // ----- Statusleiste wie am Cloner -----
+          it.filled_rectangle(0, 0, 320, 26, LEISTE);
+          it.filled_circle(13, 13, 7, KORALLE);
+          it.filled_circle(13, 13, 5, LEISTE);
+          it.filled_rectangle(12, 4, 3, 8, KORALLE);
           auto time = id(sntp_time).now();
           if (time.is_valid()) {
-            it.printf(316, 0, id(vt24), SCHWARZ, TextAlign::TOP_RIGHT, "%02d:%02d", time.hour, time.minute);
+            const char *wt[] = {"Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"};
+            snprintf(lbuf, sizeof(lbuf), "%s %02d.%02d.", wt[(time.day_of_week + 5) % 7], time.day_of_month, time.month);
+            links(28, 4, id(ru14), GRAU, lbuf);
+            it.printf(160, 2, id(ru20), NAVY, TextAlign::TOP_CENTER, "%02d:%02d", time.hour, time.minute);
           }
+          if (id(sensor_thermo_hygrometer_3_temperatur).has_state())
+            it.printf(312, 4, id(ru14), GRAU, TextAlign::TOP_RIGHT, "Innen %.1f°  %.0f%%",
+              id(sensor_thermo_hygrometer_3_temperatur).state, id(sensor_thermo_hygrometer_3_luftfeuchtigkeit).state);
+
+          // ----- Titel -----
+          links(10, 30, id(ru20b), NAVY, "Ossi's Wetterstation");
 
           // ----- Tages-Tiefst/Hoechst (eigene Rechnung, Reset bei Datumswechsel) -----
           bool ta_ok = id(sensor_luxmeter_lux_korrigierte_temperatur).has_state();
@@ -328,68 +343,62 @@ display:
             if (ta > id(hz_max)) id(hz_max) = ta;
           }
 
-          // ----- Fenster Aussen -----
-          if (time.is_valid()) {
-            const char *wt[] = {"Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"};
-            snprintf(lbuf, sizeof(lbuf), "Aussen  -  %s %02d.%02d.%04d", wt[(time.day_of_week + 5) % 7], time.day_of_month, time.month, time.year);
-          } else {
-            snprintf(lbuf, sizeof(lbuf), "Aussen");
+          // ----- Karte Aussen -----
+          karte(6, 58, 308, 152);
+          links(16, 63, id(ru16b), NAVY, "Aussen");
+          if (id(hz_min) < 999) {
+            snprintf(lbuf, sizeof(lbuf), "heute %.1f° bis %.1f°", id(hz_min), id(hz_max));
+            links(16, 82, id(ru14), GRAU, lbuf);
           }
-          fenster(2, 26, 316, 208, lbuf);
           if (ta_ok) {
             int t = (int) roundf(ta);
             char g[8];
             snprintf(g, sizeof(g), "%d", t);
-            esphome::display::BaseFont *f = id(vt_gross);
+            esphome::display::BaseFont *f = id(ru_temp);
             int x1, y1, w, h;
             it.get_text_bounds(0, 0, g, f, TextAlign::TOP_LEFT, &x1, &y1, &w, &h);
-            if (w > 150) { f = id(vt_gross_k); it.get_text_bounds(0, 0, g, f, TextAlign::TOP_LEFT, &x1, &y1, &w, &h); }
-            int x0 = 100 - (w + 24) / 2;
-            if (x0 < 8) x0 = 8;
-            it.print(x0 + w, 40, f, ORANGE, TextAlign::TOP_RIGHT, g);
-            it.print(x0 + w + 2, 52, id(vt40), ORANGE, TextAlign::TOP_LEFT, "°");
+            if (w > 150) { f = id(ru_temp_k); it.get_text_bounds(0, 0, g, f, TextAlign::TOP_LEFT, &x1, &y1, &w, &h); }
+            int x0 = 96 - (w + 22) / 2;
+            if (x0 < 14) x0 = 14;
+            it.print(x0 + w, 96, f, NAVY, TextAlign::TOP_RIGHT, g);
+            it.print(x0 + w + 2, 104, id(ru36), KORALLE, TextAlign::TOP_LEFT, "°");
           } else {
-            it.print(100, 110, id(vt24), ROT, TextAlign::TOP_CENTER, "keine Daten");
+            it.print(96, 130, id(ru16b), ROT, TextAlign::TOP_CENTER, "keine Daten");
           }
-          if (id(hz_min) < 999)
-            it.printf(100, 204, id(vt20), WEISS, TextAlign::TOP_CENTER, "heute %.1f° bis %.1f°", id(hz_min), id(hz_max));
-
-          boing(262, 64, 20);
+          it.vertical_line(190, 68, 132, LEISTE);
           auto wert = [&](int nr, const char *symbol, bool ok, Color wf, const char *text) {
-            int y = 92 + nr * 34;
-            it.print(204, y + 4, id(mdi_icons_klein), ORANGE, TextAlign::TOP_LEFT, symbol);
-            links(226, y, id(vt24), ok ? wf : ROT, ok ? text : "--");
+            int y = 66 + nr * 35;
+            it.print(198, y + 8, id(mdi_icons_klein), KORALLE, TextAlign::TOP_LEFT, symbol);
+            links(220, y + 7, id(ru16b), ok ? wf : ROT, ok ? text : "--");
           };
           char buf[16];
           snprintf(buf, sizeof(buf), "%.0f %%", id(sensor_luxmeter_aussen_luftfeuchtigkeit).state);
-          wert(0, "\U000F058E", id(sensor_luxmeter_aussen_luftfeuchtigkeit).has_state(), WEISS, buf);
+          wert(0, "\U000F058E", id(sensor_luxmeter_aussen_luftfeuchtigkeit).has_state(), NAVY, buf);
           float druck = id(sensor_luxmeter_aussen_luftdruck).state;
-          Color df = WEISS;
-          if (druck < 1000) df = ORANGE; else if (druck > 1030) df = ROT;
+          Color df = NAVY;
+          if (druck < 1000) df = OCKER; else if (druck > 1030) df = ROT;
           snprintf(buf, sizeof(buf), "%d hPa", (int) druck);
           wert(1, "\U000F029A", id(sensor_luxmeter_aussen_luftdruck).has_state(), df, buf);
           snprintf(buf, sizeof(buf), "%.1f km/h", id(wind_speed_kmh).state);
-          wert(2, "\U000F059D", id(wind_speed_kmh).has_state(), WEISS, buf);
+          wert(2, "\U000F059D", id(wind_speed_kmh).has_state(), NAVY, buf);
           snprintf(buf, sizeof(buf), "%.1f lx", id(aussenfuhler_umgebungslicht).state);
-          wert(3, "\U000F05A8", id(aussenfuhler_umgebungslicht).has_state(), WEISS, buf);
+          wert(3, "\U000F05A8", id(aussenfuhler_umgebungslicht).has_state(), NAVY, buf);
 
-          // ----- Fenster Raumklima -----
-          fenster(2, 238, 316, 146, "Raumklima");
-          // Build-Nummer der Firmware (von GitHub) klein rechts in der Titelleiste
-          it.printf(272, 236, id(vt20), BLAU, TextAlign::TOP_RIGHT, "Build %s", ESPHOME_PROJECT_VERSION);
-          it.print(232, 254, id(vt20), ORANGE, TextAlign::TOP_RIGHT, "Temp");
-          it.print(310, 254, id(vt20), ORANGE, TextAlign::TOP_RIGHT, "Feuchte");
-          links(8, 254, id(vt20), ORANGE, "Raum");
+          // ----- Karte Raumklima -----
+          karte(6, 216, 308, 150);
+          links(16, 220, id(ru16b), NAVY, "Raumklima");
+          it.print(232, 224, id(ru13), GRAU, TextAlign::TOP_RIGHT, "Temp");
+          it.print(304, 224, id(ru13), GRAU, TextAlign::TOP_RIGHT, "Feuchte");
           auto zeile = [&](int nr, const char *name, bool t_ok, float t, bool h_ok, float h) {
-            int y = 270 + nr * 16;
-            links(8, y, id(vt20), nr == 0 ? ORANGE : WEISS, name);
-            if (t_ok) it.printf(232, y, id(vt20), WEISS, TextAlign::TOP_RIGHT, "%.1f°C", t);
-            else      it.print(232, y, id(vt20), ROT, TextAlign::TOP_RIGHT, "--");
+            int y = 240 + nr * 17;
+            links(16, y, id(ru14), nr == 0 ? KORALLE : NAVY, name);
+            if (t_ok) it.printf(232, y, id(ru14), NAVY, TextAlign::TOP_RIGHT, "%.1f°C", t);
+            else      it.print(232, y, id(ru14), ROT, TextAlign::TOP_RIGHT, "--");
             if (h_ok) {
-              it.printf(298, y, id(vt20), feuchte_farbe(h), TextAlign::TOP_RIGHT, "%.0f%%", h);
-              it.filled_rectangle(303, y + 6, 6, 6, feuchte_farbe(h));
+              it.printf(290, y, id(ru14), feuchte_farbe(h), TextAlign::TOP_RIGHT, "%.0f%%", h);
+              it.filled_circle(299, y + 8, 4, feuchte_farbe(h));
             } else {
-              it.print(298, y, id(vt20), ROT, TextAlign::TOP_RIGHT, "--");
+              it.print(290, y, id(ru14), ROT, TextAlign::TOP_RIGHT, "--");
             }
           };
           zeile(0, "Kueche (innen)",
@@ -415,19 +424,22 @@ display:
             id(sensor_thermo_hygrometer_7_luftfeuchtigkeit).has_state(), id(sensor_thermo_hygrometer_7_luftfeuchtigkeit).state);
 
 
-          // ----- Fenster Strom & Bitcoin -----
-          fenster(2, 388, 316, 90, "Strom Kueche  &  Bitcoin");
-          if (id(sensor_kuchl_steckdose_switch_0_voltage).has_state()) {
-            snprintf(lbuf, sizeof(lbuf), "%.1f V", id(sensor_kuchl_steckdose_switch_0_voltage).state);
-            links(8, 404, id(vt24), WEISS, lbuf);
+          // ----- Karte Strom Kueche -----
+          karte(6, 372, 308, 50);
+          links(16, 376, id(ru16b), NAVY, "Strom Kueche");
+          if (id(sensor_shellyplusplugs_e465b8b6b9e0_switch_0_power).has_state()) {
+            snprintf(lbuf, sizeof(lbuf), "Server %.0f W", id(sensor_shellyplusplugs_e465b8b6b9e0_switch_0_power).state);
+            links(16, 398, id(ru14), GRAU, lbuf);
           }
-          if (id(sensor_kuchl_steckdose_switch_0_current).has_state())
-            it.printf(160, 404, id(vt24), WEISS, TextAlign::TOP_CENTER, "%.2f A", id(sensor_kuchl_steckdose_switch_0_current).state);
-          if (id(sensor_kuchl_steckdose_switch_0_power).has_state())
-            it.printf(310, 404, id(vt24), WEISS, TextAlign::TOP_RIGHT, "%.1f W", id(sensor_kuchl_steckdose_switch_0_power).state);
-          if (id(sensor_shellyplusplugs_e465b8b6b9e0_switch_0_power).has_state())
-            it.printf(310, 428, id(vt20), ORANGE, TextAlign::TOP_RIGHT, "Server %.0f W",
-              id(sensor_shellyplusplugs_e465b8b6b9e0_switch_0_power).state);
-          links(8, 446, id(vt24), ORANGE, "Bitcoin");
+          if (id(sensor_kuchl_steckdose_switch_0_voltage).has_state())
+            it.printf(304, 376, id(ru16b), NAVY, TextAlign::TOP_RIGHT, "%.1f V", id(sensor_kuchl_steckdose_switch_0_voltage).state);
+          if (id(sensor_kuchl_steckdose_switch_0_current).has_state() && id(sensor_kuchl_steckdose_switch_0_power).has_state())
+            it.printf(304, 398, id(ru14), GRAU, TextAlign::TOP_RIGHT, "%.2f A   %.1f W",
+              id(sensor_kuchl_steckdose_switch_0_current).state, id(sensor_kuchl_steckdose_switch_0_power).state);
+
+          // ----- Karte Bitcoin -----
+          karte(6, 428, 308, 46);
+          links(16, 432, id(ru16b), NAVY, "Bitcoin");
+          links(16, 452, id(ru13), GRAU, "Kurs in Euro");
           if (id(bitcoin_preis).has_state())
-            it.printf(310, 440, id(vt32), WEISS, TextAlign::TOP_RIGHT, "%.0f EUR", id(bitcoin_preis).state);
+            it.printf(304, 434, id(ru24b), KORALLE, TextAlign::TOP_RIGHT, "%.0f EUR", id(bitcoin_preis).state);

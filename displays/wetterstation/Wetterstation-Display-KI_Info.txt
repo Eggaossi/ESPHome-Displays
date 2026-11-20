@@ -182,5 +182,8 @@ Rahmen (seit 20.11. dezent): eine duenne dunkelgoldene Linie, je Ecke zwei klein
   selbst angekommen (Nutzer hat nichts getan). Die zuerst in HA gebaute Version
   (10-min-Intervall) hatte nicht von selbst eingespielt, Ursache unklar; falls es
   wieder hakt: on_update_available + update.is_available nutzen.
+20.11.2026: Entwurf Amiga2 (designs/anzeige_amiga2.yaml): hell wie Micro-SD Cloner, Mint
+  (219,255,170), Creme-Karten (255,255,170), Navy-Text, Koralle-Akzent, Rubik. Aktiv zum Testen.
+  Zurueck zu Amiga1: tools/design_aktivieren.py ... designs/anzeige_amiga1.yaml
 Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
   Thermo-Hygrometer 5 (Werkstatt) Batterie 0 %.
