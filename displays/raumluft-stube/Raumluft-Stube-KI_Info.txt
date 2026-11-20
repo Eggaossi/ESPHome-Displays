@@ -86,3 +86,11 @@ Hotspot (Fallback-AP) "Co-Ossi-Stube Fallback Hotspot", Passwort = OTA_PASSWORD.
   (CO2 5000, CO 500, Feuchte 100): alles passt; -12 Grad wird Stufe 4 statt 9 (Minus so breit wie eine Ziffer).
   Kein font:-Abschnitt -> tools/design_aktivieren.py kann jetzt Designs ohne Schriften. tools/vorschau.py: <cstring>.
   esphome config OK. NICHT am Geraet.
+
+20.11.2026 Design "Pixel Klassik" (designs/anzeige_pixel_klassik.yaml), Nutzer: "vielleicht das coolste". Wunsch: wie das
+  Original muessen Datum, Uhr, Aussen- und Innentemperatur immer gross und gut lesbar sein. Aufbau wie Original:
+  Datum/Uhr Pixelschrift Stufe 4, Wochentag 2, Aussen Stufe 11 mittig in x 104..318, Innen (gerundet, °C) und Feuchte
+  unten Stufe 4, CO-Zeile, CO2 als kleiner Farbbogen links (15 Stuecke) mit Zahl und Status. Schmale Zeichen: Minus
+  3 Spalten (damit -12 gross bleibt), Punkt/Doppelpunkt 2 Spalten (Luecke Datum/Uhr bei 11:30). Frost-Farben hell
+  (unter 0 hellblau statt dunkelblau, auf Schwarz sonst kaum sichtbar). Haertetest Vorschau normal/-12/35/-25 + CO2 5000,
+  CO 500, Feuchte 100: alles passt, -12 und -25 bleiben Stufe 11. esphome config OK. NICHT am Geraet.
