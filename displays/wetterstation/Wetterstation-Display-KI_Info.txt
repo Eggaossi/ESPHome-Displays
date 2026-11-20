@@ -11,7 +11,25 @@ Hardware: ESP32-S3 (board esp32-s3-devkitc-1, Arduino-Framework),
           LEDs 1/2/3: GPIO14/13/12 (in HA als Licht)
 Netz:     im IP-Plan .34 (ESP-32-Bereich), Hostname wetterstation-display
 
-── Wie aktualisiert wird (seit 20.11.2026) ─────────────────────
+── NEU (20.11.2026 mittags): Repo heisst ESPHome-Displays ───────
+Repo umbenannt (Wetterstation-Display -> ESPHome-Displays), fuer alle HA-Displays
+des Nutzers. Wetterstation liegt jetzt in displays/wetterstation/:
+  wetterstation.yaml (Geraet, Secrets aus GitHub, Selbst-Update per http_request),
+  anzeige.yaml (aktives Design, erzeugt mit tools/design_aktivieren.py, das
+  unbenutzte Schriften entfernt), designs/, alt/.
+GitHub Actions (.github/workflows/build.yml) baut geaenderte Displays und legt
+Zweig firmware an: wetterstation/firmware.ota.bin + manifest.json (+ fehler.txt).
+Das Geraet prueft alle 10 min das Manifest und spielt neue Builds selbst ein.
+Einmalig noetig: GitHub-Secrets WIFI_SSID, WIFI_PASSWORD, OTA_PASSWORD,
+WETTERSTATION_API_KEY (Werte wie bisher in HA) und EIN letztes "Installieren" in
+HA mit der neuen Geraete-YAML. Bis dahin nutzt HA noch esphome/anzeige.yaml
+(alter Weg, NICHT loeschen bis umgestellt).
+Western braucht die eigenen Schriften (Cabaret/Coffin/Ananda) aus
+/config/esphome/fonts - fuer GitHub-Bau muessten sie ins Repo.
+Claude kann Actions-Laeufe nicht ansehen: Ergebnis steht im Zweig firmware
+(version.txt bzw. fehler.txt + build.log).
+
+── Wie aktualisiert wird (seit 20.11.2026, ALTER Weg) ────────────
 Repo ist OEFFENTLICH (Wunsch Nutzer), damit ESPHome es ohne Token holt.
 Darum stehen hier KEINE Schluessel/Passwoerter.
 Die Geraete-YAML im ESPHome Builder (Home Assistant) enthaelt nur

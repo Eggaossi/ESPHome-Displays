@@ -1,0 +1,92 @@
+name: Displays bauen
+on:
+  push:
+    branches: [main]
+    paths: ['displays/**', '.github/workflows/build.yml']
+  workflow_dispatch:
+permissions: { contents: write }
+concurrency: { group: firmware, cancel-in-progress: false }
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 2 }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.platformio
+            displays/*/.esphome
+          key: esphome-${{ runner.os }}-${{ hashFiles('displays/*/*.yaml') }}
+          restore-keys: esphome-${{ runner.os }}-
+      - name: ESPHome installieren
+        run: pip install esphome
+      - name: Geaenderte Displays bestimmen
+        id: welche
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || git diff --name-only HEAD~1 HEAD | grep -q '^.github/workflows/'; then
+            LISTE=$(ls displays)
+          else
+            LISTE=$(git diff --name-only HEAD~1 HEAD | grep '^displays/' | cut -d/ -f2 | sort -u)
+          fi
+          echo "liste=$(echo $LISTE)" >> $GITHUB_OUTPUT
+          echo "Baue: $LISTE"
+      - name: Secrets-Datei anlegen
+        env:
+          WIFI_SSID: ${{ secrets.WIFI_SSID }}
+          WIFI_PASSWORD: ${{ secrets.WIFI_PASSWORD }}
+          OTA_PASSWORD: ${{ secrets.OTA_PASSWORD }}
+          WETTERSTATION_API_KEY: ${{ secrets.WETTERSTATION_API_KEY }}
+        run: |
+          for d in displays/*/; do
+            {
+              echo "wifi_ssid: \"$WIFI_SSID\""
+              echo "wifi_password: \"$WIFI_PASSWORD\""
+              echo "ota_password: \"$OTA_PASSWORD\""
+              echo "wetterstation_api_key: \"$WETTERSTATION_API_KEY\""
+            } > "$d/secrets.yaml"
+          done
+      - name: Firmware-Zweig holen
+        run: |
+          git fetch origin firmware:firmware 2>/dev/null && git worktree add fw firmware || {
+            git worktree add --orphan -b firmware fw 2>/dev/null || { mkdir fw; cd fw; git init -q -b firmware; }
+          }
+      - name: Bauen
+        run: |
+          set +e
+          FEHLER=0
+          for d in ${{ steps.welche.outputs.liste }}; do
+            mkdir -p fw/$d
+            esphome -s fw_version ${{ github.run_number }} compile displays/$d/$d.yaml > fw/$d/build.log 2>&1
+            if [ $? -ne 0 ]; then
+              echo "FEHLER Build ${{ github.run_number }} ($GITHUB_SHA)" > fw/$d/fehler.txt
+              tail -n 80 fw/$d/build.log >> fw/$d/fehler.txt
+              FEHLER=1; continue
+            fi
+            rm -f fw/$d/fehler.txt
+            NAME=$(grep -m1 '^  name:' displays/$d/$d.yaml | awk '{print $2}')
+            ENV=displays/$d/.esphome/build/$NAME/.pioenvs/$NAME
+            BIN=$ENV/firmware.ota.bin; [ -f $BIN ] || BIN=$ENV/firmware.bin
+            cp $BIN fw/$d/firmware.ota.bin
+            [ -f $ENV/firmware.factory.bin ] && cp $ENV/firmware.factory.bin fw/$d/firmware.factory.bin
+            MD5=$(md5sum fw/$d/firmware.ota.bin | cut -d' ' -f1)
+            cat > fw/$d/manifest.json <<JSON
+          {"name": "$d", "version": "${{ github.run_number }}", "builds": [{"chipFamily": "ESP32-S3",
+            "ota": {"path": "https://raw.githubusercontent.com/${{ github.repository }}/firmware/$d/firmware.ota.bin",
+                    "md5": "$MD5", "summary": "Build ${{ github.run_number }} von ${GITHUB_SHA::7}"}}]}
+          JSON
+            echo "Build ${{ github.run_number }} von ${GITHUB_SHA::7}" > fw/$d/version.txt
+            tail -n 5 fw/$d/build.log
+          done
+          echo "FEHLER=$FEHLER" >> $GITHUB_ENV
+      - name: Firmware-Zweig hochladen
+        run: |
+          cd fw
+          git config user.name "github-actions"; git config user.email "actions@github.com"
+          git add -A
+          git commit -qm "Build ${{ github.run_number }} von ${GITHUB_SHA::7}" || true
+          git push -f https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git HEAD:firmware
+      - name: Ergebnis
+        run: test "$FEHLER" = "0"

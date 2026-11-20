@@ -1,18 +1,24 @@
-# Wetterstation by Ossi
+# ESPHome-Displays (by Ossi)
 
-ESPHome-Display (ESP32-S3, ST7796 320x480, 8-Bit-Farben) im lila Gehaeuse.
-Zeigt Werte aus Home Assistant: Aussentemperatur gross, Aussenwerte, Innenwerte
-(Kueche), Raumklima von 6 Raeumen, Strom Kueche, Server-Watt, Bitcoin.
+Alle ESPHome-Displays von Home Assistant an einem Ort. Ein Ordner je Display
+unter `displays/`. GitHub baut bei jeder Aenderung die Firmware, das Display
+holt sie sich selbst (Selbst-Update alle 10 Minuten) - kein "Installieren" mehr.
 
-## Aufbau
+## Aufbau je Display (`displays/<name>/`)
+- `<name>.yaml` - Geraete-Datei (Board, WLAN, Selbst-Update, Schluessel aus Secrets)
+- `anzeige.yaml` - AKTIVES Design (wird aus `designs/` erzeugt)
+- `designs/` - gespeicherte Designs mit Vorschau
+- `alt/` - fruehere Fassungen
+- `<Name>-KI_Info.txt` - Projektbeschreibung fuer die KI
 
-- `esphome/anzeige.yaml` - Package mit Zeit, Schriften, Tastern, LEDs,
-  Sensoren und der Display-Zeichnung. Hier wird geaendert.
-- `esphome/geraet-vorlage.yaml` - Vorlage der Geraete-YAML im ESPHome Builder
-  (echte Schluessel stehen nur in Home Assistant).
-- `alt/` - fruehere Fassungen (Schluessel entfernt).
+## Design wechseln
+`python3 tools/design_aktivieren.py displays/<name> designs/anzeige_<design>.yaml`
+(raeumt unbenutzte Schriften weg), committen, pushen. Fertig.
 
-## Aktualisieren
+## Firmware
+Zweig `firmware`: `<name>/firmware.ota.bin`, `manifest.json`, `version.txt`,
+bei Fehlern `fehler.txt` und `build.log`.
 
-ESPHome Builder -> Wetterstation-Display -> Installieren -> Wirelessly.
-ESPHome holt `esphome/anzeige.yaml` bei jedem Kompilieren neu (`refresh: 0s`).
+## GitHub-Secrets (Settings -> Secrets and variables -> Actions)
+`WIFI_SSID`, `WIFI_PASSWORD`, `OTA_PASSWORD`, je Display ein API-Schluessel
+(z.B. `WETTERSTATION_API_KEY`).
