@@ -143,5 +143,6 @@ Rahmen (seit 20.11. dezent): eine duenne dunkelgoldene Linie, je Ecke zwei klein
   Workbench 1.3 (Blau 0,85,170 / Weiss / Schwarz / Orange), Bildschirm-Titelleiste,
   Bereiche als Workbench-Fenster mit Schliess-/Tiefenknopf, Schrift VT323 (gfonts),
   Boing-Ball gezeichnet, Temp orange. Noch NICHT aktiv.
+20.11.2026: Amiga zum Ausprobieren aktiv. Zurueck: designs/anzeige_gruen.yaml nach esphome/anzeige.yaml.
 Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
   Thermo-Hygrometer 5 (Werkstatt) Batterie 0 %.

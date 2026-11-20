@@ -1,6 +1,6 @@
 # =====================================================================
 #  Wetterstation by Ossi - Anzeige-Teil (Package fuer ESPHome)
-#  DESIGN "Gruen" (vom Nutzer benannt, 20.11.2026): Racing-Gruen, Messing, Anton
+#  DESIGN "Amiga" (Entwurf, 20.11.2026): Workbench 1.3, VT323, Boing-Ball
 #  Wird von der Geraete-YAML im ESPHome Builder per "packages:" geholt.
 #  Hier stehen: Zeit, Schriften, Taster, LEDs, Sensoren aus Home Assistant
 #  und die Display-Zeichnung. KEINE Passwoerter/Schluessel (Repo oeffentlich).
@@ -107,66 +107,46 @@ font:
       weight: 700
     id: rb28
     size: 28
-  # Schriften dieses Designs: Anton (Temperatur, Uhr, Bitcoin) und Roboto Condensed
+  # Schrift dieses Designs: VT323 (Pixel-/Terminalschrift wie am Amiga)
   - file:
       type: gfonts
-      family: Anton
+      family: VT323
       weight: 400
-    id: an_temp
+    id: vt_gross
     size: 150
     glyphs: "-0123456789"
   - file:
       type: gfonts
-      family: Anton
+      family: VT323
       weight: 400
-    id: an_temp_k
-    size: 118
+    id: vt_gross_k
+    size: 110
     glyphs: "-0123456789"
   - file:
       type: gfonts
-      family: Anton
+      family: VT323
       weight: 400
-    id: an_dez
-    size: 64
+    id: vt40
+    size: 40
     glyphs: "°"
   - file:
       type: gfonts
-      family: Anton
+      family: VT323
       weight: 400
-    id: an_uhr
-    size: 50
-    glyphs: "0123456789:"
+    id: vt20
+    size: 20
   - file:
       type: gfonts
-      family: Anton
+      family: VT323
       weight: 400
-    id: an_btc
-    size: 34
-    glyphs: "0123456789 EUR"
+    id: vt24
+    size: 24
   - file:
       type: gfonts
-      family: Roboto Condensed
-      weight: 700
-    id: rc13
-    size: 13
-  - file:
-      type: gfonts
-      family: Roboto Condensed
-      weight: 700
-    id: rc14
-    size: 14
-  - file:
-      type: gfonts
-      family: Roboto Condensed
-      weight: 700
-    id: rc16
-    size: 16
-  - file:
-      type: gfonts
-      family: Roboto Condensed
-      weight: 700
-    id: rc18
-    size: 18
+      family: VT323
+      weight: 400
+    id: vt32
+    size: 32
   # Symbole (Material Design Icons), ESPHome laedt die Datei beim Kompilieren
   - file:
       type: web
@@ -345,74 +325,65 @@ display:
     pages:
       - id: seite_haupt
         lambda: |-
-          // =========== Design (Racing-Gruen / Messing / Anton-Schrift) ===========
-          const Color HINTERGRUND = Color(0, 0, 0);       // fast schwarz, Gruen nur in den Baendern
-          const Color BAND        = Color(0, 36, 0);      // dunkles Gruen (dunkelste Stufe der 8-Bit-Palette)
-          const Color MESSING     = Color(219, 182, 0);
-          const Color MESSING_D   = Color(146, 109, 0);
-          const Color MESSING_H   = Color(255, 219, 85);
-          const Color WEISS       = Color(255, 255, 255);
-          const Color GRUEN       = Color(146, 255, 0);
-          const Color GELB        = Color(255, 255, 0);
-          const Color ROT         = Color(255, 36, 0);
-          const Color KORALLE     = Color(255, 146, 85);
+          // =========== Design "Amiga": Workbench 1.3 - Blau, Weiss, Schwarz, Orange ===========
+          const Color BLAU    = Color(0, 85, 170);
+          const Color WEISS   = Color(255, 255, 255);
+          const Color SCHWARZ = Color(0, 0, 0);
+          const Color ORANGE  = Color(255, 146, 0);
+          const Color ROT     = Color(255, 36, 0);
 
-          // Linksbuendiger Text ueber denselben Zeichenweg wie rechtsbuendiger
-          // (Breite messen, dann TOP_RIGHT am rechten Ende) -> alle Texte einer Zeile
-          // stehen garantiert auf gleicher Hoehe, egal wie die Schrift ihre Oberkante meldet.
+          it.fill(BLAU);
+
+          // ----- Helfer -----
           auto links = [&](int x, int y, esphome::display::BaseFont *f, Color c, const char *t) {
             int bx, by, bw, bh;
             it.get_text_bounds(x, y, t, f, TextAlign::TOP_LEFT, &bx, &by, &bw, &bh);
             it.print(x + bw, y, f, c, TextAlign::TOP_RIGHT, t);
           };
-          char lbuf[32];
-
-          it.fill(HINTERGRUND);
-
-          // ----- Helfer -----
-          auto niete = [&](int x, int y) {
-            it.filled_circle(x, y, 3, MESSING_D);
-            it.filled_circle(x, y, 2, MESSING);
-            it.draw_pixel_at(x - 1, y - 1, MESSING_H);
+          char lbuf[40];
+          // Workbench-Fenster: weisser Rahmen, Titelleiste mit Schliess- und Tiefenknopf
+          auto fenster = [&](int x, int y, int w, int h, const char *titel) {
+            it.rectangle(x, y, w, h, WEISS);
+            it.rectangle(x + 1, y + 1, w - 2, h - 2, WEISS);
+            it.filled_rectangle(x, y, w, 16, WEISS);
+            // Schliessknopf links
+            it.rectangle(x + 3, y + 3, 14, 10, BLAU);
+            it.filled_rectangle(x + 8, y + 6, 4, 4, BLAU);
+            it.vertical_line(x + 19, y, 16, BLAU);
+            // Titel
+            links(x + 24, y - 2, id(vt20), BLAU, titel);
+            // Tiefenknoepfe rechts (zwei ueberlappende Rechtecke)
+            it.vertical_line(x + w - 40, y, 16, BLAU);
+            it.rectangle(x + w - 36, y + 3, 12, 8, BLAU);
+            it.filled_rectangle(x + w - 32, y + 6, 12, 8, BLAU);
+            it.vertical_line(x + w - 19, y, 16, BLAU);
+            it.filled_rectangle(x + w - 16, y + 3, 12, 8, BLAU);
+            it.rectangle(x + w - 12, y + 6, 12 - 4, 8, WEISS);
           };
-          auto band = [&](int y, int h) {
-            it.filled_rectangle(8, y, 304, h, BAND);
-            it.horizontal_line(8, y, 304, MESSING_D);
-            it.horizontal_line(8, y + h - 1, 304, MESSING_D);
+          // Boing-Ball (rot/weiss kariert), einfache Kugel-Projektion
+          auto boing = [&](int cx, int cy, int r) {
+            for (int dy = -r; dy <= r; dy++)
+              for (int dx = -r; dx <= r; dx++) {
+                float d2 = (float)(dx * dx + dy * dy) / (r * r);
+                if (d2 > 1.0f) continue;
+                float lat = asinf((float) dy / r);
+                float lon = asinf((float) dx / (r * sqrtf(1.0f - (float)(dy * dy) / (r * r)) + 0.001f)) + 0.35f;
+                int a = (int) floorf(lat / 0.3927f) + (int) floorf(lon / 0.3927f);
+                it.draw_pixel_at(cx + dx, cy + dy, (a & 1) ? WEISS : ROT);
+              }
           };
           auto feuchte_farbe = [&](float h) -> Color {
             if (h >= 70) return ROT;
-            if (h >= 60) return GELB;
-            return GRUEN;
-          };
-          auto temp_farbe = [&](float t) -> Color {
-            if (t < -10) return Color(182, 219, 255);
-            if (t < 0)   return Color(219, 255, 255);
-            if (t < 5)   return Color(255, 255, 255);
-            if (t < 10)  return Color(219, 255, 85);
-            if (t < 15)  return Color(255, 255, 0);
-            if (t < 20)  return Color(255, 219, 0);
-            if (t < 25)  return Color(255, 182, 0);
-            if (t < 30)  return Color(255, 109, 0);
-            return Color(255, 36, 0);
+            if (h >= 60) return ORANGE;
+            return WEISS;
           };
 
-          // ----- Rahmen: Typenschild, doppelt Messing, Nieten -----
-          it.rectangle(0, 0, 320, 480, MESSING);
-          it.rectangle(3, 3, 314, 474, MESSING_D);
-          niete(10, 10);  niete(309, 10);  niete(10, 469);  niete(309, 469);
-
-          // ----- Kopfband: Datum links, Uhr rechts -----
-          band(18, 46);
+          // ----- Bildschirm-Titelleiste wie Workbench -----
+          it.filled_rectangle(0, 0, 320, 22, WEISS);
+          links(4, 0, id(vt24), BLAU, "Wetterstation by Ossi");
           auto time = id(sntp_time).now();
           if (time.is_valid()) {
-            const char *wochentage[] = {"Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"};
-            links(16, 22, id(rc18), WEISS, wochentage[(time.day_of_week + 5) % 7]);
-            snprintf(lbuf, sizeof(lbuf), "%02d.%02d.%04d", time.day_of_month, time.month, time.year);
-            links(16, 43, id(rc14), MESSING, lbuf);
-            it.printf(304, 4, id(an_uhr), MESSING_H, TextAlign::TOP_RIGHT, "%02d:%02d", time.hour, time.minute);
-          } else {
-            links(16, 32, id(rc16), MESSING, "warte auf Zeit...");
+            it.printf(316, 0, id(vt24), SCHWARZ, TextAlign::TOP_RIGHT, "%02d:%02d", time.hour, time.minute);
           }
 
           // ----- Tages-Tiefst/Hoechst (eigene Rechnung, Reset bei Datumswechsel) -----
@@ -428,46 +399,44 @@ display:
             if (ta > id(hz_max)) id(hz_max) = ta;
           }
 
-          // ----- Aussen: Temperatur gross links, Werte rechts -----
-          links(16, 66, id(rc13), MESSING, "AUSSEN");
+          // ----- Fenster Aussen -----
+          if (time.is_valid()) {
+            const char *wt[] = {"Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"};
+            snprintf(lbuf, sizeof(lbuf), "Aussen  -  %s %02d.%02d.%04d", wt[(time.day_of_week + 5) % 7], time.day_of_month, time.month, time.year);
+          } else {
+            snprintf(lbuf, sizeof(lbuf), "Aussen");
+          }
+          fenster(2, 26, 316, 208, lbuf);
           if (ta_ok) {
-            // ganze Grad ohne Komma; bei breiten Werten (z.B. -15) kleinere Schrift
-            Color tf = temp_farbe(ta);
             int t = (int) roundf(ta);
             char g[8];
             snprintf(g, sizeof(g), "%d", t);
-            esphome::display::BaseFont *f = id(an_temp);
-            int x1, y1, w, h, gx, gy, gw, gh;
+            esphome::display::BaseFont *f = id(vt_gross);
+            int x1, y1, w, h;
             it.get_text_bounds(0, 0, g, f, TextAlign::TOP_LEFT, &x1, &y1, &w, &h);
-            it.get_text_bounds(0, 0, "°", id(an_dez), TextAlign::TOP_LEFT, &gx, &gy, &gw, &gh);
-            int yoff = 33;
-            if (w + gw > 196) {
-              f = id(an_temp_k);
-              it.get_text_bounds(0, 0, g, f, TextAlign::TOP_LEFT, &x1, &y1, &w, &h);
-              yoff = 47;
-            }
-            int x0 = 108 - (w + gw) / 2;
-            if (x0 < 12) x0 = 12;
-            it.print(x0, yoff, f, tf, TextAlign::TOP_LEFT, g);
-            it.print(x0 + w + 2, 61, id(an_dez), tf, TextAlign::TOP_LEFT, "°");
+            if (w > 150) { f = id(vt_gross_k); it.get_text_bounds(0, 0, g, f, TextAlign::TOP_LEFT, &x1, &y1, &w, &h); }
+            int x0 = 100 - (w + 24) / 2;
+            if (x0 < 8) x0 = 8;
+            it.print(x0 + w, 40, f, ORANGE, TextAlign::TOP_RIGHT, g);
+            it.print(x0 + w + 2, 52, id(vt40), ORANGE, TextAlign::TOP_LEFT, "°");
           } else {
-            it.print(108, 130, id(rc18), ROT, TextAlign::TOP_CENTER, "keine Daten");
+            it.print(100, 110, id(vt24), ROT, TextAlign::TOP_CENTER, "keine Daten");
           }
           if (id(hz_min) < 999)
-            it.printf(108, 218, id(rc14), MESSING, TextAlign::TOP_CENTER, "heute  %.1f°  bis  %.1f°", id(hz_min), id(hz_max));
+            it.printf(100, 204, id(vt20), WEISS, TextAlign::TOP_CENTER, "heute %.1f° bis %.1f°", id(hz_min), id(hz_max));
 
-          it.vertical_line(212, 76, 156, MESSING_D);
+          boing(262, 64, 20);
           auto wert = [&](int nr, const char *symbol, bool ok, Color wf, const char *text) {
-            int y = 80 + nr * 38;
-            it.print(220, y + 6, id(mdi_icons_klein), MESSING, TextAlign::TOP_LEFT, symbol);
-            links(242, y + 6, id(rc18), ok ? wf : ROT, ok ? text : "--");
+            int y = 92 + nr * 34;
+            it.print(204, y + 4, id(mdi_icons_klein), ORANGE, TextAlign::TOP_LEFT, symbol);
+            links(226, y, id(vt24), ok ? wf : ROT, ok ? text : "--");
           };
           char buf[16];
           snprintf(buf, sizeof(buf), "%.0f %%", id(sensor_luxmeter_aussen_luftfeuchtigkeit).state);
           wert(0, "\U000F058E", id(sensor_luxmeter_aussen_luftfeuchtigkeit).has_state(), WEISS, buf);
           float druck = id(sensor_luxmeter_aussen_luftdruck).state;
           Color df = WEISS;
-          if (druck < 1000) df = GELB; else if (druck > 1030) df = ROT;
+          if (druck < 1000) df = ORANGE; else if (druck > 1030) df = ROT;
           snprintf(buf, sizeof(buf), "%d hPa", (int) druck);
           wert(1, "\U000F029A", id(sensor_luxmeter_aussen_luftdruck).has_state(), df, buf);
           snprintf(buf, sizeof(buf), "%.1f km/h", id(wind_speed_kmh).state);
@@ -475,22 +444,21 @@ display:
           snprintf(buf, sizeof(buf), "%.1f lx", id(aussenfuhler_umgebungslicht).state);
           wert(3, "\U000F05A8", id(aussenfuhler_umgebungslicht).has_state(), WEISS, buf);
 
-          // ----- Raumklima: Kopfband, Zeilen abwechselnd hinterlegt -----
-          band(240, 18);
-          links(16, 242, id(rc13), MESSING_H, "RAUMKLIMA");
-          it.print(236, 242, id(rc13), MESSING, TextAlign::TOP_RIGHT, "Temp");
-          it.print(304, 242, id(rc13), MESSING, TextAlign::TOP_RIGHT, "Feuchte");
+          // ----- Fenster Raumklima -----
+          fenster(2, 238, 316, 146, "Raumklima");
+          it.print(232, 254, id(vt20), ORANGE, TextAlign::TOP_RIGHT, "Temp");
+          it.print(310, 254, id(vt20), ORANGE, TextAlign::TOP_RIGHT, "Feuchte");
+          links(8, 254, id(vt20), ORANGE, "Raum");
           auto zeile = [&](int nr, const char *name, bool t_ok, float t, bool h_ok, float h) {
-            int y = 260 + nr * 17;
-            if (nr % 2 == 1) it.filled_rectangle(8, y - 1, 304, 17, BAND);
-            links(16, y, id(rc14), nr == 0 ? MESSING_H : WEISS, name);
-            if (t_ok) it.printf(236, y, id(rc14), WEISS, TextAlign::TOP_RIGHT, "%.1f°C", t);
-            else      it.print(236, y, id(rc14), ROT, TextAlign::TOP_RIGHT, "--");
+            int y = 270 + nr * 16;
+            links(8, y, id(vt20), nr == 0 ? ORANGE : WEISS, name);
+            if (t_ok) it.printf(232, y, id(vt20), WEISS, TextAlign::TOP_RIGHT, "%.1f°C", t);
+            else      it.print(232, y, id(vt20), ROT, TextAlign::TOP_RIGHT, "--");
             if (h_ok) {
-              it.printf(292, y, id(rc14), feuchte_farbe(h), TextAlign::TOP_RIGHT, "%.0f%%", h);
-              it.filled_circle(301, y + 7, 3, feuchte_farbe(h));
+              it.printf(298, y, id(vt20), feuchte_farbe(h), TextAlign::TOP_RIGHT, "%.0f%%", h);
+              it.filled_rectangle(303, y + 6, 6, 6, feuchte_farbe(h));
             } else {
-              it.print(292, y, id(rc14), ROT, TextAlign::TOP_RIGHT, "--");
+              it.print(298, y, id(vt20), ROT, TextAlign::TOP_RIGHT, "--");
             }
           };
           zeile(0, "Kueche (innen)",
@@ -516,23 +484,19 @@ display:
             id(sensor_thermo_hygrometer_7_luftfeuchtigkeit).has_state(), id(sensor_thermo_hygrometer_7_luftfeuchtigkeit).state);
 
 
-          // ----- Strom Kueche + Server -----
-          band(384, 18);
-          links(16, 386, id(rc13), MESSING_H, "STROM KUECHE");
-          if (id(sensor_shellyplusplugs_e465b8b6b9e0_switch_0_power).has_state())
-            it.printf(304, 386, id(rc13), MESSING, TextAlign::TOP_RIGHT, "Server %.0f W",
-              id(sensor_shellyplusplugs_e465b8b6b9e0_switch_0_power).state);
-          if (id(sensor_kuchl_steckdose_switch_0_voltage).has_state())
-            { snprintf(lbuf, sizeof(lbuf), "%.1f V", id(sensor_kuchl_steckdose_switch_0_voltage).state); links(16, 406, id(rc18), WEISS, lbuf); }
+          // ----- Fenster Strom & Bitcoin -----
+          fenster(2, 388, 316, 90, "Strom Kueche  &  Bitcoin");
+          if (id(sensor_kuchl_steckdose_switch_0_voltage).has_state()) {
+            snprintf(lbuf, sizeof(lbuf), "%.1f V", id(sensor_kuchl_steckdose_switch_0_voltage).state);
+            links(8, 404, id(vt24), WEISS, lbuf);
+          }
           if (id(sensor_kuchl_steckdose_switch_0_current).has_state())
-            it.printf(160, 406, id(rc18), KORALLE, TextAlign::TOP_CENTER, "%.2f A", id(sensor_kuchl_steckdose_switch_0_current).state);
+            it.printf(160, 404, id(vt24), WEISS, TextAlign::TOP_CENTER, "%.2f A", id(sensor_kuchl_steckdose_switch_0_current).state);
           if (id(sensor_kuchl_steckdose_switch_0_power).has_state())
-            it.printf(304, 406, id(rc18), GRUEN, TextAlign::TOP_RIGHT, "%.1f W", id(sensor_kuchl_steckdose_switch_0_power).state);
-
-          // ----- Bitcoin -----
-          band(432, 36);
-          links(16, 443, id(rc13), MESSING_H, "BITCOIN");
+            it.printf(310, 404, id(vt24), WEISS, TextAlign::TOP_RIGHT, "%.1f W", id(sensor_kuchl_steckdose_switch_0_power).state);
+          if (id(sensor_shellyplusplugs_e465b8b6b9e0_switch_0_power).has_state())
+            it.printf(310, 428, id(vt20), ORANGE, TextAlign::TOP_RIGHT, "Server %.0f W",
+              id(sensor_shellyplusplugs_e465b8b6b9e0_switch_0_power).state);
+          links(8, 446, id(vt24), ORANGE, "Bitcoin");
           if (id(bitcoin_preis).has_state())
-            it.printf(304, 427, id(an_btc), MESSING_H, TextAlign::TOP_RIGHT, "%.0f EUR", id(bitcoin_preis).state);
-          else
-            it.print(304, 440, id(rc18), ROT, TextAlign::TOP_RIGHT, "--");
+            it.printf(310, 440, id(vt32), WEISS, TextAlign::TOP_RIGHT, "%.0f EUR", id(bitcoin_preis).state);
