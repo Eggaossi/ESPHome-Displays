@@ -86,5 +86,13 @@ Rahmen (seit 20.11. dezent): eine duenne dunkelgoldene Linie, je Ecke zwei klein
   Ersatz-8, Leuchten durch mehrfaches Zeichnen, Neon-Punkt), Uhr leuchtend,
   Raumklima mit Kueche (innen) als erste Zeile. Noch NICHT aktiv, wartet auf
   Ja des Nutzers.
+20.11.2026: Nixie abgelehnt ("das ist nix"). Nutzer will "normale Wetterstation".
+  WICHTIG (Nutzer): KEINE Online-Daten wie Wettervorhersage (weather.*) auf diese
+  Anzeige - nur seine eigenen Werte vom Haus, und ALLE eigenen Werte muessen immer
+  drauf sein (Online-Wetter hat er am Multidisplay). Bitcoin bleibt (war im Original).
+  Entwurf "Klassisch" in designs/anzeige_klassisch.yaml (+ Vorschau): grosse Uhr,
+  Kaesten Aussen / Innen (Kueche), Luftdruck-Wind-Licht, Raumklima, Strom, Bitcoin;
+  schwarz, graue Rahmen, Amber-Ueberschriften. Aussen-Feuchte ohne Ampel (normal
+  hoch), innen mit Ampel. Noch NICHT aktiv, wartet auf Ja.
 Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
   Thermo-Hygrometer 5 (Werkstatt) Batterie 0 %.
