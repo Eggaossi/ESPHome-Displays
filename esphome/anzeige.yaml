@@ -358,7 +358,8 @@ display:
           const Color KORALLE     = Color(255, 146, 85);
 
           // Roboto Condensed: linksbuendige Texte stehen am Geraet ca. 4 px hoeher als
-          // rechts-/mittig-buendige (am Foto gemessen) -> links um LO nach unten
+          // rechts-/mittig-buendige (am Foto gemessen) -> in Zeilen links um LO nach unten,
+          // in den Baendern rechts um LO nach oben (damit nichts auf die Linien rutscht)
           const int LO = 4;
 
           it.fill(HINTERGRUND);
@@ -470,9 +471,9 @@ display:
 
           // ----- Raumklima: Kopfband, Zeilen abwechselnd hinterlegt -----
           band(240, 18);
-          it.print(16, 242 + LO, id(rc13), MESSING_H, TextAlign::TOP_LEFT, "RAUMKLIMA");
-          it.print(236, 242, id(rc13), MESSING, TextAlign::TOP_RIGHT, "Temp");
-          it.print(304, 242, id(rc13), MESSING, TextAlign::TOP_RIGHT, "Feuchte");
+          it.print(16, 242, id(rc13), MESSING_H, TextAlign::TOP_LEFT, "RAUMKLIMA");
+          it.print(236, 242 - LO, id(rc13), MESSING, TextAlign::TOP_RIGHT, "Temp");
+          it.print(304, 242 - LO, id(rc13), MESSING, TextAlign::TOP_RIGHT, "Feuchte");
           auto zeile = [&](int nr, const char *name, bool t_ok, float t, bool h_ok, float h) {
             int y = 260 + nr * 17;
             if (nr % 2 == 1) it.filled_rectangle(8, y - 1, 304, 17, BAND);
@@ -511,9 +512,9 @@ display:
 
           // ----- Strom Kueche + Server -----
           band(384, 18);
-          it.print(16, 386 + LO, id(rc13), MESSING_H, TextAlign::TOP_LEFT, "STROM KUECHE");
+          it.print(16, 386, id(rc13), MESSING_H, TextAlign::TOP_LEFT, "STROM KUECHE");
           if (id(sensor_shellyplusplugs_e465b8b6b9e0_switch_0_power).has_state())
-            it.printf(304, 386, id(rc13), MESSING, TextAlign::TOP_RIGHT, "Server %.0f W",
+            it.printf(304, 386 - LO, id(rc13), MESSING, TextAlign::TOP_RIGHT, "Server %.0f W",
               id(sensor_shellyplusplugs_e465b8b6b9e0_switch_0_power).state);
           if (id(sensor_kuchl_steckdose_switch_0_voltage).has_state())
             it.printf(16, 406 + LO, id(rc18), WEISS, TextAlign::TOP_LEFT, "%.1f V", id(sensor_kuchl_steckdose_switch_0_voltage).state);
