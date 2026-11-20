@@ -446,6 +446,8 @@ display:
 
           // ----- Fenster Raumklima -----
           fenster(2, 238, 316, 146, "Raumklima");
+          // Build-Nummer der Firmware (von GitHub) klein rechts in der Titelleiste
+          it.printf(272, 236, id(vt20), BLAU, TextAlign::TOP_RIGHT, "Build %s", ESPHOME_PROJECT_VERSION);
           it.print(232, 254, id(vt20), ORANGE, TextAlign::TOP_RIGHT, "Temp");
           it.print(310, 254, id(vt20), ORANGE, TextAlign::TOP_RIGHT, "Feuchte");
           links(8, 254, id(vt20), ORANGE, "Raum");

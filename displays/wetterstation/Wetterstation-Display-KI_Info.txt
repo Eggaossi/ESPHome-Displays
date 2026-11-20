@@ -166,5 +166,10 @@ Rahmen (seit 20.11. dezent): eine duenne dunkelgoldene Linie, je Ecke zwei klein
   BLAU (0,73,85) statt (0,85,170). designs/anzeige_amiga1.yaml, aktiv.
   Naechste Idee des Nutzers: Amiga-Design wie sein Micro-SD Cloner Pro (hell,
   Beige/Mint, abgerundete Karten, klare Schrift) - noch offen.
+20.11.2026: Build 3 (GitHub) ok, Nutzer hat HA-Geraete-YAML mit Selbst-Update
+  einmalig installiert (wetterstation-display_HA_einmalig.yaml: wie wetterstation.yaml,
+  Schluessel direkt drin, Anzeige als remote package displays/wetterstation/anzeige.yaml).
+  HA zeigt Update-Entitaet "Firmware GitHub". Test: Amiga1 zeigt "Build <Nr>" in der
+  Titelleiste von Raumklima (ESPHOME_PROJECT_VERSION) -> Build 4 muss von selbst kommen.
 Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
   Thermo-Hygrometer 5 (Werkstatt) Batterie 0 %.
