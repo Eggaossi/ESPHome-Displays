@@ -20,7 +20,7 @@ des Nutzers. Wetterstation liegt jetzt in displays/wetterstation/:
 GitHub Actions (.github/workflows/build.yml) baut geaenderte Displays und legt
 Zweig firmware an: wetterstation/firmware.ota.bin + manifest.json (+ fehler.txt).
 Das Geraet prueft alle 10 min das Manifest und spielt neue Builds selbst ein.
-Einmalig noetig: GitHub-Secrets WIFI_SSID, WIFI_PASSWORD, OTA_PASSWORD,
+Einmalig noetig (ERLEDIGT 20.11.2026, Nutzer hat alle 4 eingetragen): GitHub-Secrets WIFI_SSID, WIFI_PASSWORD, OTA_PASSWORD,
 WETTERSTATION_API_KEY (Werte wie bisher in HA) und EIN letztes "Installieren" in
 HA mit der neuen Geraete-YAML. Bis dahin nutzt HA noch esphome/anzeige.yaml
 (alter Weg, NICHT loeschen bis umgestellt).
