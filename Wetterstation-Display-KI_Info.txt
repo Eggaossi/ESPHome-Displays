@@ -138,5 +138,10 @@ Rahmen (seit 20.11. dezent): eine duenne dunkelgoldene Linie, je Ecke zwei klein
   Hoehenversatz Roboto Condensed endgueltig: LO-Korrektur raus; linksbuendige Texte
   laufen ueber links(): Breite messen, dann TOP_RIGHT am rechten Ende -> gleicher
   Zeichenweg wie rechtsbuendig, also gleiche Hoehe. Am Geraet noch zu bestaetigen.
+20.11.2026: Gruen fertig ("endlich passt's"), links()-Ausrichtung bestaetigt.
+  Neuer Entwurf "Amiga" (designs/anzeige_amiga.yaml + Vorschau mit Ersatzschrift):
+  Workbench 1.3 (Blau 0,85,170 / Weiss / Schwarz / Orange), Bildschirm-Titelleiste,
+  Bereiche als Workbench-Fenster mit Schliess-/Tiefenknopf, Schrift VT323 (gfonts),
+  Boing-Ball gezeichnet, Temp orange. Noch NICHT aktiv.
 Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
   Thermo-Hygrometer 5 (Werkstatt) Batterie 0 %.
