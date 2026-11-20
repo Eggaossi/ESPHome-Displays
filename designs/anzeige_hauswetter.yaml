@@ -1,6 +1,6 @@
 # =====================================================================
 #  Wetterstation by Ossi - Anzeige-Teil (Package fuer ESPHome)
-#  DESIGN "Heute" (Entwurf, 20.11.2026)
+#  DESIGN "Hauswetter" (Entwurf, 20.11.2026)
 #  Wird von der Geraete-YAML im ESPHome Builder per "packages:" geholt.
 #  Hier stehen: Zeit, Schriften, Taster, LEDs, Sensoren aus Home Assistant
 #  und die Display-Zeichnung. KEINE Passwoerter/Schluessel (Repo oeffentlich).
@@ -107,7 +107,7 @@ font:
       weight: 700
     id: rb28
     size: 28
-  # Design Heute: Aussentemperatur gross, Nachkomma kleiner, Uhr
+  # Design Hauswetter: Aussentemperatur gross, Nachkomma kleiner, Uhr
   - file:
       type: gfonts
       family: Roboto
@@ -307,7 +307,7 @@ display:
     pages:
       - id: seite_haupt
         lambda: |-
-          // =========== Design "Heute": grosse (nicht riesige) Aussentemperatur, Tageswerte ===========
+          // =========== Design "Hauswetter": grosse (nicht riesige) Aussentemperatur, Tageswerte ===========
           const Color SCHWARZ = Color(0, 0, 0);
           const Color WEISS   = Color(255, 255, 255);
           const Color GRAU    = Color(146, 146, 85);     // Blauanteil klein halten
