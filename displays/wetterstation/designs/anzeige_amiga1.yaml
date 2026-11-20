@@ -195,6 +195,8 @@ binary_sensor:
       - delayed_on: 50ms
     on_press:
       - logger.log: "Wetterstation-Taster 2 wurde gedrückt!"
+      # Taster 2: sofort nach neuer Firmware auf GitHub schauen
+      - script.execute: update_jetzt
   - platform: gpio
     pin:
       number: GPIO9

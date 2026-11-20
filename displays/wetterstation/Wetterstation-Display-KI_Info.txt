@@ -171,5 +171,10 @@ Rahmen (seit 20.11. dezent): eine duenne dunkelgoldene Linie, je Ecke zwei klein
   Schluessel direkt drin, Anzeige als remote package displays/wetterstation/anzeige.yaml).
   HA zeigt Update-Entitaet "Firmware GitHub". Test: Amiga1 zeigt "Build <Nr>" in der
   Titelleiste von Raumklima (ESPHOME_PROJECT_VERSION) -> Build 4 muss von selbst kommen.
+20.11.2026: Nutzer: 15 min Warten beim Testen zu lang -> Pruefung alle 2 min,
+  Einspielen-Pruefung jede Minute; HA-Knopf "Jetzt Update holen" und Taster 2 =
+  sofort pruefen (script update_jetzt). Grenze: raw.githubusercontent cached bis
+  5 min -> realistisch 3 min Bauen + bis 5 min Cache. Ganz schnell beim Testen:
+  in HA "Installieren" (kompiliert dort sofort mit remote package, ohne Cache).
 Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
   Thermo-Hygrometer 5 (Werkstatt) Batterie 0 %.

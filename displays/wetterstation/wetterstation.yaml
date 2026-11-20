@@ -2,7 +2,7 @@
 #  Wetterstation by Ossi - Geraete-Datei (wird von GitHub gebaut)
 #  Passwoerter/Schluessel kommen aus den GitHub-Secrets (secrets.yaml
 #  wird beim Bauen erzeugt). Anzeige: anzeige.yaml (aktives Design).
-#  Selbst-Update: das Geraet prueft alle 10 min das Manifest im Zweig
+#  Selbst-Update: das Geraet prueft alle 2 min das Manifest im Zweig
 #  "firmware" und spielt eine neue Version selbst ein.
 # =====================================================================
 substitutions:
@@ -41,12 +41,12 @@ update:
     id: fw_update
     name: Firmware GitHub
     source: ${manifest_url}
-    update_interval: 10min
+    update_interval: 2min
 
 # neue Version gefunden -> selbst einspielen
 interval:
-  - interval: 10min
-    startup_delay: 2min
+  - interval: 1min
+    startup_delay: 1min
     then:
       - if:
           condition:
@@ -63,6 +63,24 @@ wifi:
     password: !secret ota_password
 
 captive_portal:
+
+# Knopf in Home Assistant: sofort nach neuer Firmware schauen und einspielen
+button:
+  - platform: template
+    name: "Jetzt Update holen"
+    on_press:
+      - script.execute: update_jetzt
+
+script:
+  - id: update_jetzt
+    then:
+      - component.update: fw_update
+      - delay: 10s
+      - if:
+          condition:
+            lambda: 'return id(fw_update).state == update::UPDATE_STATE_AVAILABLE;'
+          then:
+            - update.perform: fw_update
 
 packages:
   anzeige: !include anzeige.yaml
