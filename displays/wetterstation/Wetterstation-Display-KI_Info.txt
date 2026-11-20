@@ -192,3 +192,5 @@ Rahmen (seit 20.11. dezent): eine duenne dunkelgoldene Linie, je Ecke zwei klein
   Reserve: interval 1 min mit update.is_available. Erwartung: ca. 2,5 min Bauen + bis 30 s.
 Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
   Thermo-Hygrometer 5 (Werkstatt) Batterie 0 %.
+
+2026-11-20 Amiga2: Build-Nummer rechts neben dem Titel (ru13, GRAU), wie bei Amiga1.

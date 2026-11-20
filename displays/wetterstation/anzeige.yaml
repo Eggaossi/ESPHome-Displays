@@ -329,6 +329,8 @@ display:
 
           // ----- Titel -----
           links(10, 30, id(ru20b), NAVY, "Ossi's Wetterstation");
+          // Build-Nummer der Firmware (von GitHub) klein rechts neben dem Titel
+          it.printf(312, 36, id(ru13), GRAU, TextAlign::TOP_RIGHT, "Build %s", ESPHOME_PROJECT_VERSION);
 
           // ----- Tages-Tiefst/Hoechst (eigene Rechnung, Reset bei Datumswechsel) -----
           bool ta_ok = id(sensor_luxmeter_lux_korrigierte_temperatur).has_state();
