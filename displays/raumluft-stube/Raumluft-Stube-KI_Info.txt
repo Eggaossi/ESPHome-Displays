@@ -94,3 +94,11 @@ Hotspot (Fallback-AP) "Co-Ossi-Stube Fallback Hotspot", Passwort = OTA_PASSWORD.
   3 Spalten (damit -12 gross bleibt), Punkt/Doppelpunkt 2 Spalten (Luecke Datum/Uhr bei 11:30). Frost-Farben hell
   (unter 0 hellblau statt dunkelblau, auf Schwarz sonst kaum sichtbar). Haertetest Vorschau normal/-12/35/-25 + CO2 5000,
   CO 500, Feuchte 100: alles passt, -12 und -25 bleiben Stufe 11. esphome config OK. NICHT am Geraet.
+
+20.11.2026 Design "Klassik Anton" (designs/anzeige_klassik_anton.yaml): Nutzer fand die Pixelschrift zu klein gegen
+  Cabaret/Coffin (5x7 ist fast quadratisch -> bei gleicher Breite nur halb so hoch). Entwuerfe A (Pixel gestreckt) und
+  B (Anton) -> B gewaehlt. Aufbau wie Original/Pixel Klassik, Schrift Anton (gfonts, OFL), alles BASELINE-ausgerichtet:
+  Datum/Uhr 56 (Grundlinie 58), Wochentag 20, Aussen 120 -> 100 -> 84 (groesste, die in 200 px passt, mittig x 215,
+  Grundlinie 168), CO2-Bogen links (Mitte 48/126), CO-Zeile 18, Innen/Feuchte 44 unten (Grundlinie 238). Grosse
+  Schriften nur mit noetigen glyphs. Haertetest normal/-12/35/-25: alles passt (-25 -> 100 px). esphome config OK.
+  NICHT am Geraet.

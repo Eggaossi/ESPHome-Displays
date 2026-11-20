@@ -3,3 +3,4 @@ luftsaeule=Luftsaeule
 messgeraet=Messgeraet
 messgeraet_pixel=Messgeraet Pixel
 pixel_klassik=Pixel Klassik
+klassik_anton=Klassik Anton
