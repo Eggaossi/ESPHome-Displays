@@ -107,3 +107,8 @@ Hotspot (Fallback-AP) "Co-Ossi-Stube Fallback Hotspot", Passwort = OTA_PASSWORD.
   (designs/anzeige_luftsaeule_bogen.yaml): Luftsaeule, aber Saeule rechts weg, runder CO2-Farbbogen links (Mitte 50/140,
   Zahl Coffin 28, Luftguete-Text darunter), CO-Zeile darunter, Aussentemperatur mittig bei x 212 (bis 206 px breit).
   esphome config OK. Vorschau mit echten Schriften kommt vom GitHub-Build. NICHT am Geraet.
+
+20.11.2026 ~16:50: Nutzer waehlt "Luftsaeule Bogen" als Dauer-Design ("das lass ich mal drauf, endlich").
+  Designs fuer dieses Display: Original, Luftsaeule, Luftsaeule Bogen (AKTIV), Messgeraet, Messgeraet Pixel,
+  Pixel Klassik, Klassik Anton. Merker: Nutzer mag die eigenen Schriften (Cabaret/Coffin) am liebsten; Datum, Uhr,
+  Aussen- und Innentemperatur muessen immer gross sein; bei jedem Design Extremwerte (-12/-25 Grad usw.) pruefen.
