@@ -76,7 +76,7 @@ Rahmen (seit 20.11. dezent): eine duenne dunkelgoldene Linie, je Ecke zwei klein
   dort alle Ziffern 2-3 Pixel. rb16/rb18 (Bold) waren gleichmaessig.
 20.11.2026: Nutzer "Jetzt passt alles" (Ziffern gleich dick). Danach Rahmen dezenter.
 20.11.2026: Nutzer: "Das ist jetzt Western-Design, merken" -> gespeichert als
-  designs/anzeige_western.yaml und Git-Tag design-western. Inhalt: Mokka-Farben,
+  designs/anzeige_western.yaml. Inhalt: Mokka-Farben,
   Titel Cabaret, grosse Temp Coffin (5x versetzt), kleine Texte Roboto Black/
   Bold, dezenter Rahmen mit zwei Eckwinkeln. Weitere Designs ebenfalls unter
   designs/ ablegen; aktiv ist immer esphome/anzeige.yaml.
