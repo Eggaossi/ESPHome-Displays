@@ -277,7 +277,7 @@ display:
 
       // --- Rechts: CO2-Saeule 400..2400 ppm ---
       const int SX = 302, SB = 14, SO = 92, SU = 196;   // x, Breite, oben, unten
-      it.print(319, 78, id(my_font_Coffin_miniklein), GRAU, TextAlign::TOP_RIGHT, "CO2");
+      it.print(316, 78, id(my_font_Coffin_miniklein), GRAU, TextAlign::TOP_RIGHT, "CO2");
       auto sy = [&](int v) { if (v < 400) v = 400; if (v > 2400) v = 2400; return SU - (v - 400) * (SU - SO) / 2000; };
       const int ZG[5] = {400, 1000, 1400, 2000, 2400};
       Color ZONE_DUNKEL[4] = {Color(0, 73, 0), Color(73, 73, 0), Color(73, 36, 0), Color(73, 0, 0)};
