@@ -134,5 +134,9 @@ Rahmen (seit 20.11. dezent): eine duenne dunkelgoldene Linie, je Ecke zwei klein
   linksbuendige Texte neben rechtsbuendigen um LO=4 px nach unten.
 20.11.2026: Gruen "passt jetzt", Wunsch etwas heller -> Baender und Streifen als
   Schachbrett aus (0,36,0) und (0,73,0) = Mittelgruen (gruen_flaeche()).
+20.11.2026: Schachbrett-Gruen abgelehnt ("anders war besser") -> wieder (0,36,0).
+  Hoehenversatz Roboto Condensed endgueltig: LO-Korrektur raus; linksbuendige Texte
+  laufen ueber links(): Breite messen, dann TOP_RIGHT am rechten Ende -> gleicher
+  Zeichenweg wie rechtsbuendig, also gleiche Hoehe. Am Geraet noch zu bestaetigen.
 Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
   Thermo-Hygrometer 5 (Werkstatt) Batterie 0 %.
