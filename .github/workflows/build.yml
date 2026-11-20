@@ -2,7 +2,7 @@ name: Displays bauen
 on:
   push:
     branches: [main]
-    paths: ['displays/**', '.github/workflows/build.yml']
+    paths: ['displays/**', 'tools/**', '.github/workflows/build.yml']
   workflow_dispatch:
 permissions: { contents: write }
 concurrency: { group: firmware, cancel-in-progress: false }
@@ -19,6 +19,7 @@ jobs:
           path: |
             ~/.platformio
             displays/*/.esphome
+            ~/.cache/vorschau
           key: esphome-${{ runner.os }}-${{ hashFiles('displays/*/*.yaml') }}
           restore-keys: esphome-${{ runner.os }}-
       - name: ESPHome installieren
@@ -26,7 +27,7 @@ jobs:
       - name: Geaenderte Displays bestimmen
         id: welche
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || git diff --name-only HEAD~1 HEAD | grep -q '^.github/workflows/'; then
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || git diff --name-only HEAD~1 HEAD | grep -qE '^(.github/workflows/|tools/)'; then
             LISTE=$(ls displays)
           else
             LISTE=$(git diff --name-only HEAD~1 HEAD | grep '^displays/' | cut -d/ -f2 | sort -u)
@@ -93,6 +94,22 @@ jobs:
             tail -n 5 fw/$d/build.log
           done
           echo "FEHLER=$FEHLER" >> $GITHUB_ENV
+      - name: Vorschaubilder zeichnen
+        # aus genau dem Display-Code der Designs (tools/vorschau.py), fuer die App HA-Displays
+        run: |
+          set +e
+          for d in ${{ steps.welche.outputs.liste }}; do
+            mkdir -p fw/$d/vorschau
+            if [ -f displays/$d/designs.txt ]; then
+              IDS=$(grep -v '^#' displays/$d/designs.txt | cut -d= -f1 | tr -d ' \r')
+            else
+              IDS=$(ls displays/$d/designs/ | sed -n 's/^anzeige_\(.*\)\.yaml$/\1/p')
+            fi
+            for id in $IDS; do
+              python3 tools/vorschau.py displays/$d/designs/anzeige_$id.yaml fw/$d/vorschau/$id.png --cache ~/.cache/vorschau \
+                || echo "Vorschau $id fehlgeschlagen"
+            done
+          done
       - name: Firmware-Zweig hochladen
         run: |
           cd fw

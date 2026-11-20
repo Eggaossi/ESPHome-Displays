@@ -354,7 +354,9 @@ display:
             Color hc = warnen ? feuchte_farbe(h) : WEISS;
             kasten(x, 86, 150, 100);
             it.print(x + 10, 92, id(rb13), tf, titel);
-            if (t_ok) it.printf(x + 75, 108, id(kl_temp), WEISS, TextAlign::TOP_CENTER, "%.1f°", t);
+            // Aussen in ganzen Grad ohne Komma (Nutzerwunsch), Innen mit einer Stelle
+            if (t_ok && !warnen) it.printf(x + 75, 108, id(kl_temp), WEISS, TextAlign::TOP_CENTER, "%d°", (int) lroundf(t));
+            else if (t_ok) it.printf(x + 75, 108, id(kl_temp), WEISS, TextAlign::TOP_CENTER, "%.1f°", t);
             else      it.print(x + 75, 108, id(kl_temp), ROT, TextAlign::TOP_CENTER, "--");
             if (h_ok) {
               it.print(x + 46, 160, id(mdi_icons_klein), hc, "\U000F058E");

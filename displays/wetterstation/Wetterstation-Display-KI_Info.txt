@@ -211,3 +211,13 @@ Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
   Naechster Schritt: App (eigene oder Bereich in Projekt-Zentrale) liest designs/ ueber GitHub-API, zeigt vorschau_*.png, schreibt design.txt.
 
 2026-11-20 designs.txt: Liste der Designs fuer die App HA-Displays (Zeilen id=Name). western (Schriften fehlen) und nixie (Entwurf) nicht drin.
+
+2026-11-20 VORSCHAUBILDER AUTOMATISCH (Nutzer: "ich will ja sehen wies wird und ist"):
+  tools/vorschau.py zeichnet ein Design aus seiner echten Display-lambda: lambda wird mit nachgebauter
+  ESPHome-Zeichen-API als C++ (g++) uebersetzt, gibt Zeichenbefehle aus, Pillow zeichnet 320x480 mit 1-Bit-Schrift
+  (wie ESPHome: FreeType mono), Farben auf 3-3-2-Palette gerundet. Schriften aus google/fonts (GitHub, variable
+  Fonts mit Gewicht) und MDI aus Templarian (raw). Beispielwerte fest, Uhr Fr 20.11.2026 11:30, Build "Vorschau".
+  Der Firmware-Build zeichnet fuer jedes Design aus designs.txt fw/<d>/vorschau/<id>.png. Die App liest diese.
+  Lokal getestet (amiga1, amiga2, gruen, simple). Alte designs/vorschau_*.png bleiben liegen (nicht loeschen).
+2026-11-20 Simple: Aussentemperatur in ganzen Grad (ohne Komma), Innen weiter mit einer Stelle.
+  Gruen, Amiga1, Amiga2 hatten schon ganze Grad (alte Vorschaubilder zeigten noch Komma).
