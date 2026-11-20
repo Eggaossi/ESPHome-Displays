@@ -1,0 +1,317 @@
+# =====================================================================
+#  Raumluft Stube by Ossi - Anzeige-Teil (Package fuer ESPHome)
+#  DESIGN "Luftsaeule Bogen": wie Luftsaeule (Aufbau Original, Schriften Coffin/Cabaret), aber statt der Saeule
+#  rechts ein runder CO2-Farbbogen links (Zahl + Luftguete im Bogen, CO darunter). Aussentemperatur mittig rechts.
+#  Sensoren wie Original. Braucht die eigenen Schriften
+#  Coffin und Cabaret (fonts/*.ttf neben der Geraete-YAML, beim GitHub-Build entschluesselt).
+#  KEINE Passwoerter/Schluessel (Repo oeffentlich).
+# =====================================================================
+
+time:
+  - platform: sntp
+    id: sntp_time
+    timezone: Europe/Berlin
+    servers:
+      - 0.pool.ntp.org
+      - 1.pool.ntp.org
+      - de.pool.ntp.org
+
+# Schriftarten-Konfiguration
+font:
+  - file: 'fonts/Ananda.ttf'
+    id: my_font_ananda
+    size: 18
+  - file: 'fonts/Ananda.ttf'
+    id: my_font_cabaret_klein
+    size: 24
+  - file: 'fonts/Coffin.ttf'
+    id: my_font_Coffin
+    size: 34
+  - file: 'fonts/Coffin.ttf'
+    id: my_font_Coffin_miniklein
+    size: 15
+  - file: 'fonts/Coffin.ttf'
+    id: my_font_Coffin_klein
+    size: 18
+  - file: 'fonts/Coffin.ttf'
+    id: my_font_Coffin_mittel
+    size: 28
+  - file: 'fonts/Coffin.ttf'
+    id: my_font_Coffin_gross
+    size: 140
+  - file: 'fonts/Coffin.ttf'
+    id: my_font_Coffin_extra
+    size: 32
+  - file: 'fonts/Coffin.ttf'
+    id: my_font_Coffin_gross_schmal
+    size: 100
+  - file: 'fonts/Cabaret.ttf'
+    id: my_font_cabaret
+    size: 30
+  - file: 'fonts/Cabaret.ttf'
+    id: my_font_minicabaret
+    size: 26
+  - file: 'fonts/Cabaret.ttf'
+    id: my_font_groscabaret
+    size: 70
+  - file: 'fonts/Roboto-Regular.ttf'
+    id: my_font
+    size: 25
+  - file: 'fonts/Roboto-Regular.ttf'
+    id: my_font_medium
+    size: 35
+  - file: 'fonts/Roboto-Regular.ttf'
+    id: my_font_large
+    size: 50
+
+# Knopf in HA: sofort nach neuer Firmware schauen
+button:
+  - platform: template
+    name: "Jetzt Update holen"
+    on_press:
+      - script.execute: update_jetzt
+
+script:
+  - id: update_jetzt
+    then:
+      - component.update: fw_update
+      - delay: 10s
+      - if:
+          condition:
+            lambda: 'return id(fw_update).state == update::UPDATE_STATE_AVAILABLE;'
+          then:
+            - update.perform: fw_update
+
+# I2C Konfiguration
+i2c:
+  sda: GPIO4
+  scl: GPIO5
+  scan: true
+
+# SPI Konfiguration
+spi:
+  clk_pin: GPIO18
+  mosi_pin: GPIO17
+
+# Binary Sensor für Fehlererkennung
+binary_sensor:
+  - platform: template
+    name: "ZE15 Sensor Fehler"
+    id: sensor_error
+    lambda: |-
+      if (id(outside_temp).has_state()) {
+        float temp_aussen = id(outside_temp).state;
+        if (temp_aussen > 100 || temp_aussen < -100) {
+          return true;  // Außentemperatur Fehler
+        }
+      }
+      
+      if (id(temperature_value).has_state()) {
+        float temp_innen = id(temperature_value).state;
+        if (temp_innen > 100 || temp_innen < -100) {
+          return true;  // Innentemperatur Fehler
+        }
+      }
+      
+      if (id(co_value).has_state()) {
+        if (isnan(id(co_value).state)) {
+          return true;  // CO Fehler
+        }
+      }
+      
+      if (id(humidity_value).has_state()) {
+        float humidity = id(humidity_value).state;
+        if (humidity < 0 || humidity > 100) {
+          return true;  // Luftfeuchtigkeits Fehler
+        }
+      }
+      
+      return false;  // Kein Fehler
+
+# Sensor Konfigurationen
+sensor:
+  - platform: adc
+    pin: GPIO1
+    name: "CO Raw"
+    id: co_raw_value
+    update_interval: 5s
+    attenuation: 12db
+    accuracy_decimals: 3
+    unit_of_measurement: "V"
+
+  - platform: template
+    name: "CO-Wert"
+    id: co_value
+    unit_of_measurement: "ppm"
+    accuracy_decimals: 1
+    update_interval: 5s
+    lambda: |-
+      if (id(co_raw_value).has_state()) {
+        float raw = id(co_raw_value).state;
+        // Lineare Kalibrierung von 0 ppm (bei 0.350V) bis 500 ppm (bei 2.0V)
+        if (raw <= 0.350f) return 0.0f;
+        return (raw - 0.350f) * (500.0f / (2.0f - 0.350f));
+      }
+      return 0.0f;
+
+  # SCD4x Sensor
+  - platform: scd4x
+    co2:
+      id: co2_value
+      name: "Stube-CO2-Wert"
+      accuracy_decimals: 1
+    temperature:
+      id: temperature_value
+      name: "Stube-Temperatur"
+      accuracy_decimals: 1
+    humidity:
+      id: humidity_value
+      name: "Stube-Luftfeuchtigkeit"
+      accuracy_decimals: 1
+    address: 0x62
+    update_interval: 15s
+
+  # Home Assistant Sensor
+  - platform: homeassistant
+    id: outside_temp
+    entity_id: sensor.luxmeter_lux_korrigierte_temperatur
+    name: "Außentemperatur"
+
+# Display Konfiguration
+display:
+  - platform: ili9xxx
+    model: ST7789v
+    cs_pin: GPIO7
+    dc_pin: GPIO15
+    reset_pin: GPIO16
+    color_palette: 8BIT
+    rotation: 90
+    invert_colors: false
+    update_interval: 15s
+    lambda: |-
+      // ===== Design Luftsaeule (320x240) =====
+      // Raster: links Spalte x 0..118 (CO, Luft), Mitte 120..296 (Aussentemperatur), rechts Saeule 302..316,
+      // oben Datum/Uhr, unten Wertezeile ab y 203 (wie Original).
+      const Color GELBGRUEN(210, 243, 119);
+      const Color WEISS(255, 255, 255);
+      const Color GRAU(146, 146, 85);
+
+      // --- Luftguete: 0 gut, 1 maessig, 2 schlecht, 3 gefaehrlich (schlechtester Wert) ---
+      int stufe = 0;
+      const char* grund = "gut";
+      if (id(co2_value).has_state()) {
+        int c2 = (int) id(co2_value).state;
+        if (c2 >= 2000) { stufe = 3; grund = "SOFORT lueften"; }
+        else if (c2 >= 1400) { stufe = 2; grund = "lueften!"; }
+        else if (c2 >= 1000) { stufe = 1; grund = "lueften"; }
+      }
+      if (id(humidity_value).has_state() && stufe < 1) {
+        float rh = id(humidity_value).state;
+        if (rh < 30) { stufe = 1; grund = "zu trocken"; }
+        else if (rh > 70) { stufe = 1; grund = "zu feucht"; }
+      }
+      if (id(co_value).has_state() && !isnan(id(co_value).state)) {
+        float co = id(co_value).state;
+        if (co >= 50) { stufe = 3; grund = "CO GEFAHR"; }
+        else if (co >= 25 && stufe < 2) { stufe = 2; grund = "CO erhoeht"; }
+      }
+      Color STUFE_HELL[4] = {Color(0, 219, 0), Color(255, 219, 0), Color(255, 146, 0), Color(255, 0, 0)};
+
+      // --- Kopf wie Original: Datum links, Uhr rechts (12 h), Wochentag ---
+      auto time = id(sntp_time).now();
+      if (time.is_valid()) {
+        it.printf(0, -17, id(my_font_groscabaret), GELBGRUEN, "%02d.%02d.%02d",
+          time.day_of_month, time.month, time.year % 100);
+        int h12 = time.hour % 12;
+        if (h12 == 0) h12 = 12;
+        it.printf(319, -17, id(my_font_groscabaret), GELBGRUEN, TextAlign::TOP_RIGHT, "%d:%02d", h12, time.minute);
+        const char* weekdays[] = {"Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"};
+        it.printf(0, 58, id(my_font_Coffin_mittel), WEISS, "%s", weekdays[(time.day_of_week + 5) % 7]);
+      }
+
+      // --- Links: runder CO2-Farbbogen (pixelweise, 15 Stuecke), Zahl + Luftguete im Bogen, CO darunter ---
+      {
+        auto farbe = [](float v) -> Color {
+          if (v < 800) return Color(0, 219, 0);
+          if (v < 1000) return Color(109, 219, 0);
+          if (v < 1400) return Color(219, 219, 0);
+          if (v < 2000) return Color(255, 109, 0);
+          return Color(255, 0, 0);
+        };
+        const int CX = 50, CY = 140, RA = 44, DI = 8;
+        bool hat = id(co2_value).has_state() && !isnan(id(co2_value).state);
+        int c2 = hat ? (int) id(co2_value).state : 0;
+        for (int dy = -RA; dy <= RA; dy++) {
+          for (int dx = -RA; dx <= RA; dx++) {
+            int d2 = dx * dx + dy * dy;
+            if (d2 < (RA - DI) * (RA - DI) || d2 > RA * RA) continue;
+            float g = atan2f(dy, dx) * 180.0f / M_PI - 150.0f;
+            while (g < 0) g += 360.0f;
+            if (g > 240.0f) continue;
+            int i = (int) (g / 16.0f);
+            if (g - i * 16.0f > 13.0f) continue;
+            float v = 400.0f + 2000.0f * (i + 0.5f) / 15.0f;
+            Color c = farbe(v);
+            if (!hat || v > c2) c = Color(c.r / 5, c.g / 5, 0);
+            it.draw_pixel_at(CX + dx, CY + dy, c);
+          }
+        }
+        it.print(CX, CY - 22, id(my_font_Coffin_miniklein), GRAU, TextAlign::TOP_CENTER, "CO2");
+        if (hat) it.printf(CX, CY + 6, id(my_font_Coffin_mittel), farbe(c2), TextAlign::BASELINE_CENTER, "%d", c2);
+        it.print(CX, CY + 10, id(my_font_Coffin_miniklein), STUFE_HELL[stufe], TextAlign::TOP_CENTER, grund);
+      }
+      if (id(co_value).has_state() && !isnan(id(co_value).state)) {
+        float co = id(co_value).state;
+        Color co_color = co < 25 ? Color(28, 185, 115) : co < 50 ? Color(255, 255, 0) : co < 100 ? Color(255, 165, 0) : Color(255, 0, 0);
+        it.printf(2, 172, id(my_font_Coffin_klein), co_color, "CO %.1f ppm", co);
+      } else {
+        it.print(2, 172, id(my_font_Coffin_klein), Color(255, 0, 0), "CO Fehler");
+      }
+
+      // --- Rechts: Aussentemperatur gross, mittig in x 100..320 ---
+      if (id(outside_temp).has_state()) {
+        float ta = id(outside_temp).state;
+        if (ta > 100 || ta < -100) {
+          it.print(212, 196, id(my_font_Coffin_gross_schmal), Color(255, 0, 0), TextAlign::BASELINE_CENTER, "ERR");
+        } else {
+          int tr = int(roundf(ta));
+          Color tc;
+          if (tr < -15) tc = Color(0, 0, 128);
+          else if (tr < -10) tc = Color(0, 0, 192);
+          else if (tr < -5) tc = Color(0, 128, 255);
+          else if (tr < 0) tc = Color(0, 192, 192);
+          else if (tr < 5) tc = Color(0, 255, 128);
+          else if (tr < 10) tc = Color(192, 255, 64);
+          else if (tr < 15) tc = Color(255, 255, 0);
+          else if (tr < 20) tc = Color(255, 128, 0);
+          else if (tr < 25) tc = Color(255, 200, 0);
+          else if (tr < 30) tc = Color(255, 255, 255);
+          else tc = Color(255, 255, 128);
+          char t[8];
+          snprintf(t, sizeof(t), "%d°", tr);
+          // passt die grosse Schrift nicht in die Mitte (176 px), die schmalere nehmen
+          auto f = id(my_font_Coffin_gross);
+          int bx, by, bw, bh;
+          it.get_text_bounds(212, 196, t, f, TextAlign::BASELINE_CENTER, &bx, &by, &bw, &bh);
+          if (bw > 206) f = id(my_font_Coffin_gross_schmal);
+          for (int dx = 0; dx < 3; dx++) it.print(212 + dx, 196, f, tc, TextAlign::BASELINE_CENTER, t);
+        }
+      }
+
+      // --- Unten: Wertezeile wie Original ---
+      if (id(temperature_value).has_state()) {
+        float ti = id(temperature_value).state;
+        if (ti > 100 || ti < -100) it.print(0, 203, id(my_font_Coffin), Color(255, 0, 0), "ERR");
+        else it.printf(0, 203, id(my_font_Coffin), Color(0, 255, 0), "%d°C", int(roundf(ti)));
+      }
+      if (id(co2_value).has_state()) {
+        int co2 = (int) id(co2_value).state;
+        Color cc = co2 < 800 ? Color(28, 185, 115) : co2 < 1000 ? Color(210, 243, 119) : co2 < 1400 ? Color(255, 255, 0)
+                 : co2 < 2000 ? Color(255, 165, 0) : Color(255, 0, 0);
+        it.printf(90, 203, id(my_font_Coffin), cc, "%d ppm", co2);
+      }
+      if (id(humidity_value).has_state()) {
+        float rh = id(humidity_value).state;
+        if (rh < 0 || rh > 100) it.print(319, 203, id(my_font_Coffin), Color(255, 0, 0), TextAlign::TOP_RIGHT, "ERR");
+        else it.printf(319, 203, id(my_font_Coffin), Color(187, 94, 199), TextAlign::TOP_RIGHT, "%d%%", int(roundf(rh)));
+      }

@@ -102,3 +102,8 @@ Hotspot (Fallback-AP) "Co-Ossi-Stube Fallback Hotspot", Passwort = OTA_PASSWORD.
   Grundlinie 168), CO2-Bogen links (Mitte 48/126), CO-Zeile 18, Innen/Feuchte 44 unten (Grundlinie 238). Grosse
   Schriften nur mit noetigen glyphs. Haertetest normal/-12/35/-25: alles passt (-25 -> 100 px). esphome config OK.
   NICHT am Geraet.
+
+20.11.2026 Nutzer: "Luftsaeule ist immer noch das beste", Wunsch das Gerundete dazu -> Design "Luftsaeule Bogen"
+  (designs/anzeige_luftsaeule_bogen.yaml): Luftsaeule, aber Saeule rechts weg, runder CO2-Farbbogen links (Mitte 50/140,
+  Zahl Coffin 28, Luftguete-Text darunter), CO-Zeile darunter, Aussentemperatur mittig bei x 212 (bis 206 px breit).
+  esphome config OK. Vorschau mit echten Schriften kommt vom GitHub-Build. NICHT am Geraet.

@@ -1,5 +1,6 @@
 original=Original
 luftsaeule=Luftsaeule
+luftsaeule_bogen=Luftsaeule Bogen
 messgeraet=Messgeraet
 messgeraet_pixel=Messgeraet Pixel
 pixel_klassik=Pixel Klassik
