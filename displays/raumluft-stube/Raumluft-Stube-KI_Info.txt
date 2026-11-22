@@ -120,3 +120,10 @@ Hotspot (Fallback-AP) "Co-Ossi-Stube Fallback Hotspot", Passwort = OTA_PASSWORD.
 20.11.2026 ~17:05 Pixel Klassik: Nutzer "Aussentemp groesser und einpassen" -> Aussentemperatur mit gestreckten Pixeln
   (ptext_hoch, Punkt sx breit, sy=18 hoch -> Ziffern 126 px statt 77), Breite sx bis 12, bei breiten Werten schmaler
   (Platz x 110..318, 12 px Abstand zum CO2-Bogen), y 62..188. Haertetest normal/-12/35/-25: alles passt, Hoehe bleibt.
+
+22.11.2026 Filter gegen Datenflut in HA (Datenbank 1 GB; co_wert ~157000 Eintraege in 10 Tagen = alle 5 s, Wunsch Nutzer):
+  In anzeige.yaml UND allen designs/*.yaml (Sensoren stehen in jedem Design): CO-Wert, CO2, Temperatur, Feuchte mit
+  filters: or: [delta, throttle: 300s] -> sofort bei Aenderung >= 1 ppm CO / 10 ppm CO2 / 0,2 Grad / 1 %, sonst hoechstens
+  alle 5 min. Wirkt auch auf die Anzeige (zeigt den gefilterten Wert). CO-Gefahr (>= 25/50 ppm) kommt weiter sofort.
+  CO Raw NICHT gefiltert (CO-Wert rechnet alle 5 s daraus), in HA per Recorder ausgeschlossen (Repo HA-Konfiguration).
+  Nur YAML-Struktur geprueft; Build bei GitHub abwarten, am Geraet NOCH NICHT getestet.

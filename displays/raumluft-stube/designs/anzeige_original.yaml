@@ -138,6 +138,11 @@ sensor:
   - platform: template
     name: "CO-Wert"
     id: co_value
+    # CO: sofort bei >= 1 ppm Aenderung, sonst hoechstens alle 5 min (22.11.2026: weniger Datenbank-Eintraege in HA)
+    filters:
+      - or:
+          - delta: 1.0
+          - throttle: 300s
     unit_of_measurement: "ppm"
     accuracy_decimals: 1
     update_interval: 5s
@@ -154,14 +159,29 @@ sensor:
   - platform: scd4x
     co2:
       id: co2_value
+      # CO2: sofort bei >= 10 ppm Aenderung, sonst hoechstens alle 5 min (22.11.2026: weniger Datenbank-Eintraege in HA)
+      filters:
+        - or:
+            - delta: 10.0
+            - throttle: 300s
       name: "Stube-CO2-Wert"
       accuracy_decimals: 1
     temperature:
       id: temperature_value
+      # Temperatur: sofort bei >= 0,2 Grad, sonst hoechstens alle 5 min (22.11.2026: weniger Datenbank-Eintraege in HA)
+      filters:
+        - or:
+            - delta: 0.2
+            - throttle: 300s
       name: "Stube-Temperatur"
       accuracy_decimals: 1
     humidity:
       id: humidity_value
+      # Feuchte: sofort bei >= 1 %, sonst hoechstens alle 5 min (22.11.2026: weniger Datenbank-Eintraege in HA)
+      filters:
+        - or:
+            - delta: 1.0
+            - throttle: 300s
       name: "Stube-Luftfeuchtigkeit"
       accuracy_decimals: 1
     address: 0x62
