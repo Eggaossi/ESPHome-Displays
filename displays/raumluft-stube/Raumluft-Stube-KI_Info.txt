@@ -127,3 +127,8 @@ Hotspot (Fallback-AP) "Co-Ossi-Stube Fallback Hotspot", Passwort = OTA_PASSWORD.
   alle 5 min. Wirkt auch auf die Anzeige (zeigt den gefilterten Wert). CO-Gefahr (>= 25/50 ppm) kommt weiter sofort.
   CO Raw NICHT gefiltert (CO-Wert rechnet alle 5 s daraus), in HA per Recorder ausgeschlossen (Repo HA-Konfiguration).
   Nur YAML-Struktur geprueft; Build bei GitHub abwarten, am Geraet NOCH NICHT getestet.
+
+22.11.2026 KEIN Selbst-Einspielen mehr (Wunsch Nutzer: "will selbst entscheiden"). Geraete-Datei: update_interval 10min,
+  on_update_available/update.perform und die interval-Reserve entfernt. Aufspielen: App HA-Displays Knopf "Jetzt aufspielen"
+  (drueckt in HA "Jetzt Update holen" = script update_jetzt: sofort pruefen + einspielen) oder HA "Firmware GitHub" ->
+  Installieren. Diese Umstellung selbst kam noch EINMAL automatisch aufs Geraet (alte Firmware). NICHT am Geraet getestet.
