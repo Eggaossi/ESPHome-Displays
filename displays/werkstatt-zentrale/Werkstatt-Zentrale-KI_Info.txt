@@ -59,3 +59,6 @@ In HA dann beim ESPHome-Geraet den NEUEN API-Schluessel eintragen (HA meldet "ne
 23.11.2026  tools/builder_platzhalter.ps1: ersetzt die alte Builder-Datei (alter Schluessel/OTA-Passwort im Klartext) durch
             einen Platzhalter ohne Board (Installieren im Builder unmoeglich, esphome config lehnt ab), Sicherung C:\Backups.
             Gilt auch fuer luxmeter. pwsh selbst NICHT getestet.
+23.11.2026  builder_platzhalter.ps1 am PC gelaufen: Builder-Datei werkstatt-zentrale-by-ossi.yaml ist jetzt Platzhalter
+            (alte Fassung C:\Backups\builder_werkstatt-zentrale_2026-11-23_17-40.yaml). Alter Schluessel/OTA-Passwort nicht
+            mehr in HA.

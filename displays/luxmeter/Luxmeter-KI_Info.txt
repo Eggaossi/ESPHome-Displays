@@ -81,3 +81,6 @@ In HA dann beim ESPHome-Geraet luxmeter den NEUEN API-Schluessel eintragen (HA m
             Zehntel getrennt, Punkt als 3x3-Quadrat gezeichnet.
             Echte Vorschauen (GitHub) dem Nutzer gezeigt, Nutzer: "ok, lassen wir das" -> Gold Deluxe + Gold Bogen bleiben
             in designs.txt zur Auswahl (App HA-Displays), aktiv bleibt Original. Keine weiteren Designs vorschlagen.
+23.11.2026  tools/builder_platzhalter.ps1 am PC gelaufen: Builder-Datei luxmeter.yaml ist jetzt Platzhalter ohne Board
+            (Installieren im Builder unmoeglich; alte Fassung mit altem Schluessel/OTA-Passwort in
+            C:\Backups\builder_luxmeter_2026-11-23_17-40.yaml). Aenderungen nur noch im Repo.
