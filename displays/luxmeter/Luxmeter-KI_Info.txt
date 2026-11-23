@@ -45,3 +45,8 @@ In HA dann beim ESPHome-Geraet luxmeter den NEUEN API-Schluessel eintragen (HA m
             hochzaehlen.
 23.11.2026  Build 81 (neuer Schluessel) per Selbst-Update am Geraet, Schluessel in HA eingetragen: Luxmeter wieder in HA,
             UEBERNAHME FERTIG (Nutzer: "jetzt gings"). Ab jetzt: Aenderungen nur noch hier im Repo, Geraet holt sie selbst.
+23.11.2026  Sensor gerichtet (Nutzer "ja, mit zurueck wenns nicht geht"): BME680 zusaetzlich gas_resistance ("Aussen-
+            Gaswiderstand", Ohm, hoch = saubere Luft) und temperature ("Aussen-Temperatur BME680", Diagnose, Vergleich zum
+            SHT45); Ausgleich als "Temperatur-Ausgleich" (°C, Diagnose) an HA, aktualisiert sofort bei Drehen/Taster.
+            Anzeige unveraendert. Sicherung des vorigen Stands: alt/luxmeter_build81.yaml (ZURUECK = diese Datei wieder als
+            luxmeter.yaml, pushen -> Geraet holt sich den alten Stand selbst). esphome config lokal gueltig.

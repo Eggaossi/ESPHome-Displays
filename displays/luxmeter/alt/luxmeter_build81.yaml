@@ -1,0 +1,215 @@
+# =====================================================================
+#  Luxmeter (Egga Lux Meter) by Ossi - Geraete-Datei (wird von GitHub gebaut)
+#  Geraet in HA: luxmeter (Name bleibt, sonst aendern sich die Entitaeten).
+#  Aussen: SHT45 (Temperatur/Feuchte, I2C 0x44 Bus 1), BH1750 (Lux, I2C 0x23 Bus 2),
+#  BME680 (Luftdruck, I2C 0x76 Bus 1). Drehgeber = Temperatur-Ausgleich (0,1 °C je Raste),
+#  Taster kurz = Ausgleich 0, lang = "GESPEICHERT!". Windgeschwindigkeit kommt aus HA (Windmesser).
+#  Passwoerter/Schluessel kommen aus den GitHub-Secrets (secrets.yaml wird beim Bauen erzeugt):
+#  gemeinsames OTA-Passwort (OTA_PASSWORD), eigener API-Schluessel (LUXMETER_API_KEY).
+#  API-Schluessel Stand 2 (23.11.2026; geaendert = Neubau, sonst gibt GitHub die alte Firmware frei).
+#  Anzeige: anzeige.yaml (aktives Design). Selbst-Update: prueft alle 30 s das Manifest im
+#  Zweig "firmware" und spielt eine neue Version selbst ein.
+# =====================================================================
+substitutions:
+  fw_version: "0"                 # setzt GitHub beim Bauen auf die Build-Nummer
+  manifest_url: https://raw.githubusercontent.com/Eggaossi/ESPHome-Displays/firmware/luxmeter/manifest.json
+
+esphome:
+  name: luxmeter
+  friendly_name: Luxmeter
+  project:
+    name: ossi.luxmeter
+    version: ${fw_version}
+
+esp32:
+  board: esp32-s3-devkitc-1
+  framework:
+    type: esp-idf
+
+logger:
+
+api:
+  id: homeassistant_api
+  encryption:
+    key: !secret luxmeter_api_key
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+  - platform: http_request
+
+http_request:
+  verify_ssl: false
+  timeout: 30s
+
+update:
+  - platform: http_request
+    id: fw_update
+    name: Firmware GitHub
+    source: ${manifest_url}
+    update_interval: 30s
+    on_update_available:
+      then:
+        - logger.log: "Neue Firmware auf GitHub - spiele sie ein"
+        - update.perform: fw_update
+
+# Reserve, falls der Ausloeser oben einmal nicht greift
+interval:
+  - interval: 1min
+    startup_delay: 1min
+    then:
+      - if:
+          condition:
+            update.is_available: fw_update
+          then:
+            - update.perform: fw_update
+
+wifi:
+  id: my_wifi
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  ap:
+    ssid: "Luxmeter Fallback Hotspot"
+    password: !secret ota_password
+
+captive_portal:
+
+globals:
+  - id: temp_offset
+    type: float
+    restore_value: yes
+    initial_value: "0.0"
+
+i2c:
+  - id: bus_sht45
+    sda: GPIO8
+    scl: GPIO9
+    frequency: 50kHz
+    scan: true
+  - id: bus_bh1750
+    sda: GPIO10
+    scl: GPIO11
+    scan: true
+
+sensor:
+  # SHT45: Temperatur + Feuchte
+  - platform: sht4x
+    temperature:
+      name: "Aussen-Temperatur"
+      id: temp_sensor
+      accuracy_decimals: 1
+    humidity:
+      name: "Aussen-Luftfeuchtigkeit"
+      id: humidity_sensor
+      accuracy_decimals: 1
+    address: 0x44
+    i2c_id: bus_sht45
+    update_interval: 20s
+
+  # BH1750: Helligkeit
+  - platform: bh1750
+    name: "Aussen-Helligkeit"
+    id: lux_sensor
+    address: 0x23
+    i2c_id: bus_bh1750
+    update_interval: 30s
+    accuracy_decimals: 1
+
+  # BME680: bisher NUR Luftdruck
+  - platform: bme680
+    i2c_id: bus_sht45
+    address: 0x76
+    pressure:
+      name: "Aussen-Luftdruck"
+      id: aussenluftdruck_sensor
+    update_interval: 60s
+
+  # korrigierte Temperatur (SHT45 + Ausgleich vom Drehgeber)
+  - platform: template
+    name: "Lux-Korrigierte-Temperatur"
+    id: corrected_temp
+    lambda: |-
+      return id(temp_sensor).state + id(temp_offset);
+    unit_of_measurement: "°C"
+    accuracy_decimals: 1
+    update_interval: 20s
+
+  - platform: template
+    name: "Temperatur-Offset"
+    id: displayed_offset
+    lambda: |-
+      return id(temp_offset);
+    entity_category: diagnostic
+    internal: true
+
+  # Windgeschwindigkeit aus HA (Windmesser) fuer die Anzeige
+  - platform: homeassistant
+    name: "Windgeschwindigkeit vom Windmesser"
+    id: wind_speed_kmh
+    entity_id: sensor.windmesser_windspeed_km_h
+    unit_of_measurement: "km/h"
+    accuracy_decimals: 1
+
+  - platform: rotary_encoder
+    name: "Temperatur Offset Encoder"
+    id: temp_offset_encoder
+    pin_a:
+      number: GPIO20
+      mode:
+        input: true
+        pullup: true
+    pin_b:
+      number: GPIO21
+      mode:
+        input: true
+        pullup: true
+    resolution: 1
+    min_value: -100
+    max_value: 100
+    filters:
+      - debounce: 0.1s
+    internal: true
+    on_value:
+      then:
+        - lambda: |-
+            // jeder Schritt = 0.1 °C
+            id(temp_offset) = x * 0.1;
+
+binary_sensor:
+  # Taster am Drehgeber: kurz = Ausgleich 0, lang = "GESPEICHERT!"
+  - platform: gpio
+    pin:
+      number: GPIO47
+      inverted: true
+      mode:
+        input: true
+        pullup: true
+    id: encoder_button
+    filters:
+      - delayed_on: 10ms
+      - delayed_off: 10ms
+    on_click:
+      min_length: 50ms
+      max_length: 500ms
+      then:
+        - lambda: |-
+            ESP_LOGD("button", "Kurzer Druck - Reset auf 0");
+            id(temp_offset) = 0.0;
+            id(temp_offset_encoder).publish_state(0);
+    on_press:
+      then:
+        - delay: 1s
+        - if:
+            condition:
+              binary_sensor.is_on: encoder_button
+            then:
+              - lambda: |-
+                  ESP_LOGD("button", "Langer Druck - Speichern");
+                  id(display_trigger).publish_state(true);
+
+  - platform: template
+    id: display_trigger
+    internal: true
+
+packages:
+  anzeige: !include anzeige.yaml

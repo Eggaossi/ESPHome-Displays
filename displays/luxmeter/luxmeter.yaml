@@ -115,13 +115,22 @@ sensor:
     update_interval: 30s
     accuracy_decimals: 1
 
-  # BME680: bisher NUR Luftdruck
+  # BME680: Luftdruck + (seit 23.11.2026) Gaswiderstand (Luftqualitaet: hoch = saubere Luft, faellt bei
+  # Rauch/Abgas/VOC) + eigene Temperatur nur zum Vergleich mit dem SHT45 (Diagnose)
   - platform: bme680
     i2c_id: bus_sht45
     address: 0x76
     pressure:
       name: "Aussen-Luftdruck"
       id: aussenluftdruck_sensor
+    gas_resistance:
+      name: "Aussen-Gaswiderstand"
+      id: gas_widerstand
+      icon: mdi:air-filter
+    temperature:
+      name: "Aussen-Temperatur BME680"
+      id: bme_temp
+      entity_category: diagnostic
     update_interval: 60s
 
   # korrigierte Temperatur (SHT45 + Ausgleich vom Drehgeber)
@@ -134,13 +143,17 @@ sensor:
     accuracy_decimals: 1
     update_interval: 20s
 
+  # Ausgleich vom Drehgeber auch in HA sichtbar (seit 23.11.2026, vorher internal)
   - platform: template
-    name: "Temperatur-Offset"
+    name: "Temperatur-Ausgleich"
     id: displayed_offset
     lambda: |-
       return id(temp_offset);
+    unit_of_measurement: "°C"
+    accuracy_decimals: 1
+    icon: mdi:thermometer-plus
     entity_category: diagnostic
-    internal: true
+    update_interval: 60s
 
   # Windgeschwindigkeit aus HA (Windmesser) fuer die Anzeige
   - platform: homeassistant
@@ -174,6 +187,7 @@ sensor:
         - lambda: |-
             // jeder Schritt = 0.1 °C
             id(temp_offset) = x * 0.1;
+        - component.update: displayed_offset
 
 binary_sensor:
   # Taster am Drehgeber: kurz = Ausgleich 0, lang = "GESPEICHERT!"
@@ -196,6 +210,7 @@ binary_sensor:
             ESP_LOGD("button", "Kurzer Druck - Reset auf 0");
             id(temp_offset) = 0.0;
             id(temp_offset_encoder).publish_state(0);
+        - component.update: displayed_offset
     on_press:
       then:
         - delay: 1s
