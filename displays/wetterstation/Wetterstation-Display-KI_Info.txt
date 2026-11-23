@@ -274,3 +274,8 @@ Offen/Ideen: Taster ohne Funktion; LED 3 als Retroraum-Feuchte-Warnung;
   on_update_available/update.perform und die interval-Reserve entfernt. Aufspielen: App HA-Displays Knopf "Jetzt aufspielen"
   (drueckt in HA "Jetzt Update holen" = script update_jetzt: sofort pruefen + einspielen) oder HA "Firmware GitHub" ->
   Installieren. Diese Umstellung selbst kam noch EINMAL automatisch aufs Geraet (alte Firmware). NICHT am Geraet getestet.
+
+23.11.2026 SELBST-UPDATE WIEDER AN (Nutzer: "das hatten wir vorher besser ... mein Fehler so umzustellen"): Umstellung vom
+  22.11. zurueckgenommen (git revert 8a1ffe8): update_interval 30s, on_update_available -> update.perform, interval-Reserve 1 min.
+  Die laufende Firmware prueft nur -> diese Rueckstellung EINMAL in HA (Einstellungen > Updates > Firmware GitHub)
+  installieren, danach wieder automatisch. NICHT am Geraet getestet.

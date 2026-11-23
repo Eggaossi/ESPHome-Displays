@@ -1,11 +1,9 @@
 # ESPHome-Displays (by Ossi)
 
 Alle ESPHome-Displays von Home Assistant an einem Ort. Ein Ordner je Display
-unter `displays/`. GitHub baut bei jeder Aenderung die Firmware. Das Display
-PRUEFT alle 10 Minuten, spielt aber NICHT selbst ein (seit 22.11.2026): Aufspielen
-in Home Assistant unter Einstellungen > Updates ("Firmware GitHub" -> Installieren).
-(Der Kommentar "App HA-Displays Jetzt aufspielen" in den Geraete-Dateien ist seit 23.11.2026 ueberholt:
-den Knopf gibt es nicht mehr. Wird beim naechsten Firmware-Aenderung mit korrigiert, damit jetzt kein Build entsteht.)
+unter `displays/`. GitHub baut bei jeder Aenderung die Firmware, das Display
+holt sie sich selbst (Selbst-Update, prueft alle 30 s) - kein "Installieren" noetig.
+(22.11.2026 kurz auf "nur pruefen, in HA installieren" umgestellt, am 23.11.2026 auf Wunsch des Nutzers zurueck.)
 
 ## Aufbau je Display (`displays/<name>/`)
 - `<name>.yaml` - Geraete-Datei (Board, WLAN, Selbst-Update, Schluessel aus Secrets)

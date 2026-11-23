@@ -41,10 +41,23 @@ update:
     id: fw_update
     name: Firmware GitHub
     source: ${manifest_url}
-    # Nur PRUEFEN, nicht selbst einspielen (seit 22.11.2026, Wunsch Nutzer: er entscheidet selbst).
-    # Aufspielen: App HA-Displays "Jetzt aufspielen" (drueckt "Jetzt Update holen") oder in HA bei
-    # "Firmware GitHub" auf Installieren.
-    update_interval: 10min
+    update_interval: 30s
+    # neue Version gefunden -> sofort selbst einspielen
+    on_update_available:
+      then:
+        - logger.log: "Neue Firmware auf GitHub - spiele sie ein"
+        - update.perform: fw_update
+
+# Reserve, falls der Ausloeser oben einmal nicht greift
+interval:
+  - interval: 1min
+    startup_delay: 1min
+    then:
+      - if:
+          condition:
+            update.is_available: fw_update
+          then:
+            - update.perform: fw_update
 
 wifi:
   ssid: !secret wifi_ssid
