@@ -50,3 +50,7 @@ In HA dann beim ESPHome-Geraet luxmeter den NEUEN API-Schluessel eintragen (HA m
             SHT45); Ausgleich als "Temperatur-Ausgleich" (°C, Diagnose) an HA, aktualisiert sofort bei Drehen/Taster.
             Anzeige unveraendert. Sicherung des vorigen Stands: alt/luxmeter_build81.yaml (ZURUECK = diese Datei wieder als
             luxmeter.yaml, pushen -> Geraet holt sich den alten Stand selbst). esphome config lokal gueltig.
+23.11.2026  Build 82 GRUEN. App HA-Displays zeigt das Luxmeter von selbst (Build 82, Original), aber "kein Vorschaubild":
+            tools/vorschau.py kannte die Sensoren nur aus dem Design und keine Groesse aus device_width/height -> beides
+            ergaenzt (Geraete-Datei wird mitgelesen, Stubs is_connected/publish_state). Lauf 83: Vorschau da (echte Schriften),
+            alle Firmwares "aufgehoben" (keine neuen Versionen).
