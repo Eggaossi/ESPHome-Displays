@@ -77,3 +77,5 @@ In HA dann beim ESPHome-Geraet luxmeter den NEUEN API-Schluessel eintragen (HA m
             "Gold Bogen" (Temperatur-Bogen -20..40 °C mit Farbe nach Wert wie Raumluft "Luftsaeule Bogen", rechts Feuchte, Lux,
             Wind, Luftdruck). designs.txt: original, gold, bogen. Aktiv bleibt original. Lokal mit Ersatzschriften gezeichnet;
             echte Vorschau baut GitHub. NICHT am Geraet.
+            Lauf mit echten Schriften: Gold Bogen zeigte "123" statt 12.3 (Coffin 24 ohne sichtbaren Punkt) -> Ganzzahl und
+            Zehntel getrennt, Punkt als 3x3-Quadrat gezeichnet.

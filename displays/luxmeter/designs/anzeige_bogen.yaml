@@ -74,8 +74,22 @@ display:
         float w = (150 + s * 4) * 0.0174533f;
         it.line(mx + (int) roundf(37 * cosf(w)), my + (int) roundf(37 * sinf(w)), mx + (int) roundf(40 * cosf(w)), my + (int) roundf(40 * sinf(w)), gold);
       }
-      if (t_ok) it.printf(mx, my, id(f_temp), orange, TextAlign::CENTER, "%.1f", t);
-      else it.print(mx, my, id(f_temp), grau, TextAlign::CENTER, "--.-");
+      // Coffin 24 hat keinen sichtbaren Dezimalpunkt -> Ganzzahl und Zehntel getrennt, Punkt selbst gezeichnet
+      if (t_ok) {
+        char buf[12];
+        snprintf(buf, sizeof(buf), "%.1f", t);
+        char *punkt = strchr(buf, '.');
+        if (punkt) {
+          *punkt = 0;
+          it.print(mx + 1, my, id(f_temp), orange, TextAlign::CENTER_RIGHT, buf);
+          it.filled_rectangle(mx + 3, my + 7, 3, 3, orange);
+          it.print(mx + 8, my, id(f_temp), orange, TextAlign::CENTER_LEFT, punkt + 1);
+        } else {
+          it.print(mx, my, id(f_temp), orange, TextAlign::CENTER, buf);
+        }
+      } else {
+        it.print(mx, my, id(f_temp), grau, TextAlign::CENTER, "--");
+      }
       it.print(mx, my + 18, id(f_mini), golddunkel, TextAlign::CENTER, "°C");
       // rechts: Feuchte, Lux, Wind, Luftdruck
       it.vertical_line(92, 28, 92, golddunkel);
