@@ -1,0 +1,36 @@
+═══════════════════════════════════════════════════════════════
+  Luxmeter-KI_Info.txt  (Egga Lux Meter, aussen)
+═══════════════════════════════════════════════════════════════
+Stand: 23.11.2026
+
+── GERAET ────────────────────────────────────────────────────────
+ESP32-S3-DevKitC-1, ESPHome (Framework esp-idf), HA-Geraet "luxmeter" (Name bleibt, sonst aendern sich die
+Entitaeten sensor.luxmeter_aussen_*). Display ST7735 128x160 quer (SPI CLK 18, MOSI 17, CS 7, DC 15, RST 16).
+Sensoren:
+  SHT45   I2C 0x44 Bus 1 (SDA 8, SCL 9, 50 kHz)  Temperatur + Feuchte (20 s)
+  BH1750  I2C 0x23 Bus 2 (SDA 10, SCL 11)        Helligkeit Lux (30 s)
+  BME680  I2C 0x76 Bus 1                          bisher NUR Luftdruck (60 s); kann auch Gas/VOC (Luftqualitaet)
+Drehgeber GPIO20/21 = Temperatur-Ausgleich 0,1 °C je Raste (global temp_offset, bleibt gespeichert),
+Taster GPIO47 kurz = Ausgleich 0, lang = "GESPEICHERT!". Wind kommt aus HA (sensor.windmesser_windspeed_km_h).
+
+── REPO / BAU ────────────────────────────────────────────────────
+Seit 23.11.2026 im Repo ESPHome-Displays (wie Wetterstation und Raumluft Stube), vorher nur im ESPHome Builder.
+luxmeter.yaml = Geraete-Datei (Sensoren, WLAN, Selbst-Update), designs/anzeige_original.yaml = Anzeige wie bisher,
+design.txt = aktives Design. GitHub baut, das Geraet holt sich die Firmware selbst (alle 30 s).
+Zugang: GEMEINSAMES OTA-Passwort aller Geraete (Secret OTA_PASSWORD, wie in GitHub-Gesamt-KI_Info.txt Abschnitt 4),
+eigener API-Schluessel Secret LUXMETER_API_KEY (NEU erzeugt, der alte stand am 23.11.2026 im Chat).
+Fallback-Hotspot "Luxmeter Fallback Hotspot" mit dem OTA-Passwort.
+Schriften Ananda/Coffin aus fonts_verschluesselt (Secret FONTS_KEY); design_aktivieren.py hat 10 ungenutzte
+Schriften entfernt (u.a. Coffin 200 px).
+
+── UEBERNAHME (einmalig) ─────────────────────────────────────────
+Das Geraet kennt noch sein altes OTA-Passwort. Darum im ESPHome Builder EINMAL die alte luxmeter.yaml nur um das
+Selbst-Update ergaenzen (ota http_request, http_request, update mit manifest_url, siehe luxmeter.yaml) und
+installieren. Danach holt es sich die GitHub-Fassung selbst (gemeinsames Passwort, neuer API-Schluessel).
+In HA dann beim ESPHome-Geraet luxmeter den NEUEN API-Schluessel eintragen (HA meldet "neu konfigurieren").
+
+── STAND ─────────────────────────────────────────────────────────
+23.11.2026  Ordner angelegt, Inhalt 1:1 aus der YAML des Nutzers (ohne Schluessel). esphome config 2026.11.0 lokal
+            GUELTIG (mit Ersatz-Schriften und Ersatz-Secrets). NICHT gebaut, NICHT am Geraet.
+            Naechste Schritte: Secret LUXMETER_API_KEY, Uebernahme, dann BME680 Gas/Luftqualitaet freischalten,
+            Ausgleich an HA melden (fuer die Tablet-Seite "Wetter" im Repo HA-Konfiguration).

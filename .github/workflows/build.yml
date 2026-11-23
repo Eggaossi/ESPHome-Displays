@@ -54,6 +54,7 @@ jobs:
           OTA_PASSWORD: ${{ secrets.OTA_PASSWORD }}
           WETTERSTATION_API_KEY: ${{ secrets.WETTERSTATION_API_KEY }}
           RAUMLUFT_STUBE_API_KEY: ${{ secrets.RAUMLUFT_STUBE_API_KEY }}
+          LUXMETER_API_KEY: ${{ secrets.LUXMETER_API_KEY }}
         run: |
           for d in displays/*/; do
             {
@@ -62,6 +63,7 @@ jobs:
               echo "ota_password: \"$OTA_PASSWORD\""
               echo "wetterstation_api_key: \"$WETTERSTATION_API_KEY\""
               echo "raumluft_stube_api_key: \"$RAUMLUFT_STUBE_API_KEY\""
+              echo "luxmeter_api_key: \"$LUXMETER_API_KEY\""
             } > "$d/secrets.yaml"
           done
       - name: Firmware-Zweig holen

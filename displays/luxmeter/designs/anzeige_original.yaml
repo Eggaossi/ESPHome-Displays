@@ -1,0 +1,143 @@
+# Design "Original" - Anzeige wie bis 23.11.2026 im ESPHome Builder (ST7735 160x128 quer, Gold-Rahmen,
+# "Egga Lux Meter", Lux, korrigierte Temperatur gross, Feuchte, Wind, Luftdruck, Ausgleich).
+# Schriften Ananda/Coffin/Cabaret/Roboto-Regular aus fonts_verschluesselt (Secret FONTS_KEY).
+font:
+  - file: 'fonts/Ananda.ttf'
+    id: my_font_ananda
+    size: 18
+  - file: 'fonts/Ananda.ttf'
+    id: my_font_cabaret_klein
+    size: 24
+  - file: 'fonts/Coffin.ttf'
+    id: my_font_Coffin
+    size: 16
+  - file: 'fonts/Coffin.ttf'
+    id: my_font_Coffin_pico
+    size: 14
+  - file: 'fonts/Coffin.ttf'
+    id: my_font_Coffin_miniklein
+    size: 12
+  - file: 'fonts/Coffin.ttf'
+    id: my_font_Coffin_klein
+    size: 18
+  - file: 'fonts/Coffin.ttf'
+    id: my_font_Coffin_gross
+    size: 200
+  - file: 'fonts/Coffin.ttf'
+    id: my_font_Coffin_extra
+    size: 33
+  - file: 'fonts/Coffin.ttf'
+    id: my_font_Coffin_druck
+    size: 18
+  - file: 'fonts/Cabaret.ttf'
+    id: my_font_cabaret
+    size: 37
+  - file: 'fonts/Cabaret.ttf'
+    id: my_font_minicabaret
+    size: 15
+  - file: 'fonts/Cabaret.ttf'
+    id: my_font_groscabaret
+    size: 40
+  - file: 'fonts/Cabaret.ttf'
+    id: my_font_extracabaret
+    size: 26
+  - file: 'fonts/Roboto-Regular.ttf'
+    id: my_font
+    size: 25
+  - file: 'fonts/Roboto-Regular.ttf'
+    id: my_font_medium
+    size: 20
+  - file: 'fonts/Roboto-Regular.ttf'
+    id: my_font_large
+    size: 50
+
+spi:
+  clk_pin: GPIO18
+  mosi_pin: GPIO17
+
+display:
+  - platform: st7735
+    model: "INITR_REDTAB"
+    cs_pin: GPIO7
+    dc_pin: GPIO15
+    reset_pin: GPIO16
+    device_width: 128
+    device_height: 160
+    col_start: 0
+    row_start: 1
+    rotation: 90
+    update_interval: 5s
+    id: my_display
+    lambda: |-
+      // Hintergrund schwarz
+      it.fill(Color(0, 0, 0));
+
+      // Rahmen
+      int x = 1, y = 1, w = 158, h = 126, r = 3;
+      Color gold = Color(255, 215, 0);
+      Color white = Color(255, 255, 255);
+      Color blue = Color(100, 149, 237);
+      Color orange = Color(255, 165, 0);
+      Color gray = Color(150, 150, 150);
+      Color green = Color(0, 255, 0);
+
+      // Rahmen zeichnen (Gold)
+      it.horizontal_line(x + r, y, w - 2*r, gold);
+      it.horizontal_line(x + r, y + h, w - 2*r, gold);
+      it.vertical_line(x, y + r, h - 2*r, gold);
+      it.vertical_line(x + w, y + r, h - 2*r, gold);
+      it.line(x + r, y, x, y + r, gold);
+      it.line(x + w - r, y, x + w, y + r, gold);
+      it.line(x, y + h - r, x + r, y + h, gold);
+      it.line(x + w, y + h - r, x + w - r, y + h, gold);
+
+      // WLAN-Status
+      if (id(my_wifi).is_connected()) {
+        it.print(15, 8, id(my_font_ananda), Color(243, 214, 119), "Egga Lux Meter");
+      } else {
+        it.print(15, 8, id(my_font_ananda), Color(180, 0, 0), "Egga Lux Meter");
+      }
+
+      // Temperatur
+      if (id(temp_sensor).has_state() && !isnan(id(temp_sensor).state)) {
+        // Original-Temperatur (klein)
+        it.printf(5, 110, id(my_font_Coffin_klein), gray, "%.1f°C", id(temp_sensor).state);
+        // korrigierte Temperatur (gross)
+        float corrected_temp = id(temp_sensor).state + id(temp_offset);
+        it.printf(5, 70, id(my_font_Coffin_extra), orange, "%.1f°C", corrected_temp);
+      }
+
+      // Windgeschwindigkeit (nicht waehrend "GESPEICHERT!")
+      if (!id(display_trigger).state && id(wind_speed_kmh).has_state() && !isnan(id(wind_speed_kmh).state)) {
+        it.printf(60, 98, id(my_font_Coffin_pico), green, "%.1f km/h", id(wind_speed_kmh).state);
+      }
+
+      // Luftdruck
+      if (id(aussenluftdruck_sensor).has_state() && !isnan(id(aussenluftdruck_sensor).state)) {
+        it.printf(62, 114, id(my_font_Coffin_pico), Color(196, 126, 75), "%.0f hPa", id(aussenluftdruck_sensor).state);
+      }
+
+      // Ausgleich (unten rechts)
+      if (id(temp_offset) > 0) {
+        it.printf(125, 110, id(my_font_Coffin_klein), gray, "+%.1f", id(temp_offset));
+      } else if (id(temp_offset) < 0) {
+        it.printf(125, 110, id(my_font_Coffin_klein), gray, "%.1f", id(temp_offset));
+      } else {
+        it.printf(125, 110, id(my_font_Coffin_klein), gray, "0.0");
+      }
+
+      // Bestaetigung nach Speichern
+      if (id(display_trigger).state) {
+        it.printf(55, 100, id(my_font_Coffin_miniklein), Color(0, 255, 0), "GESPEICHERT!");
+        id(display_trigger).publish_state(false);
+      }
+
+      // Luftfeuchtigkeit
+      if (id(humidity_sensor).has_state() && !isnan(id(humidity_sensor).state)) {
+        it.printf(100, 70, id(my_font_Coffin_extra), blue, "%.0f%%", id(humidity_sensor).state);
+      }
+
+      // Helligkeit
+      if (id(lux_sensor).has_state() && !isnan(id(lux_sensor).state)) {
+        it.printf(52, 32, id(my_font_extracabaret), Color(196, 126, 75), "%.1f Lux", id(lux_sensor).state);
+      }
