@@ -1,0 +1,102 @@
+# Design "Gold Deluxe" (23.11.2026) fuer das Luxmeter ST7735 160x128: wie das Original (schwarz, Gold-Rahmen,
+# Ananda-Titel, Temperatur orange + Feuchte blau gross, Lux in Cabaret), aber Art-deco-Rahmen mit Ecken, Sonne vor
+# den Lux (Farbe nach Helligkeit), Trennlinie mit Raute, unten Wind | Luftdruck. Ausgleich + Fuehlerwert nur 10 s
+# nach Drehen/Taste (global offset_zeit). Schriften Ananda/Coffin/Cabaret aus fonts_verschluesselt.
+font:
+  - file: 'fonts/Ananda.ttf'
+    id: f_titel
+    size: 18
+  - file: 'fonts/Coffin.ttf'
+    id: f_temp
+    size: 33
+  - file: 'fonts/Coffin.ttf'
+    id: f_mini
+    size: 14
+  - file: 'fonts/Cabaret.ttf'
+    id: f_lux
+    size: 24
+
+spi:
+  clk_pin: GPIO18
+  mosi_pin: GPIO17
+
+display:
+  - platform: st7735
+    model: "INITR_REDTAB"
+    cs_pin: GPIO7
+    dc_pin: GPIO15
+    reset_pin: GPIO16
+    device_width: 128
+    device_height: 160
+    col_start: 0
+    row_start: 1
+    rotation: 90
+    update_interval: 5s
+    id: my_display
+    lambda: |-
+      // Design "Gold Deluxe": das Original, nur feiner (Art-deco-Rahmen, Sonne, Trennlinie)
+      it.fill(Color(0, 0, 0));
+      Color gold = Color(255, 215, 0);
+      Color golddunkel = Color(120, 95, 20);
+      Color orange = Color(255, 165, 0);
+      Color blau = Color(100, 149, 237);
+      Color kupfer = Color(196, 126, 75);
+      Color gruen = Color(0, 255, 0);
+      Color grau = Color(150, 150, 150);
+      bool t_ok = id(temp_sensor).has_state() && !isnan(id(temp_sensor).state);
+      float t = t_ok ? id(temp_sensor).state + id(temp_offset) : 0;
+      bool h_ok = id(humidity_sensor).has_state() && !isnan(id(humidity_sensor).state);
+      bool l_ok = id(lux_sensor).has_state() && !isnan(id(lux_sensor).state);
+      bool p_ok = id(aussenluftdruck_sensor).has_state() && !isnan(id(aussenluftdruck_sensor).state);
+      bool w_ok = id(wind_speed_kmh).has_state() && !isnan(id(wind_speed_kmh).state);
+      // Ausgleich nur 10 s nach Drehen/Taste (oder "GESPEICHERT!")
+      bool einstellen = (millis() - id(offset_zeit) < 10000 && id(offset_zeit) != 0) || id(display_trigger).state;
+      // Doppelrahmen mit abgeschraegten Ecken + Stufen-Ecken (Art deco)
+      for (int k = 0; k < 2; k++) {
+        int a = 1 + k * 3, b = 158 - k * 3, c = 1 + k * 3, d = 126 - k * 3, s = 5 - k;
+        Color f = k == 0 ? gold : golddunkel;
+        it.horizontal_line(a + s, c, b - a - 2 * s + 1, f);
+        it.horizontal_line(a + s, d, b - a - 2 * s + 1, f);
+        it.vertical_line(a, c + s, d - c - 2 * s + 1, f);
+        it.vertical_line(b, c + s, d - c - 2 * s + 1, f);
+        it.line(a + s, c, a, c + s, f); it.line(b - s, c, b, c + s, f);
+        it.line(a, d - s, a + s, d, f); it.line(b, d - s, b - s, d, f);
+      }
+      // Titel
+      it.print(80, 6, id(f_titel), id(my_wifi).is_connected() ? Color(243, 214, 119) : Color(180, 0, 0), TextAlign::TOP_CENTER, "Egga Lux Meter");
+      // Lux mit Sonne (gelb hell, orange daemmrig, grau dunkel)
+      if (l_ok) {
+        float lx = id(lux_sensor).state;
+        Color sonne = lx >= 1000 ? Color(255, 220, 40) : (lx >= 5 ? Color(255, 140, 0) : Color(110, 110, 140));
+        int sx = 30, sy = 40;
+        it.filled_circle(sx, sy, 4, sonne);
+        for (int i = 0; i < 8; i++) {
+          float w = i * 0.785398f;
+          it.line(sx + (int) roundf(6 * cosf(w)), sy + (int) roundf(6 * sinf(w)), sx + (int) roundf(9 * cosf(w)), sy + (int) roundf(9 * sinf(w)), sonne);
+        }
+        if (lx >= 1000) it.printf(88, 40, id(f_lux), kupfer, TextAlign::CENTER, "%.0f Lux", lx);
+        else it.printf(88, 40, id(f_lux), kupfer, TextAlign::CENTER, "%.1f Lux", lx);
+      }
+      // Temperatur (orange, gross) links, Feuchte (blau) rechts - wie im Original
+      if (t_ok) it.printf(10, 72, id(f_temp), orange, TextAlign::CENTER_LEFT, "%.1f°", t);
+      else it.print(10, 72, id(f_temp), grau, TextAlign::CENTER_LEFT, "--.-°");
+      if (h_ok) it.printf(150, 72, id(f_temp), blau, TextAlign::CENTER_RIGHT, "%.0f%%", id(humidity_sensor).state);
+      // Trennlinie mit Raute
+      it.horizontal_line(14, 94, 56, golddunkel);
+      it.horizontal_line(90, 94, 56, golddunkel);
+      it.filled_triangle(80, 90, 76, 94, 84, 94, gold);
+      it.filled_triangle(80, 98, 76, 94, 84, 94, gold);
+      // unten Wind | Luftdruck
+      if (w_ok) it.printf(14, 110, id(f_mini), gruen, TextAlign::CENTER_LEFT, "%.0f km/h", id(wind_speed_kmh).state);
+      if (p_ok) it.printf(146, 110, id(f_mini), kupfer, TextAlign::CENTER_RIGHT, "%.0f hPa", id(aussenluftdruck_sensor).state);
+      if (einstellen) {
+        it.filled_rectangle(6, 96, 148, 28, Color(20, 16, 6));
+        it.rectangle(6, 96, 148, 28, gold);
+        if (id(display_trigger).state) {
+          it.print(80, 110, id(f_mini), gruen, TextAlign::CENTER, "GESPEICHERT!");
+          id(display_trigger).publish_state(false);
+        } else {
+          if (t_ok) it.printf(12, 110, id(f_mini), grau, TextAlign::CENTER_LEFT, "Fuehler %.1f", id(temp_sensor).state);
+          it.printf(148, 110, id(f_mini), gold, TextAlign::CENTER_RIGHT, "%+.1f", id(temp_offset));
+        }
+      }

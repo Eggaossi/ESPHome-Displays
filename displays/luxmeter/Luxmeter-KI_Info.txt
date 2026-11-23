@@ -70,3 +70,10 @@ In HA dann beim ESPHome-Geraet luxmeter den NEUEN API-Schluessel eintragen (HA m
             Kommastelle. Neue Designs werden erst beim Auswaehlen von ESPHome uebersetzt (nur die Vorschau ist gebaut).
 23.11.2026  Nutzer zu den Vorschauen Klar/Kacheln/Wetter: "ok, diese passen". Auswahl am Geraet ueber die App HA-Displays
             (noch keins ausgewaehlt, aktiv original).
+23.11.2026  Nutzer (spaeter): "alle ausser mein Original sind scheisse" -> Klar/Kacheln/Wetter GELOESCHT (Nutzer: "loesch die
+            restlichen und bau 2 neue"). Zwei neue im Stil des Originals (schwarz, Gold, Ananda/Coffin/Cabaret, Farben wie
+            Original): designs/anzeige_gold.yaml "Gold Deluxe" (Art-deco-Doppelrahmen mit Ecken, Sonne vor Lux je nach
+            Helligkeit, Temperatur orange | Feuchte blau, Trennlinie mit Raute, Wind | Luftdruck) und designs/anzeige_bogen.yaml
+            "Gold Bogen" (Temperatur-Bogen -20..40 °C mit Farbe nach Wert wie Raumluft "Luftsaeule Bogen", rechts Feuchte, Lux,
+            Wind, Luftdruck). designs.txt: original, gold, bogen. Aktiv bleibt original. Lokal mit Ersatzschriften gezeichnet;
+            echte Vorschau baut GitHub. NICHT am Geraet.

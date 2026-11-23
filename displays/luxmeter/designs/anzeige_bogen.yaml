@@ -1,0 +1,100 @@
+# Design "Gold Bogen" (23.11.2026) fuer das Luxmeter ST7735 160x128: Farben/Schriften wie das Original, links ein
+# Temperatur-Bogen -20..40 °C (Farbe nach Wert, wie "Luftsaeule Bogen" am Raumluft-Display), Temperatur im Bogen,
+# rechts untereinander Feuchte, Lux, Wind, Luftdruck. Ausgleich + Fuehlerwert nur 10 s nach Drehen/Taste.
+font:
+  - file: 'fonts/Ananda.ttf'
+    id: f_titel
+    size: 16
+  - file: 'fonts/Coffin.ttf'
+    id: f_temp
+    size: 24
+  - file: 'fonts/Coffin.ttf'
+    id: f_wert
+    size: 18
+  - file: 'fonts/Coffin.ttf'
+    id: f_mini
+    size: 14
+
+spi:
+  clk_pin: GPIO18
+  mosi_pin: GPIO17
+
+display:
+  - platform: st7735
+    model: "INITR_REDTAB"
+    cs_pin: GPIO7
+    dc_pin: GPIO15
+    reset_pin: GPIO16
+    device_width: 128
+    device_height: 160
+    col_start: 0
+    row_start: 1
+    rotation: 90
+    update_interval: 5s
+    id: my_display
+    lambda: |-
+      // Design "Gold Bogen": Temperatur-Bogen links, Werte rechts
+      it.fill(Color(0, 0, 0));
+      Color gold = Color(255, 215, 0);
+      Color golddunkel = Color(120, 95, 20);
+      Color orange = Color(255, 165, 0);
+      Color blau = Color(100, 149, 237);
+      Color kupfer = Color(196, 126, 75);
+      Color gruen = Color(0, 255, 0);
+      Color grau = Color(150, 150, 150);
+      bool t_ok = id(temp_sensor).has_state() && !isnan(id(temp_sensor).state);
+      float t = t_ok ? id(temp_sensor).state + id(temp_offset) : 0;
+      bool h_ok = id(humidity_sensor).has_state() && !isnan(id(humidity_sensor).state);
+      bool l_ok = id(lux_sensor).has_state() && !isnan(id(lux_sensor).state);
+      bool p_ok = id(aussenluftdruck_sensor).has_state() && !isnan(id(aussenluftdruck_sensor).state);
+      bool w_ok = id(wind_speed_kmh).has_state() && !isnan(id(wind_speed_kmh).state);
+      // Ausgleich nur 10 s nach Drehen/Taste (oder "GESPEICHERT!")
+      bool einstellen = (millis() - id(offset_zeit) < 10000 && id(offset_zeit) != 0) || id(display_trigger).state;
+      // Gold-Rahmen wie im Original
+      it.rectangle(1, 1, 158, 126, gold);
+      it.print(80, 3, id(f_titel), id(my_wifi).is_connected() ? Color(243, 214, 119) : Color(180, 0, 0), TextAlign::TOP_CENTER, "Egga Lux Meter");
+      it.horizontal_line(8, 22, 144, golddunkel);
+      // Bogen: 240 Grad, -20 (unten links) bis 40 °C (unten rechts), Mitte 44/72
+      int mx = 44, my = 72;
+      float tw = t_ok ? t : -99;
+      for (int g = 0; g <= 240; g++) {
+        float wert = -20 + g / 4.0f;
+        float w = (150 + g) * 0.0174533f;
+        Color f;
+        if (wert > tw) f = Color(45, 40, 25);
+        else if (wert < 0) f = Color(90, 150, 255);
+        else if (wert < 10) f = Color(80, 210, 220);
+        else if (wert < 20) f = Color(100, 220, 90);
+        else if (wert < 28) f = Color(255, 165, 0);
+        else f = Color(255, 60, 40);
+        it.line(mx + (int) roundf(28 * cosf(w)), my + (int) roundf(28 * sinf(w)), mx + (int) roundf(36 * cosf(w)), my + (int) roundf(36 * sinf(w)), f);
+      }
+      // Striche bei -20, 0, 20, 40 (gold)
+      for (int s = 0; s <= 60; s += 20) {
+        float w = (150 + s * 4) * 0.0174533f;
+        it.line(mx + (int) roundf(37 * cosf(w)), my + (int) roundf(37 * sinf(w)), mx + (int) roundf(40 * cosf(w)), my + (int) roundf(40 * sinf(w)), gold);
+      }
+      if (t_ok) it.printf(mx, my, id(f_temp), orange, TextAlign::CENTER, "%.1f", t);
+      else it.print(mx, my, id(f_temp), grau, TextAlign::CENTER, "--.-");
+      it.print(mx, my + 18, id(f_mini), golddunkel, TextAlign::CENTER, "°C");
+      // rechts: Feuchte, Lux, Wind, Luftdruck
+      it.vertical_line(92, 28, 92, golddunkel);
+      if (h_ok) it.printf(154, 38, id(f_wert), blau, TextAlign::CENTER_RIGHT, "%.0f %%", id(humidity_sensor).state);
+      if (l_ok) {
+        float lx = id(lux_sensor).state;
+        if (lx >= 1000) it.printf(154, 62, id(f_mini), kupfer, TextAlign::CENTER_RIGHT, "%.0f lx", lx);
+        else it.printf(154, 62, id(f_mini), kupfer, TextAlign::CENTER_RIGHT, "%.1f lx", lx);
+      }
+      if (w_ok) it.printf(154, 84, id(f_mini), gruen, TextAlign::CENTER_RIGHT, "%.0f km/h", id(wind_speed_kmh).state);
+      if (p_ok) it.printf(154, 106, id(f_mini), kupfer, TextAlign::CENTER_RIGHT, "%.0f hPa", id(aussenluftdruck_sensor).state);
+      if (einstellen) {
+        it.filled_rectangle(6, 96, 148, 28, Color(20, 16, 6));
+        it.rectangle(6, 96, 148, 28, gold);
+        if (id(display_trigger).state) {
+          it.print(80, 110, id(f_mini), gruen, TextAlign::CENTER, "GESPEICHERT!");
+          id(display_trigger).publish_state(false);
+        } else {
+          if (t_ok) it.printf(12, 110, id(f_mini), grau, TextAlign::CENTER_LEFT, "Fuehler %.1f", id(temp_sensor).state);
+          it.printf(148, 110, id(f_mini), gold, TextAlign::CENTER_RIGHT, "%+.1f", id(temp_offset));
+        }
+      }
