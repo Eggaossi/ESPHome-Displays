@@ -1,0 +1,89 @@
+# Design "Kacheln" (23.11.2026) fuer das Luxmeter ST7735 160x128. Ausgleich + Fuehlerwert nur 10 s nach
+# Drehen/Taste (global offset_zeit in luxmeter.yaml). Schriften Ananda/Coffin aus fonts_verschluesselt.
+font:
+  - file: 'fonts/Ananda.ttf'
+    id: f_titel
+    size: 18
+  - file: 'fonts/Coffin.ttf'
+    id: f_gross
+    size: 40
+  - file: 'fonts/Coffin.ttf'
+    id: f_temp
+    size: 33
+  - file: 'fonts/Coffin.ttf'
+    id: f_mittel
+    size: 22
+  - file: 'fonts/Coffin.ttf'
+    id: f_klein
+    size: 18
+  - file: 'fonts/Coffin.ttf'
+    id: f_mini
+    size: 14
+  - file: 'fonts/Coffin.ttf'
+    id: f_pico
+    size: 12
+
+spi:
+  clk_pin: GPIO18
+  mosi_pin: GPIO17
+
+display:
+  - platform: st7735
+    model: "INITR_REDTAB"
+    cs_pin: GPIO7
+    dc_pin: GPIO15
+    reset_pin: GPIO16
+    device_width: 128
+    device_height: 160
+    col_start: 0
+    row_start: 1
+    rotation: 90
+    update_interval: 5s
+    id: my_display
+    lambda: |-
+      // Design "Kacheln": 4 Felder (Temperatur, Feuchte, Licht, Druck) mit Ueberschrift, unten Wind-Balken
+      it.fill(Color(0, 0, 0));
+      Color gold = Color(255, 205, 60);
+      Color orange = Color(255, 150, 30);
+      Color blau = Color(90, 170, 255);
+      Color gruen = Color(80, 230, 110);
+      Color grau = Color(150, 150, 150);
+      Color weiss = Color(240, 236, 225);
+      bool t_ok = id(temp_sensor).has_state() && !isnan(id(temp_sensor).state);
+      float t = t_ok ? id(temp_sensor).state + id(temp_offset) : 0;
+      bool h_ok = id(humidity_sensor).has_state() && !isnan(id(humidity_sensor).state);
+      bool l_ok = id(lux_sensor).has_state() && !isnan(id(lux_sensor).state);
+      bool p_ok = id(aussenluftdruck_sensor).has_state() && !isnan(id(aussenluftdruck_sensor).state);
+      bool w_ok = id(wind_speed_kmh).has_state() && !isnan(id(wind_speed_kmh).state);
+      // Ausgleich nur 10 s nach Drehen/Taste (oder "GESPEICHERT!")
+      bool einstellen = (millis() - id(offset_zeit) < 10000 && id(offset_zeit) != 0) || id(display_trigger).state;
+      auto feld = [&](int x, int y, const char *titel, Color c) {
+        it.rectangle(x, y, 76, 50, c);
+        it.filled_rectangle(x + 1, y + 1, 74, 13, Color(30, 30, 30));
+        it.print(x + 38, y + 8, id(f_pico), c, TextAlign::CENTER, titel);
+      };
+      feld(2, 2, "TEMPERATUR", orange);
+      feld(82, 2, "FEUCHTE", blau);
+      feld(2, 56, "LICHT", gold);
+      feld(82, 56, "DRUCK", Color(210, 150, 100));
+      if (t_ok) it.printf(40, 36, id(f_mittel), orange, TextAlign::CENTER, "%.1f°", t);
+      if (h_ok) it.printf(120, 36, id(f_mittel), blau, TextAlign::CENTER, "%.0f%%", id(humidity_sensor).state);
+      if (l_ok) it.printf(40, 90, id(f_mittel), gold, TextAlign::CENTER, "%.0f", id(lux_sensor).state);
+      if (p_ok) it.printf(120, 90, id(f_mittel), Color(210, 150, 100), TextAlign::CENTER, "%.0f", id(aussenluftdruck_sensor).state);
+      // Wind: Balken 0-50 km/h
+      float w = w_ok ? id(wind_speed_kmh).state : 0;
+      int bw = (int) (100 * (w > 50 ? 50 : w) / 50);
+      it.rectangle(2, 112, 104, 14, grau);
+      if (bw > 0) it.filled_rectangle(4, 114, bw, 10, w < 30 ? gruen : (w < 45 ? orange : Color(230, 50, 40)));
+      it.printf(158, 119, id(f_mini), gruen, TextAlign::CENTER_RIGHT, "%.0f km/h", w);
+      if (einstellen) {
+        it.filled_rectangle(4, 92, 152, 32, Color(25, 25, 25));
+        it.rectangle(4, 92, 152, 32, gold);
+        if (id(display_trigger).state) {
+          it.print(80, 108, id(f_mini), gruen, TextAlign::CENTER, "GESPEICHERT!");
+          id(display_trigger).publish_state(false);
+        } else {
+          if (t_ok) it.printf(10, 108, id(f_mini), grau, TextAlign::CENTER_LEFT, "Fuehler %.1f", id(temp_sensor).state);
+          it.printf(150, 108, id(f_mini), gold, TextAlign::CENTER_RIGHT, "%+.1f", id(temp_offset));
+        }
+      }

@@ -58,3 +58,10 @@ In HA dann beim ESPHome-Geraet luxmeter den NEUEN API-Schluessel eintragen (HA m
             (101620 Ohm), sensor.aussen_luxmeter_aussen_temperatur_bme680 (3,07 °C, SHT45 2,79 °C), sensor.aussen_luxmeter_temperatur_ausgleich
             (-4,0); Praefix "aussen_" weil Geraet im Bereich Aussen. Alte Entitaeten unveraendert (sensor.luxmeter_*),
             update.aussen_luxmeter_firmware_github installiert 82. SENSOR GERICHTET - fertig.
+23.11.2026  Neue Designs (Nutzer: "Original haben wir, bau alle"): designs/anzeige_klar.yaml (Temperatur gross mittig,
+            Feuchte|Lux, Wind|Druck), anzeige_kacheln.yaml (4 Felder mit Ueberschrift + Wind-Balken 0-50 km/h),
+            anzeige_wetter.yaml (Bild nach Lux: Sonne >= 10000, Sonne+Wolke >= 300, Wolke >= 5, sonst Mond; Temperatur gross).
+            Alle zeigen Fuehlerwert + Ausgleich nur 10 s nach Drehen/Taste (neues global offset_zeit = millis() in
+            luxmeter.yaml) bzw. "GESPEICHERT!". designs.txt: original/klar/kacheln/wetter. Aktiv bleibt original (Wahl
+            in der App HA-Displays). tools/vorschau.py: millis() fuer die Vorschau. Lokal mit Ersatzschriften gezeichnet.
+            NICHT am Geraet.

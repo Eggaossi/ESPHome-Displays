@@ -1,2 +1,5 @@
 # id=Name (fuer die App HA-Displays)
 original=Original
+klar=Klar
+kacheln=Kacheln
+wetter=Wetter

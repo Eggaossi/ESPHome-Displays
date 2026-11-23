@@ -210,6 +210,7 @@ struct ZeitQuelle { ESPTime now() { return ESPTime(); } ESPTime utcnow() { retur
 namespace sensor { struct Sensor { float state; bool has_state() const { return true; } float get_state() const { return state; } }; }
 using sensor::Sensor;
 struct TextSensor { string state; bool has_state() const { return true; } };
+static uint32_t millis() { return 600000; }
 struct BinarySensor { bool state; bool has_state() const { return true; } void publish_state(bool v) { state = v; } };
 struct Etwas { bool state = false; bool has_state() const { return false; } bool is_on() const { return false; }
   bool is_connected() const { return true; } void publish_state(bool v) { state = v; } };

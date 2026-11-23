@@ -79,6 +79,11 @@ globals:
     type: float
     restore_value: yes
     initial_value: "0.0"
+  # Zeitpunkt (millis) der letzten Drehung/Taste - Designs zeigen den Ausgleich nur kurz danach (seit 23.11.2026)
+  - id: offset_zeit
+    type: uint32_t
+    restore_value: no
+    initial_value: "0"
 
 i2c:
   - id: bus_sht45
@@ -187,6 +192,7 @@ sensor:
         - lambda: |-
             // jeder Schritt = 0.1 °C
             id(temp_offset) = x * 0.1;
+            id(offset_zeit) = millis();
         - component.update: displayed_offset
 
 binary_sensor:
@@ -210,6 +216,7 @@ binary_sensor:
             ESP_LOGD("button", "Kurzer Druck - Reset auf 0");
             id(temp_offset) = 0.0;
             id(temp_offset_encoder).publish_state(0);
+            id(offset_zeit) = millis();
         - component.update: displayed_offset
     on_press:
       then:
