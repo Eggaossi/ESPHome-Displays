@@ -37,3 +37,5 @@ In HA dann beim ESPHome-Geraet luxmeter den NEUEN API-Schluessel eintragen (HA m
 23.11.2026  Secret LUXMETER_API_KEY vom Nutzer per gh gesetzt (neuer Schluessel, in Bitwarden). Build 80 (Lauf von Hand)
             GRUEN: firmware.ota.bin 1,05 MB im Zweig firmware/luxmeter. Andere Displays "aufgehoben" (keine neue Version).
             Noch NICHT am Geraet (Uebernahme im ESPHome Builder steht aus).
+            tools/luxmeter_uebernahme.ps1: ergaenzt die luxmeter.yaml im ESPHome Builder per Samba um das Selbst-Update
+            (Sicherung C:\Backups, Einfuegen in Python nachgestellt, pwsh selbst NICHT getestet).
