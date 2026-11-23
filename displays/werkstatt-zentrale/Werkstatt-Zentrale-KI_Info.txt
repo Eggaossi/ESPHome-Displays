@@ -50,3 +50,9 @@ In HA dann beim ESPHome-Geraet den NEUEN API-Schluessel eintragen (HA meldet "ne
             tools/werkstatt_zentrale_uebernahme.ps1: sucht im ESPHome Builder per Samba die YAML mit name
             werkstatt-zentrale-by-ossi und ergaenzt sie um das Selbst-Update (Sicherung C:\Backups). Einfuegen in Python
             nachgestellt, Ergebnis esphome config GUELTIG; pwsh selbst NICHT getestet.
+23.11.2026  Uebernahme: Skript am PC gelaufen (Builder-Datei werkstatt-zentrale-by-ossi.yaml, Sicherung
+            C:\Backups\werkstatt-zentrale_2026-11-23_17-31.yaml), im ESPHome Builder installiert. Geraet holte sich
+            Build 95 selbst von GitHub (13 s, IP 192.168.178.199), danach "Invalid encryption key" fuer den Builder (richtig,
+            neuer Schluessel). Neuer Schluessel in HA eingetragen: Zentrale wieder in HA. UEBERNAHME FERTIG.
+            Ab jetzt: Aenderungen NUR noch hier im Repo, Geraet holt sie selbst. NICHT mehr im ESPHome Builder installieren
+            (die Builder-Datei hat noch den alten Schluessel und das alte OTA-Passwort).
