@@ -68,3 +68,5 @@ In HA dann beim ESPHome-Geraet luxmeter den NEUEN API-Schluessel eintragen (HA m
 23.11.2026  Build 84 GRUEN (original + offset_zeit), Vorschauen mit echten Schriften da. MERKER: Coffin klein (14 px) hat
             KEINEN sichtbaren Dezimalpunkt ("3.2 km/h" -> "32 km/h", im Original "00 km/h") -> Wind in den neuen Designs ohne
             Kommastelle. Neue Designs werden erst beim Auswaehlen von ESPHome uebersetzt (nur die Vorschau ist gebaut).
+23.11.2026  Nutzer zu den Vorschauen Klar/Kacheln/Wetter: "ok, diese passen". Auswahl am Geraet ueber die App HA-Displays
+            (noch keins ausgewaehlt, aktiv original).
