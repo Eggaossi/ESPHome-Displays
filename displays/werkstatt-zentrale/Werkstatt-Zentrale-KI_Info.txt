@@ -44,3 +44,9 @@ In HA dann beim ESPHome-Geraet den NEUEN API-Schluessel eintragen (HA meldet "ne
             tools/vorschau.py: ESPTime kennt jetzt .timestamp (fuer die Restzeit 3D-Druck).
             NICHT gebaut (Secret fehlt noch, erster Lauf scheitert fuer dieses Display), NICHT am Geraet.
             Naechste Schritte: Secret WERKSTATT_ZENTRALE_API_KEY, Build, Uebernahme im Builder, Schluessel in HA.
+23.11.2026  Secret WERKSTATT_ZENTRALE_API_KEY vom Nutzer per gh gesetzt (neuer Schluessel, in Bitwarden). Build 95 (Lauf von
+            Hand) GRUEN: firmware.ota.bin 1,09 MB im Zweig firmware/werkstatt-zentrale, Vorschau mit echten Schriften da.
+            Andere Displays "aufgehoben". Noch NICHT am Geraet.
+            tools/werkstatt_zentrale_uebernahme.ps1: sucht im ESPHome Builder per Samba die YAML mit name
+            werkstatt-zentrale-by-ossi und ergaenzt sie um das Selbst-Update (Sicherung C:\Backups). Einfuegen in Python
+            nachgestellt, Ergebnis esphome config GUELTIG; pwsh selbst NICHT getestet.
