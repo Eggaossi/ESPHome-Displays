@@ -1,0 +1,46 @@
+═══════════════════════════════════════════════════════════════
+  Werkstatt-Zentrale-KI_Info.txt  (Werkstatt-Zentrale by Ossi, Keller)
+═══════════════════════════════════════════════════════════════
+Stand: 23.11.2026
+
+── GERAET ────────────────────────────────────────────────────────
+ESP32-S3-DevKitC-1, ESPHome (Framework arduino), HA-Geraet "werkstatt-zentrale-by-ossi" (Name bleibt, sonst aendern
+sich die Entitaeten). Display ST7789V 240x320 hochkant, rotation 0 (SPI CLK 18, MOSI 17, CS 7, DC 15, RST 16).
+Innen:  BME680 I2C (SDA 4, SCL 5): Werkstatt Temperatur, Luftdruck, Luftfeuchtigkeit.
+Aus HA: Luxmeter (sensor.luxmeter_lux_korrigierte_temperatur, sensor.luxmeter_aussen_luftfeuchtigkeit,
+        sensor.luxmeter_aussen_luftdruck), Strom-Messer Werkraum-Dose Shelly Plus 1PM
+        (sensor.shellyplus1pm_a0dd6c2b7808_voltage/_current/_power), 3D-Druck Moonraker
+        (sensor.mainsailos_print_progress, sensor.mainsailos_print_eta).
+Ausgaenge: Keller Leuchte 1-4 (GPIO 21, 47, 14, 38), Keller Steckdose 1-4 (LEDC 200 Hz max 15 %, GPIO 39-42),
+        Keller Radio (GPIO 37, zugleich Radio-LED), Status-LED WLAN (GPIO 13), General-Aus-LED (GPIO 19).
+Eingaenge: Keller-Eingang 1-8 (GPIO 1, 2, 12, 6, 8, 9, 10, 11), General-Aus (GPIO 20, schaltet Leuchte 1+2,
+        Steckdose 1-3, Radio und die LED aus), Radio-Taster (GPIO 3). Alle INPUT_PULLUP, invertiert, 50 ms.
+Hinweis: GPIO19/20 sind die USB-Pins des S3 (Warnung von ESPHome), GPIO3 ist Strapping-Pin - lief so schon immer.
+Anzeige-Beschriftung: Lampen "3D-Drucker", "Lupen", "Werkbank", "Retro-PC"; Steckdosen "Leata", "Entleata",
+        "Netzteil", "Retro-PC".
+
+── REPO / BAU ────────────────────────────────────────────────────
+Seit 23.11.2026 im Repo ESPHome-Displays (wie Wetterstation, Raumluft Stube, Luxmeter), vorher nur im ESPHome Builder.
+werkstatt-zentrale.yaml = Geraete-Datei (alles ausser Anzeige, Inhalt 1:1 aus dem Builder), designs/anzeige_original.yaml
+= Anzeige wie bisher (Schriften, SPI, Display), design.txt = aktives Design, designs.txt = Auswahl fuer die App HA-Displays.
+GitHub baut, das Geraet holt sich die Firmware selbst (alle 30 s).
+Zugang: GEMEINSAMES OTA-Passwort aller Geraete (Secret OTA_PASSWORD, wie in GitHub-Gesamt-KI_Info.txt Abschnitt 4),
+eigener API-Schluessel Secret WERKSTATT_ZENTRALE_API_KEY (NEU, der alte und das alte OTA-/Hotspot-Passwort standen am
+23.11.2026 im Chat). Fallback-Hotspot "Werkstatt-Zentrale-By-Ossi" mit dem OTA-Passwort.
+Schriften Ananda/Coffin/Cabaret aus fonts_verschluesselt (Secret FONTS_KEY); design_aktivieren.py entfernt 9 ungenutzte
+(u.a. Roboto, JandaManateeSolid, Coffin 200 px), die beiden muessen also nicht im Repo sein.
+MERKER: Schluessel-Aenderung allein baut NICHT neu -> Kommentar "API-Schluessel Stand N" in werkstatt-zentrale.yaml
+hochzaehlen.
+
+── UEBERNAHME (einmalig, steht aus) ──────────────────────────────
+Das Geraet kennt noch sein altes OTA-Passwort. Darum im ESPHome Builder EINMAL die alte YAML nur um das Selbst-Update
+ergaenzen (ota http_request, http_request, update mit manifest_url, siehe werkstatt-zentrale.yaml) und installieren.
+Danach holt es sich die GitHub-Fassung selbst (gemeinsames Passwort, neuer API-Schluessel).
+In HA dann beim ESPHome-Geraet den NEUEN API-Schluessel eintragen (HA meldet "neu konfigurieren").
+
+── STAND ─────────────────────────────────────────────────────────
+23.11.2026  Ordner angelegt, Inhalt 1:1 aus der YAML des Nutzers (ohne Schluessel). esphome config 2026.11.0 lokal
+            GUELTIG (mit Ersatz-Schriften und Ersatz-Secrets). Vorschau lokal gezeichnet (Ersatzschrift).
+            tools/vorschau.py: ESPTime kennt jetzt .timestamp (fuer die Restzeit 3D-Druck).
+            NICHT gebaut (Secret fehlt noch, erster Lauf scheitert fuer dieses Display), NICHT am Geraet.
+            Naechste Schritte: Secret WERKSTATT_ZENTRALE_API_KEY, Build, Uebernahme im Builder, Schluessel in HA.

@@ -201,7 +201,7 @@ struct Display {
   void printf(int x, int y, BaseFont *f, const char *fmt, ...) __attribute__((format(printf, 5, 6))) {
     char b[256]; va_list v; va_start(v, fmt); vsnprintf(b, sizeof(b), fmt, v); va_end(v); print(x, y, f, COLOR_ON, TextAlign::TOP_LEFT, b); }
 };
-struct ESPTime { int second = 0, minute = 30, hour = 11, day_of_week = 6, day_of_month = 20, day_of_year = 324, month = 11, year = 2026;
+struct ESPTime { int second = 0, minute = 30, hour = 11, day_of_week = 6, day_of_month = 20, day_of_year = 324, month = 11, year = 2026; time_t timestamp = 1795689000;
   bool is_valid() const { return true; }
   size_t strftime(char *b, size_t n, const char *fmt) { struct tm t = {}; t.tm_sec = second; t.tm_min = minute; t.tm_hour = hour;
     t.tm_mday = day_of_month; t.tm_mon = month - 1; t.tm_year = year - 1900; t.tm_wday = day_of_week - 1; return ::strftime(b, n, fmt, &t); }

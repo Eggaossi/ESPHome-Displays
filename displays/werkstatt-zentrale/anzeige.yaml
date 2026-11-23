@@ -1,0 +1,210 @@
+# AKTIVES DESIGN - erzeugt aus designs/anzeige_original.yaml (tools/design_aktivieren.py)
+# Design "Original" - Anzeige wie bis 23.11.2026 im ESPHome Builder (ST7789V 240x320 hochkant,
+# "Werkstatt Zentrale by Ossi", Wochentag, Luftdruck innen/aussen, 3D-Druck (Moonraker), 4 Lampen links,
+# 4 Steckdosen rechts als Kreise, Spannung/Strom/Leistung Werkraum, Datum/Uhrzeit, Temperatur/Feuchte innen + aussen).
+# Schriften Ananda/Coffin/Cabaret/Roboto-Regular/JandaManateeSolid; ungenutzte entfernt design_aktivieren.py beim Bauen.
+font:
+  - file: 'fonts/Ananda.ttf'
+    id: my_font_ananda
+    size: 16
+  - file: 'fonts/Coffin.ttf'
+    id: my_font_Coffin
+    size: 16
+  - file: 'fonts/Coffin.ttf'
+    id: my_font_Coffin_miniklein
+    size: 16
+  - file: 'fonts/Coffin.ttf'
+    id: my_font_Coffin_1
+    size: 22
+  - file: 'fonts/Coffin.ttf'
+    id: my_font_Coffin_extra
+    size: 15
+  - file: 'fonts/Coffin.ttf'
+    id: my_font_Coffin_druck
+    size: 18
+  - file: 'fonts/Cabaret.ttf'
+    id: my_font_minicabaret
+    size: 30
+  - file: 'fonts/Cabaret.ttf'
+    id: my_font_extracabaret
+    size: 22
+
+spi:
+  clk_pin: GPIO18
+  mosi_pin: GPIO17
+
+display:
+  - platform: ili9xxx
+    model: ST7789v
+    cs_pin: GPIO7
+    dc_pin: GPIO15
+    reset_pin: GPIO16
+    color_palette: 8BIT
+    rotation: 0
+    invert_colors: false
+    update_interval: 20s
+    lambda: |-
+      // === Farbdefinitionen ===
+      // Rand: weiß für alle Knöpfe
+      Color farbe_rand        = Color(255, 255, 255);  // weißer Rand
+      Color farbe_aus         = Color(61, 34, 0);      // AUS: sehr dunkles Braun
+      Color farbe_lampe_an    = Color(240, 220, 50);   // EIN Lampe: Gelb
+      Color farbe_steckdose_an= Color(0, 255, 0);      // EIN Steckdose: Grün
+      Color farbe_text_lampen      = Color(250, 225, 145);
+      Color farbe_text_steckdosen  = Color(220, 225, 145);
+
+      // ===== Titel =====
+      it.printf(27, 4, id(my_font_ananda), Color(243, 214, 119), "Werkstatt Zentrale by Ossi");
+
+      // ===== Zeit und Datum =====
+      auto time = id(sntp_time).now();
+      if (time.is_valid()) {
+        it.printf(0, 287, id(my_font_minicabaret), Color(255, 255, 0), "%02d.%02d.%04d",
+          time.day_of_month, time.month, time.year);
+        const char* weekdays[] = {"Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"};
+        it.printf(90, 24, id(my_font_Coffin_extra), Color(189, 217, 80), "%s",
+          weekdays[(time.day_of_week + 5) % 7]);
+        it.printf(190, 287, id(my_font_minicabaret), Color(255, 255, 0), "%02d:%02d",
+          time.hour, time.minute);
+      }
+
+      // ============================================================
+      // MOONRAKER: Druckfortschritt und ETA anzeigen
+      // ============================================================
+      if (id(sensor_moonraker_print_progress).has_state() &&
+          id(sensor_moonraker_print_progress).state > 0 &&
+          id(sensor_moonraker_print_progress).state < 100) {
+
+        float progress = id(sensor_moonraker_print_progress).state;
+        it.printf(3, 44, id(my_font_Coffin_druck), Color(0, 255, 128),
+          "Druck: %.1f%%", progress);
+
+        if (id(sensor_moonraker_eta).has_state()) {
+          time_t finish = static_cast<time_t>(id(sensor_moonraker_eta).state);
+          time_t now_ts = id(sntp_time).now().timestamp;
+          if (finish > now_ts) {
+            int32_t diff_minutes = (finish - now_ts) / 60;
+            int hours = diff_minutes / 60;
+            int minutes = diff_minutes % 60;
+            it.printf(3, 65, id(my_font_Coffin_druck), Color(255, 255, 0),
+              "Fertig in: %02d:%02d h", hours, minutes);
+          }
+        }
+      }
+
+      // ===== Innenbereich =====
+      if (id(bme680_pressure).has_state()) {
+        float pressure = id(bme680_pressure).state;
+        Color pressure_color;
+        if (pressure < 905) pressure_color = Color(255, 0, 0);
+        else if (pressure < 910) pressure_color = Color(255, 165, 0);
+        else if (pressure < 916) pressure_color = Color(0, 255, 0);
+        else if (pressure < 920) pressure_color = Color(64, 224, 208);
+        else pressure_color = Color(0, 128, 255);
+        it.printf(2, 24, id(my_font_Coffin), pressure_color, "%.0f hPa", pressure);
+      }
+
+      if (id(bme680_temperature).has_state()) {
+        float temp_innen = id(bme680_temperature).state;
+        Color temp_color;
+        if (temp_innen < 16) temp_color = Color(0, 128, 255);
+        else if (temp_innen < 19) temp_color = Color(64, 224, 208);
+        else if (temp_innen < 22) temp_color = Color(0, 255, 0);
+        else if (temp_innen < 26) temp_color = Color(255, 165, 0);
+        else temp_color = Color(255, 0, 0);
+        it.printf(102, 291, id(my_font_Coffin), temp_color, "%.1f°C", temp_innen);
+      }
+
+      if (id(bme680_humidity).has_state()) {
+        float humidity = id(bme680_humidity).state;
+        it.printf(155, 291, id(my_font_Coffin), Color(173, 216, 230), "%.0f%%", humidity);
+      }
+
+      // ===== Außenbereich =====
+      if (id(sensor_luxmeter_aussen_luftdruck).has_state()) {
+        float pressure_aussen = id(sensor_luxmeter_aussen_luftdruck).state;
+        Color pressure_color;
+        if (pressure_aussen < 905) pressure_color = Color(255, 0, 0);
+        else if (pressure_aussen < 910) pressure_color = Color(255, 165, 0);
+        else if (pressure_aussen < 916) pressure_color = Color(0, 255, 0);
+        else if (pressure_aussen < 920) pressure_color = Color(64, 224, 208);
+        else pressure_color = Color(0, 128, 255);
+        it.printf(175, 24, id(my_font_Coffin), pressure_color, "%.0f hPa", pressure_aussen);
+      }
+
+      if (id(sensor_luxmeter_lux_korrigierte_temperatur).has_state()) {
+        float temp_aussen = id(sensor_luxmeter_lux_korrigierte_temperatur).state;
+        Color temp_color;
+        if (temp_aussen < -15) temp_color = Color(0, 0, 128);
+        else if (temp_aussen < -10) temp_color = Color(0, 0, 192);
+        else if (temp_aussen < -5) temp_color = Color(0, 128, 255);
+        else if (temp_aussen < 0) temp_color = Color(0, 192, 192);
+        else if (temp_aussen < 5) temp_color = Color(0, 255, 128);
+        else if (temp_aussen < 10) temp_color = Color(192, 255, 64);
+        else if (temp_aussen < 15) temp_color = Color(255, 255, 0);
+        else if (temp_aussen < 20) temp_color = Color(255, 128, 0);
+        else temp_color = Color(255, 0, 0);
+        it.printf(102, 305, id(my_font_Coffin), temp_color, "%.1f°C", temp_aussen);
+      }
+
+      if (id(sensor_luxmeter_aussen_luftfeuchtigkeit).has_state()) {
+        float humidity = id(sensor_luxmeter_aussen_luftfeuchtigkeit).state;
+        it.printf(155, 305, id(my_font_Coffin), Color(173, 216, 230), "%.0f%%", humidity);
+      }
+
+      // Spannung Werkraum
+      if (id(sensor_shellyplus1pm_a0dd6c2b7808_voltage).has_state()) {
+        float voltage_werkraum = id(sensor_shellyplus1pm_a0dd6c2b7808_voltage).state;
+        it.printf(40, 262, id(my_font_extracabaret), Color(214, 92, 203), "%.1fV", voltage_werkraum);
+      }
+
+      // Strom Werkraum
+      if (id(sensor_shellyplus1pm_a0dd6c2b7808_current).has_state()) {
+        float current_werkraum = id(sensor_shellyplus1pm_a0dd6c2b7808_current).state;
+        it.printf(105, 262, id(my_font_extracabaret), Color(240, 42, 16), "%.2fA", current_werkraum);
+      }
+
+      // Leistung Werkraum
+      if (id(sensor_shellyplus1pm_a0dd6c2b7808_power).has_state()) {
+        float power_werkraum = id(sensor_shellyplus1pm_a0dd6c2b7808_power).state;
+        it.printf(160, 262, id(my_font_extracabaret), Color(176, 185, 28), "%.1fW", power_werkraum);
+      }
+
+      // === Status Kreise mit weißem Rand ===
+      // Lampen links: äußerer Kreis weiß (Rand), innerer Kreis Farbe
+      it.filled_circle(13, 65, 13, farbe_rand);
+      it.filled_circle(13, 65, 10, id(keller_leuchte_1).state ? farbe_lampe_an : farbe_aus);
+      it.printf(30, 51, id(my_font_Coffin_miniklein), farbe_text_lampen, "Lampe");
+      it.printf(30, 66, id(my_font_Coffin_miniklein), farbe_text_lampen, "3D-Drucker");
+
+      it.filled_circle(13, 125, 13, farbe_rand);
+      it.filled_circle(13, 125, 10, id(keller_leuchte_2).state ? farbe_lampe_an : farbe_aus);
+      it.printf(30, 111, id(my_font_Coffin_miniklein), farbe_text_lampen, "Lupen");
+      it.printf(30, 126, id(my_font_Coffin_miniklein), farbe_text_lampen, "Lampe");
+
+      it.filled_circle(13, 185, 13, farbe_rand);
+      it.filled_circle(13, 185, 10, id(keller_leuchte_3).state ? farbe_lampe_an : farbe_aus);
+      it.printf(30, 171, id(my_font_Coffin_miniklein), farbe_text_lampen, "Lampe");
+      it.printf(30, 186, id(my_font_Coffin_miniklein), farbe_text_lampen, "Werkbank");
+
+      it.filled_circle(13, 245, 13, farbe_rand);
+      it.filled_circle(13, 245, 10, id(keller_leuchte_4).state ? farbe_lampe_an : farbe_aus);
+      it.printf(30, 231, id(my_font_Coffin_miniklein), farbe_text_lampen, "Lampe");
+      it.printf(30, 246, id(my_font_Coffin_miniklein), farbe_text_lampen, "Retro-PC");
+
+      // Steckdosen rechts
+      it.printf(162, 56, id(my_font_Coffin_1), farbe_text_steckdosen, "Leata");
+      it.filled_circle(226, 65, 13, farbe_rand);
+      it.filled_circle(226, 65, 10, id(keller_steckdose_1).state ? farbe_steckdose_an : farbe_aus);
+
+      it.printf(140, 115, id(my_font_Coffin_1), farbe_text_steckdosen, "Entleata");
+      it.filled_circle(226, 125, 13, farbe_rand);
+      it.filled_circle(226, 125, 10, id(keller_steckdose_2).state ? farbe_steckdose_an : farbe_aus);
+
+      it.printf(149, 176, id(my_font_Coffin_1), farbe_text_steckdosen, "Netzteil");
+      it.filled_circle(226, 185, 13, farbe_rand);
+      it.filled_circle(226, 185, 10, id(keller_steckdose_3).state ? farbe_steckdose_an : farbe_aus);
+
+      it.printf(133, 236, id(my_font_Coffin_1), farbe_text_steckdosen, "Retro-PC");
+      it.filled_circle(226, 245, 13, farbe_rand);
+      it.filled_circle(226, 245, 10, id(keller_steckdose_4).state ? farbe_steckdose_an : farbe_aus);

@@ -55,6 +55,7 @@ jobs:
           WETTERSTATION_API_KEY: ${{ secrets.WETTERSTATION_API_KEY }}
           RAUMLUFT_STUBE_API_KEY: ${{ secrets.RAUMLUFT_STUBE_API_KEY }}
           LUXMETER_API_KEY: ${{ secrets.LUXMETER_API_KEY }}
+          WERKSTATT_ZENTRALE_API_KEY: ${{ secrets.WERKSTATT_ZENTRALE_API_KEY }}
         run: |
           for d in displays/*/; do
             {
@@ -64,6 +65,7 @@ jobs:
               echo "wetterstation_api_key: \"$WETTERSTATION_API_KEY\""
               echo "raumluft_stube_api_key: \"$RAUMLUFT_STUBE_API_KEY\""
               echo "luxmeter_api_key: \"$LUXMETER_API_KEY\""
+              echo "werkstatt_zentrale_api_key: \"$WERKSTATT_ZENTRALE_API_KEY\""
             } > "$d/secrets.yaml"
           done
       - name: Firmware-Zweig holen

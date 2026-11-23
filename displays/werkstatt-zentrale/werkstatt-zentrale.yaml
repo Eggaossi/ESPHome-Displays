@@ -1,0 +1,413 @@
+# =====================================================================
+#  Werkstatt-Zentrale by Ossi - Geraete-Datei (wird von GitHub gebaut)
+#  Geraet in HA: werkstatt-zentrale-by-ossi (Name bleibt, sonst aendern sich die Entitaeten).
+#  ESP32-S3-DevKitC-1, Display ST7789V 240x320 hochkant (SPI CLK 18, MOSI 17, CS 7, DC 15, RST 16).
+#  Innen: BME680 (I2C SDA 4, SCL 5). Aus HA: Luxmeter (aussen), Strom-Messer Werkraum-Dose
+#  (Shelly Plus 1PM), Moonraker/Mainsail (3D-Druck).
+#  Schaltet: 4 Lampen, 4 Steckdosen (Relais per LEDC), Radio; 8 Keller-Eingaenge, General-Aus, Radio-Taster.
+#  Inhalt 1:1 aus der Fassung im ESPHome Builder (23.11.2026), nur Kopf/Schluessel/Selbst-Update neu.
+#  Passwoerter/Schluessel kommen aus den GitHub-Secrets (secrets.yaml wird beim Bauen erzeugt):
+#  gemeinsames OTA-Passwort (OTA_PASSWORD), eigener API-Schluessel (WERKSTATT_ZENTRALE_API_KEY).
+#  API-Schluessel Stand 1 (23.11.2026; geaendert = Neubau, sonst gibt GitHub die alte Firmware frei).
+#  Anzeige: anzeige.yaml (aktives Design). Selbst-Update: prueft alle 30 s das Manifest im
+#  Zweig "firmware" und spielt eine neue Version selbst ein.
+# =====================================================================
+substitutions:
+  fw_version: "0"                 # setzt GitHub beim Bauen auf die Build-Nummer
+  manifest_url: https://raw.githubusercontent.com/Eggaossi/ESPHome-Displays/firmware/werkstatt-zentrale/manifest.json
+
+esphome:
+  name: werkstatt-zentrale-by-ossi
+  friendly_name: Werkstatt-Zentrale by Ossi
+  project:
+    name: ossi.werkstatt_zentrale
+    version: ${fw_version}
+
+esp32:
+  board: esp32-s3-devkitc-1
+  framework:
+    type: arduino
+
+logger:
+
+api:
+  encryption:
+    key: !secret werkstatt_zentrale_api_key
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+  - platform: http_request
+
+http_request:
+  verify_ssl: false
+  timeout: 30s
+
+update:
+  - platform: http_request
+    id: fw_update
+    name: Firmware GitHub
+    source: ${manifest_url}
+    update_interval: 30s
+    on_update_available:
+      then:
+        - logger.log: "Neue Firmware auf GitHub - spiele sie ein"
+        - update.perform: fw_update
+
+# Reserve, falls der Ausloeser oben einmal nicht greift
+interval:
+  - interval: 1min
+    startup_delay: 1min
+    then:
+      - if:
+          condition:
+            update.is_available: fw_update
+          then:
+            - update.perform: fw_update
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  ap:
+    ssid: "Werkstatt-Zentrale-By-Ossi"
+    password: !secret ota_password
+  on_connect:
+    - output.turn_on: werkstatt_status_led
+    - logger.log: "WLAN verbunden - LED an"
+  on_disconnect:
+    - output.turn_off: werkstatt_status_led
+    - logger.log: "WLAN getrennt - LED aus"
+
+captive_portal:
+
+time:
+  - platform: sntp
+    id: sntp_time
+    timezone: Europe/Berlin
+
+i2c:
+  sda: GPIO4
+  scl: GPIO5
+  scan: true
+
+sensor:
+  - platform: bme680
+    temperature:
+      name: "Werkstatt Temperatur"
+      id: bme680_temperature
+    pressure:
+      name: "Werkstatt Luftdruck"
+      id: bme680_pressure
+    humidity:
+      name: "Werkstatt Luftfeuchtigkeit"
+      id: bme680_humidity
+  - platform: homeassistant
+    id: sensor_luxmeter_lux_korrigierte_temperatur
+    entity_id: sensor.luxmeter_lux_korrigierte_temperatur
+  - platform: homeassistant
+    id: sensor_luxmeter_aussen_luftfeuchtigkeit
+    entity_id: sensor.luxmeter_aussen_luftfeuchtigkeit
+  - platform: homeassistant
+    id: sensor_luxmeter_aussen_luftdruck
+    entity_id: sensor.luxmeter_aussen_luftdruck
+  - platform: homeassistant
+    id: sensor_shellyplus1pm_a0dd6c2b7808_voltage
+    entity_id: sensor.shellyplus1pm_a0dd6c2b7808_voltage
+    name: "Spannung"
+  - platform: homeassistant
+    id: sensor_shellyplus1pm_a0dd6c2b7808_current
+    entity_id: sensor.shellyplus1pm_a0dd6c2b7808_current
+    name: "Strom"
+  - platform: homeassistant
+    id: sensor_shellyplus1pm_a0dd6c2b7808_power
+    entity_id: sensor.shellyplus1pm_a0dd6c2b7808_power
+    name: "Leistung"
+
+  # ============================================================
+  # MOONRAKER (ersetzt OctoPrint)
+  # ============================================================
+  - platform: homeassistant
+    id: sensor_moonraker_print_progress
+    entity_id: sensor.mainsailos_print_progress
+    internal: true
+
+  - platform: homeassistant
+    id: sensor_moonraker_eta
+    entity_id: sensor.mainsailos_print_eta
+    internal: true
+    filters:
+      - lambda: |-
+          if (!std::isnan(x) && x > 0) {
+            return {x};
+          }
+          return {};
+
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO1
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "Keller-Eingang 1"
+    id: keller_eingang_1
+    filters:
+      - delayed_on: 50ms
+    on_state:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(keller_eingang_1).state;'
+            then:
+              - logger.log: "Keller-Eingang 1 wurde gedrückt!"
+  - platform: gpio
+    pin:
+      number: GPIO2
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "Keller-Eingang 2"
+    id: keller_eingang_2
+    filters:
+      - delayed_on: 50ms
+    on_state:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(keller_eingang_2).state;'
+            then:
+              - logger.log: "Keller-Eingang 2 wurde gedrückt!"
+  - platform: gpio
+    pin:
+      number: GPIO12
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "Keller-Eingang 3"
+    id: keller_eingang_3
+    filters:
+      - delayed_on: 50ms
+    on_state:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(keller_eingang_3).state;'
+            then:
+              - logger.log: "Keller-Eingang 3 wurde gedrückt!"
+  - platform: gpio
+    pin:
+      number: GPIO6
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "Keller-Eingang 4"
+    id: keller_eingang_4
+    filters:
+      - delayed_on: 50ms
+    on_state:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(keller_eingang_4).state;'
+            then:
+              - logger.log: "Keller-Eingang 4 wurde gedrückt!"
+  - platform: gpio
+    pin:
+      number: GPIO8
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "Keller-Eingang 5"
+    id: keller_eingang_5
+    filters:
+      - delayed_on: 50ms
+    on_state:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(keller_eingang_5).state;'
+            then:
+              - logger.log: "Keller-Eingang 5 wurde gedrückt!"
+  - platform: gpio
+    pin:
+      number: GPIO9
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "Keller-Eingang 6"
+    id: keller_eingang_6
+    filters:
+      - delayed_on: 50ms
+    on_state:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(keller_eingang_6).state;'
+            then:
+              - logger.log: "Keller-Eingang 6 wurde gedrückt!"
+  - platform: gpio
+    pin:
+      number: GPIO10
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "Keller-Eingang 7"
+    id: keller_eingang_7
+    filters:
+      - delayed_on: 50ms
+    on_state:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(keller_eingang_7).state;'
+            then:
+              - logger.log: "Keller-Eingang 7 wurde gedrückt!"
+  - platform: gpio
+    pin:
+      number: GPIO11
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "Keller-Eingang 8"
+    id: keller_eingang_8
+    filters:
+      - delayed_on: 50ms
+    on_state:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(keller_eingang_8).state;'
+            then:
+              - logger.log: "Keller-Eingang 8 wurde gedrückt!"
+  - platform: gpio
+    pin:
+      number: GPIO20
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "General-Aus"
+    id: general_aus_taster
+    filters:
+      - delayed_on: 50ms
+    on_state:
+      then:
+        - logger.log: "General-Aus wurde gedrückt!"
+        - switch.turn_off: keller_leuchte_1
+        - switch.turn_off: keller_leuchte_2
+        - switch.turn_off: keller_steckdose_1
+        - switch.turn_off: keller_steckdose_2
+        - switch.turn_off: keller_steckdose_3
+        - switch.turn_off: keller_radio
+        - output.turn_off: radio_led_output
+        - output.turn_off: general_aus_led
+        - logger.log: "Ausgewählte Lampen und Steckdosen wurden erfolgreich ausgeschaltet!"
+  - platform: gpio
+    pin:
+      number: GPIO3
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "Radio Taster"
+    id: radio_taster
+    filters:
+      - delayed_on: 50ms
+    on_state:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(radio_taster).state;'
+            then:
+              - logger.log: "Radio Taster wurde gedrückt!"
+
+output:
+  - platform: gpio
+    pin: GPIO21
+    id: keller_leuchte_1_output
+  - platform: gpio
+    pin: GPIO47
+    id: keller_leuchte_2_output
+  - platform: gpio
+    pin: GPIO14
+    id: keller_leuchte_3_output
+  - platform: gpio
+    pin: GPIO38
+    id: keller_leuchte_4_output
+  - platform: ledc
+    pin: GPIO39
+    id: keller_steckdose_1_output
+    frequency: 200 Hz
+    max_power: 0.15
+  - platform: ledc
+    pin: GPIO40
+    id: keller_steckdose_2_output
+    frequency: 200 Hz
+    max_power: 0.15
+  - platform: ledc
+    pin: GPIO41
+    id: keller_steckdose_3_output
+    frequency: 200 Hz
+    max_power: 0.15
+  - platform: ledc
+    pin: GPIO42
+    id: keller_steckdose_4_output
+    frequency: 200 Hz
+    max_power: 0.15
+  - platform: gpio
+    pin: GPIO13
+    id: werkstatt_status_led
+  - platform: gpio
+    pin: GPIO19
+    id: general_aus_led
+  - platform: gpio
+    pin: GPIO37
+    id: radio_led_output
+
+switch:
+  - platform: output
+    name: "Keller Leuchte 1"
+    output: keller_leuchte_1_output
+    id: keller_leuchte_1
+    on_turn_on:
+      - output.turn_on: general_aus_led
+  - platform: output
+    name: "Keller Leuchte 2"
+    output: keller_leuchte_2_output
+    id: keller_leuchte_2
+    on_turn_on:
+      - output.turn_on: general_aus_led
+  - platform: output
+    name: "Keller Leuchte 3"
+    output: keller_leuchte_3_output
+    id: keller_leuchte_3
+  - platform: output
+    name: "Keller Leuchte 4"
+    output: keller_leuchte_4_output
+    id: keller_leuchte_4
+  - platform: output
+    name: "Keller Steckdose 1"
+    output: keller_steckdose_1_output
+    id: keller_steckdose_1
+    on_turn_on:
+      - output.turn_on: general_aus_led
+  - platform: output
+    name: "Keller Steckdose 2"
+    output: keller_steckdose_2_output
+    id: keller_steckdose_2
+    on_turn_on:
+      - output.turn_on: general_aus_led
+  - platform: output
+    name: "Keller Steckdose 3"
+    output: keller_steckdose_3_output
+    id: keller_steckdose_3
+    on_turn_on:
+      - output.turn_on: general_aus_led
+  - platform: output
+    name: "Keller Steckdose 4"
+    output: keller_steckdose_4_output
+    id: keller_steckdose_4
+    on_turn_on:
+      - output.turn_on: general_aus_led
+  - platform: output
+    name: "Keller Radio"
+    output: radio_led_output
+    id: keller_radio
+    on_turn_on:
+      - output.turn_on: general_aus_led
+  - platform: output
+    output: general_aus_led
+    id: general_aus_led_switch
+    name: "Werkstatt General-Aus LED"
+    internal: false
+
+packages:
+  anzeige: !include anzeige.yaml
