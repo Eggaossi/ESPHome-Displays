@@ -6,6 +6,7 @@
 #  Taster kurz = Ausgleich 0, lang = "GESPEICHERT!". Windgeschwindigkeit kommt aus HA (Windmesser).
 #  Passwoerter/Schluessel kommen aus den GitHub-Secrets (secrets.yaml wird beim Bauen erzeugt):
 #  gemeinsames OTA-Passwort (OTA_PASSWORD), eigener API-Schluessel (LUXMETER_API_KEY).
+#  API-Schluessel Stand 2 (23.11.2026; geaendert = Neubau, sonst gibt GitHub die alte Firmware frei).
 #  Anzeige: anzeige.yaml (aktives Design). Selbst-Update: prueft alle 30 s das Manifest im
 #  Zweig "firmware" und spielt eine neue Version selbst ein.
 # =====================================================================
