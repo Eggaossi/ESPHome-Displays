@@ -82,7 +82,7 @@ display:
       it.horizontal_line(6, 82, 148, Color(90, 75, 30));
       if (l_ok) it.printf(6, 96, id(f_mini), gold, TextAlign::CENTER_LEFT, "%.0f lx", lux);
       if (p_ok) it.printf(154, 96, id(f_mini), Color(210, 150, 100), TextAlign::CENTER_RIGHT, "%.0f hPa", id(aussenluftdruck_sensor).state);
-      if (w_ok) it.printf(80, 116, id(f_mini), gruen, TextAlign::CENTER, "Wind %.1f km/h", id(wind_speed_kmh).state);
+      if (w_ok) it.printf(80, 116, id(f_mini), gruen, TextAlign::CENTER, "Wind %.0f km/h", id(wind_speed_kmh).state);
       if (einstellen) {
         it.filled_rectangle(4, 92, 152, 32, Color(25, 25, 25));
         it.rectangle(4, 92, 152, 32, gold);

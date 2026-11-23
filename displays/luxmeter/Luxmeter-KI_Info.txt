@@ -65,3 +65,6 @@ In HA dann beim ESPHome-Geraet luxmeter den NEUEN API-Schluessel eintragen (HA m
             luxmeter.yaml) bzw. "GESPEICHERT!". designs.txt: original/klar/kacheln/wetter. Aktiv bleibt original (Wahl
             in der App HA-Displays). tools/vorschau.py: millis() fuer die Vorschau. Lokal mit Ersatzschriften gezeichnet.
             NICHT am Geraet.
+23.11.2026  Build 84 GRUEN (original + offset_zeit), Vorschauen mit echten Schriften da. MERKER: Coffin klein (14 px) hat
+            KEINEN sichtbaren Dezimalpunkt ("3.2 km/h" -> "32 km/h", im Original "00 km/h") -> Wind in den neuen Designs ohne
+            Kommastelle. Neue Designs werden erst beim Auswaehlen von ESPHome uebersetzt (nur die Vorschau ist gebaut).

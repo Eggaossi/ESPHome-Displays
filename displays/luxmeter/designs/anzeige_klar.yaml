@@ -64,7 +64,7 @@ display:
       it.horizontal_line(10, 74, 140, Color(90, 75, 30));
       if (h_ok) it.printf(10, 88, id(f_klein), blau, TextAlign::CENTER_LEFT, "%.0f %%", id(humidity_sensor).state);
       if (l_ok) it.printf(150, 88, id(f_klein), gold, TextAlign::CENTER_RIGHT, "%.0f lx", id(lux_sensor).state);
-      if (w_ok) it.printf(10, 112, id(f_mini), gruen, TextAlign::CENTER_LEFT, "%.1f km/h", id(wind_speed_kmh).state);
+      if (w_ok) it.printf(10, 112, id(f_mini), gruen, TextAlign::CENTER_LEFT, "%.0f km/h", id(wind_speed_kmh).state);
       if (p_ok) it.printf(150, 112, id(f_mini), Color(210, 150, 100), TextAlign::CENTER_RIGHT, "%.0f hPa", id(aussenluftdruck_sensor).state);
       if (einstellen) {
         it.filled_rectangle(4, 92, 152, 32, Color(25, 25, 25));
