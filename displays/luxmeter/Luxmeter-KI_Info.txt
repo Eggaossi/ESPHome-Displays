@@ -54,3 +54,7 @@ In HA dann beim ESPHome-Geraet luxmeter den NEUEN API-Schluessel eintragen (HA m
             tools/vorschau.py kannte die Sensoren nur aus dem Design und keine Groesse aus device_width/height -> beides
             ergaenzt (Geraete-Datei wird mitgelesen, Stubs is_connected/publish_state). Lauf 83: Vorschau da (echte Schriften),
             alle Firmwares "aufgehoben" (keine neuen Versionen).
+23.11.2026  Build 82 am Geraet GETESTET (HA Zustaende 11:1x): neue Entitaeten heissen sensor.aussen_luxmeter_aussen_gaswiderstand
+            (101620 Ohm), sensor.aussen_luxmeter_aussen_temperatur_bme680 (3,07 °C, SHT45 2,79 °C), sensor.aussen_luxmeter_temperatur_ausgleich
+            (-4,0); Praefix "aussen_" weil Geraet im Bereich Aussen. Alte Entitaeten unveraendert (sensor.luxmeter_*),
+            update.aussen_luxmeter_firmware_github installiert 82. SENSOR GERICHTET - fertig.
