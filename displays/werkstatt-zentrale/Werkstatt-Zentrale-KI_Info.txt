@@ -56,3 +56,6 @@ In HA dann beim ESPHome-Geraet den NEUEN API-Schluessel eintragen (HA meldet "ne
             neuer Schluessel). Neuer Schluessel in HA eingetragen: Zentrale wieder in HA. UEBERNAHME FERTIG.
             Ab jetzt: Aenderungen NUR noch hier im Repo, Geraet holt sie selbst. NICHT mehr im ESPHome Builder installieren
             (die Builder-Datei hat noch den alten Schluessel und das alte OTA-Passwort).
+23.11.2026  tools/builder_platzhalter.ps1: ersetzt die alte Builder-Datei (alter Schluessel/OTA-Passwort im Klartext) durch
+            einen Platzhalter ohne Board (Installieren im Builder unmoeglich, esphome config lehnt ab), Sicherung C:\Backups.
+            Gilt auch fuer luxmeter. pwsh selbst NICHT getestet.
