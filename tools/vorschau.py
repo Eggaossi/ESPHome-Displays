@@ -210,8 +210,9 @@ struct ZeitQuelle { ESPTime now() { return ESPTime(); } ESPTime utcnow() { retur
 namespace sensor { struct Sensor { float state; bool has_state() const { return true; } float get_state() const { return state; } }; }
 using sensor::Sensor;
 struct TextSensor { string state; bool has_state() const { return true; } };
-struct BinarySensor { bool state; bool has_state() const { return true; } };
-struct Etwas { bool state = false; bool has_state() const { return false; } bool is_on() const { return false; } };
+struct BinarySensor { bool state; bool has_state() const { return true; } void publish_state(bool v) { state = v; } };
+struct Etwas { bool state = false; bool has_state() const { return false; } bool is_on() const { return false; }
+  bool is_connected() const { return true; } void publish_state(bool v) { state = v; } };
 '''
 
 
@@ -226,6 +227,8 @@ def groesse(cfg):
             b, h = int(dim["width"]), int(dim["height"])
         elif isinstance(dim, str) and "x" in dim:
             b, h = map(int, dim.lower().split("x"))
+        elif d.get("device_width") and d.get("device_height"):
+            b, h = int(d["device_width"]), int(d["device_height"])
         else:
             b, h = MODELLE.get(str(d.get("model", "")).lower(), (320, 480))
         if int(d.get("rotation", 0) or 0) in (90, 270): b, h = h, b
@@ -250,6 +253,17 @@ def main():
         i = args.index("--cache"); cache = args[i + 1]; del args[i:i + 2]
     quelle, ziel = args[0], args[1]
     cfg = yaml.load(open(quelle, encoding="utf-8"), Lader)
+    # Luxmeter (23.11.2026): Sensoren stehen in der Geraete-Datei, nicht im Design -> dazunehmen
+    ordner = os.path.dirname(os.path.dirname(os.path.abspath(quelle)))
+    geraet = os.path.join(ordner, os.path.basename(ordner) + ".yaml")
+    if os.path.isfile(geraet):
+        try:
+            gcfg = yaml.load(open(geraet, encoding="utf-8"), Lader) or {}
+            for k in ("sensor", "text_sensor", "binary_sensor", "globals", "time"):
+                if gcfg.get(k):
+                    cfg[k] = list(cfg.get(k) or []) + list(gcfg[k])
+        except Exception as fehler:
+            sys.stderr.write(f"Geraete-Datei nicht gelesen: {fehler}\n")
     global B, H
     B, H = groesse(cfg)
     code = lambda_suchen(cfg)
