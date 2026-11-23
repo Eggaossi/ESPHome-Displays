@@ -43,3 +43,5 @@ In HA dann beim ESPHome-Geraet luxmeter den NEUEN API-Schluessel eintragen (HA m
             HA lehnte den Schluessel ab (vermutlich Zwischenablage ueberschrieben) -> neuer Schluessel. MERKER: Schluessel-
             Aenderung allein baut NICHT neu (Lager vergleicht nur YAML) -> Kommentar "API-Schluessel Stand N" in luxmeter.yaml
             hochzaehlen.
+23.11.2026  Build 81 (neuer Schluessel) per Selbst-Update am Geraet, Schluessel in HA eingetragen: Luxmeter wieder in HA,
+            UEBERNAHME FERTIG (Nutzer: "jetzt gings"). Ab jetzt: Aenderungen nur noch hier im Repo, Geraet holt sie selbst.
