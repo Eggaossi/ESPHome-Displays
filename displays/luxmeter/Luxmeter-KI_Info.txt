@@ -34,3 +34,6 @@ In HA dann beim ESPHome-Geraet luxmeter den NEUEN API-Schluessel eintragen (HA m
             GUELTIG (mit Ersatz-Schriften und Ersatz-Secrets). NICHT gebaut, NICHT am Geraet.
             Naechste Schritte: Secret LUXMETER_API_KEY, Uebernahme, dann BME680 Gas/Luftqualitaet freischalten,
             Ausgleich an HA melden (fuer die Tablet-Seite "Wetter" im Repo HA-Konfiguration).
+23.11.2026  Secret LUXMETER_API_KEY vom Nutzer per gh gesetzt (neuer Schluessel, in Bitwarden). Build 80 (Lauf von Hand)
+            GRUEN: firmware.ota.bin 1,05 MB im Zweig firmware/luxmeter. Andere Displays "aufgehoben" (keine neue Version).
+            Noch NICHT am Geraet (Uebernahme im ESPHome Builder steht aus).
