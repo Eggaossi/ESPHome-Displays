@@ -79,3 +79,5 @@ In HA dann beim ESPHome-Geraet luxmeter den NEUEN API-Schluessel eintragen (HA m
             echte Vorschau baut GitHub. NICHT am Geraet.
             Lauf mit echten Schriften: Gold Bogen zeigte "123" statt 12.3 (Coffin 24 ohne sichtbaren Punkt) -> Ganzzahl und
             Zehntel getrennt, Punkt als 3x3-Quadrat gezeichnet.
+            Echte Vorschauen (GitHub) dem Nutzer gezeigt, Nutzer: "ok, lassen wir das" -> Gold Deluxe + Gold Bogen bleiben
+            in designs.txt zur Auswahl (App HA-Displays), aktiv bleibt Original. Keine weiteren Designs vorschlagen.
