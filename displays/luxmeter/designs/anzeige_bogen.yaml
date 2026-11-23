@@ -82,7 +82,7 @@ display:
         if (punkt) {
           *punkt = 0;
           it.print(mx + 1, my, id(f_temp), orange, TextAlign::CENTER_RIGHT, buf);
-          it.filled_rectangle(mx + 3, my + 7, 3, 3, orange);
+          it.filled_rectangle(mx + 3, my + 4, 3, 3, orange);
           it.print(mx + 8, my, id(f_temp), orange, TextAlign::CENTER_LEFT, punkt + 1);
         } else {
           it.print(mx, my, id(f_temp), orange, TextAlign::CENTER, buf);
