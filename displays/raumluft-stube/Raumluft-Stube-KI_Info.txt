@@ -136,4 +136,5 @@ Hotspot (Fallback-AP) "Co-Ossi-Stube Fallback Hotspot", Passwort = OTA_PASSWORD.
 23.11.2026 SELBST-UPDATE WIEDER AN (Nutzer: "das hatten wir vorher besser ... mein Fehler so umzustellen"): Umstellung vom
   22.11. zurueckgenommen (git revert 8a1ffe8): update_interval 30s, on_update_available -> update.perform, interval-Reserve 1 min.
   Die laufende Firmware prueft nur -> diese Rueckstellung EINMAL in HA (Einstellungen > Updates > Firmware GitHub)
-  installieren, danach wieder automatisch. NICHT am Geraet getestet.
+  installieren, danach wieder automatisch. Am 23.11.2026 morgens in HA bei beiden Displays installiert (Nutzer).
+  Selbst-Update mit der naechsten Aenderung noch NICHT beobachtet.
