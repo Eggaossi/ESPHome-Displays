@@ -106,10 +106,14 @@ display:
         snprintf(strom, sizeof(strom), "%.2f", id(sensor_shellyplus1pm_a0dd6c2b7808_current).state);
         int sx, sy, w_zahl, w_a, sh;
         it.get_text_bounds(0, 0, strom, id(neu_werte), TextAlign::TOP_LEFT, &sx, &sy, &w_zahl, &sh);
-        it.get_text_bounds(0, 0, "A", id(neu_steckdose), TextAlign::TOP_LEFT, &sx, &sy, &w_a, &sh);
+        it.get_text_bounds(0, 0, "A", id(neu_klein), TextAlign::TOP_LEFT, &sx, &sy, &w_a, &sh);
         int links = 120 - (w_zahl + 1 + w_a) / 2;
-        it.print(links, 249, id(neu_werte), Color(240, 42, 16), strom);
-        it.print(links + w_zahl + 1, 249, id(neu_steckdose), Color(240, 42, 16), "A");
+        // beide auf dieselbe Grundlinie wie V und W
+        int basis_y, b1, b2, b3;
+        it.get_text_bounds(0, 0, strom, id(neu_werte), TextAlign::BASELINE_LEFT, &b1, &basis_y, &b2, &b3);
+        int grundlinie = 249 - basis_y;
+        it.print(links, grundlinie, id(neu_werte), Color(240, 42, 16), TextAlign::BASELINE_LEFT, strom);
+        it.print(links + w_zahl + 1, grundlinie, id(neu_klein), Color(240, 42, 16), TextAlign::BASELINE_LEFT, "A");
       }
       if (id(sensor_shellyplus1pm_a0dd6c2b7808_power).has_state())
         it.printf(238, 249, id(neu_werte), Color(176, 185, 28), TextAlign::TOP_RIGHT, "%.1fW", id(sensor_shellyplus1pm_a0dd6c2b7808_power).state);
