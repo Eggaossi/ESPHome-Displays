@@ -71,3 +71,5 @@ In HA dann beim ESPHome-Geraet den NEUEN API-Schluessel eintragen (HA meldet "ne
             V | A | W und Tabelle Innen/Aussen (Temperatur, Feuchte, hPa). Lampe an jetzt reines Gelb (8-Bit-Palette).
             "A" in Coffin, weil das A der Cabaret wie R aussieht. Vorschau von GitHub (echte Schriften) gezeigt.
             NOCH NICHT AKTIV (design.txt = original), NICHT kompiliert (Build baut nur das aktive Design), NICHT am Geraet.
+24.11.2026  App HA-Displays: Werkstatt-Zentrale TAUCHT AUF (Original + Neu mit Vorschau), am Handy GESEHEN (Screenshot Nutzer).
+            Design Neu: Kreise wieder genau an den Stellen wie Original (Mitte y 65/125/185/245, x 13/226), Wunsch Nutzer.
