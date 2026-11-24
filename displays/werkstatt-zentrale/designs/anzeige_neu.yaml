@@ -54,7 +54,7 @@ display:
       };
 
       // ===== Titel =====
-      it.print(120, 1, id(neu_titel), Color(243, 214, 119), TextAlign::TOP_CENTER, "Werkstatt Zentrale by Ossi");
+      it.print(120, 4, id(neu_titel), Color(243, 214, 119), TextAlign::TOP_CENTER, "Werkstatt Zentrale by Ossi");
 
       // ===== Datum | Wochentag | Uhrzeit =====
       auto time = id(sntp_time).now();
@@ -100,8 +100,17 @@ display:
       // ===== Werkraum: Spannung | Strom | Leistung =====
       if (id(sensor_shellyplus1pm_a0dd6c2b7808_voltage).has_state())
         it.printf(2, 249, id(neu_werte), Color(214, 92, 203), "%.0fV", id(sensor_shellyplus1pm_a0dd6c2b7808_voltage).state);
-      if (id(sensor_shellyplus1pm_a0dd6c2b7808_current).has_state())
-        it.printf(120, 249, id(neu_werte), Color(240, 42, 16), TextAlign::TOP_CENTER, "%.2fA", id(sensor_shellyplus1pm_a0dd6c2b7808_current).state);
+      if (id(sensor_shellyplus1pm_a0dd6c2b7808_current).has_state()) {
+        // Zahl in Cabaret, das "A" in Coffin (das A der Cabaret sieht aus wie ein R)
+        char strom[12];
+        snprintf(strom, sizeof(strom), "%.2f", id(sensor_shellyplus1pm_a0dd6c2b7808_current).state);
+        int sx, sy, w_zahl, w_a, sh;
+        it.get_text_bounds(0, 0, strom, id(neu_werte), TextAlign::TOP_LEFT, &sx, &sy, &w_zahl, &sh);
+        it.get_text_bounds(0, 0, "A", id(neu_steckdose), TextAlign::TOP_LEFT, &sx, &sy, &w_a, &sh);
+        int links = 120 - (w_zahl + 1 + w_a) / 2;
+        it.print(links, 249, id(neu_werte), Color(240, 42, 16), strom);
+        it.print(links + w_zahl + 1, 249, id(neu_steckdose), Color(240, 42, 16), "A");
+      }
       if (id(sensor_shellyplus1pm_a0dd6c2b7808_power).has_state())
         it.printf(238, 249, id(neu_werte), Color(176, 185, 28), TextAlign::TOP_RIGHT, "%.1fW", id(sensor_shellyplus1pm_a0dd6c2b7808_power).state);
       it.horizontal_line(0, 276, 240, farbe_linie);
