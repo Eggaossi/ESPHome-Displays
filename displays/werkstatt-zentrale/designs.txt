@@ -1,2 +1,3 @@
 # id=Name (fuer die App HA-Displays)
 original=Original
+neu=Neu
