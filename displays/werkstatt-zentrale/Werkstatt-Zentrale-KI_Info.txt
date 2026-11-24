@@ -66,3 +66,8 @@ In HA dann beim ESPHome-Geraet den NEUEN API-Schluessel eintragen (HA meldet "ne
             Design "Original" am Geraet fotografiert (Datum, Druck/Temperaturen, Lampen 3+4 an = Taster links 3+4 leuchten).
             OFFEN: NICHT geprueft, ob die Werkstatt-Zentrale in der App HA-Displays auftaucht (designs.txt hat bisher nur
             "original").
+24.11.2026  Design "Neu" (designs/anzeige_neu.yaml, in designs.txt): ohne 3D-Druck (Nutzer braucht ihn nicht mehr), oben
+            Datum | Wochentag (mittig in der Luecke) | Uhrzeit, Mitte 8 Kreise (Seiten/Reihenfolge wie die Taster), unten
+            V | A | W und Tabelle Innen/Aussen (Temperatur, Feuchte, hPa). Lampe an jetzt reines Gelb (8-Bit-Palette).
+            "A" in Coffin, weil das A der Cabaret wie R aussieht. Vorschau von GitHub (echte Schriften) gezeigt.
+            NOCH NICHT AKTIV (design.txt = original), NICHT kompiliert (Build baut nur das aktive Design), NICHT am Geraet.
