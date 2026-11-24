@@ -1,7 +1,7 @@
 ═══════════════════════════════════════════════════════════════
   Werkstatt-Zentrale-KI_Info.txt  (Werkstatt-Zentrale by Ossi, Keller)
 ═══════════════════════════════════════════════════════════════
-Stand: 23.11.2026
+Stand: 24.11.2026
 
 ── GERAET ────────────────────────────────────────────────────────
 ESP32-S3-DevKitC-1, ESPHome (Framework arduino), HA-Geraet "werkstatt-zentrale-by-ossi" (Name bleibt, sonst aendern
@@ -62,3 +62,7 @@ In HA dann beim ESPHome-Geraet den NEUEN API-Schluessel eintragen (HA meldet "ne
 23.11.2026  builder_platzhalter.ps1 am PC gelaufen: Builder-Datei werkstatt-zentrale-by-ossi.yaml ist jetzt Platzhalter
             (alte Fassung C:\Backups\builder_werkstatt-zentrale_2026-11-23_17-40.yaml). Alter Schluessel/OTA-Passwort nicht
             mehr in HA.
+24.11.2026  Nutzer bestaetigt: Aenderungen NUR noch im Repo, Geraet holt sich neue Firmware selbst (laeuft).
+            Design "Original" am Geraet fotografiert (Datum, Druck/Temperaturen, Lampen 3+4 an = Taster links 3+4 leuchten).
+            OFFEN: NICHT geprueft, ob die Werkstatt-Zentrale in der App HA-Displays auftaucht (designs.txt hat bisher nur
+            "original").
