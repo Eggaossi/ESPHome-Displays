@@ -73,3 +73,6 @@ In HA dann beim ESPHome-Geraet den NEUEN API-Schluessel eintragen (HA meldet "ne
             NOCH NICHT AKTIV (design.txt = original), NICHT kompiliert (Build baut nur das aktive Design), NICHT am Geraet.
 24.11.2026  App HA-Displays: Werkstatt-Zentrale TAUCHT AUF (Original + Neu mit Vorschau), am Handy GESEHEN (Screenshot Nutzer).
             Design Neu: Kreise wieder genau an den Stellen wie Original (Mitte y 65/125/185/245, x 13/226), Wunsch Nutzer.
+            REGEL (Nutzer 24.11.2026): jede neue Design-Variante bekommt einen EIGENEN Namen (eigene designs/anzeige_<id>.yaml
+            + Zeile in designs.txt), bestehende Designs NICHT ueberschreiben - der Nutzer schaltet in der App HA-Displays um.
+            Die enge Fassung von "Neu" (Kreise 76/124/172/220) wird NICHT als eigenes Design gebraucht (Nutzer: "Kompakt weg").
