@@ -1,0 +1,140 @@
+INFO ESPHome 2026.11.0
+INFO Reading configuration displays/werkstatt-zentrale/werkstatt-zentrale.yaml...
+WARNING GPIO20 is used by the USB-Serial-JTAG interface. Using this pin as GPIO will conflict with USB-Serial-JTAG.
+WARNING GPIO3 is a strapping pin and should only be used for I/O with care.
+Attaching external pullup/down resistors to strapping pins can cause unexpected failures.
+See https://esphome.io/guides/faq/#why-am-i-getting-a-warning-about-strapping-pins
+WARNING GPIO19 is used by the USB-Serial-JTAG interface. Using this pin as GPIO will conflict with USB-Serial-JTAG.
+WARNING 'ota' password wastes significant flash and RAM; using 'encryption' instead is recommended - see https://esphome.io/components/ota/esphome/#configuration-variables
+INFO Generating C++ source...
+INFO Setting CONFIG_LWIP_MAX_SOCKETS to 14 (TCP=6 [api=3, captive_portal=3], UDP=5 [captive_portal=1, mdns=2, web_server_idf=2], TCP_LISTEN=3 [api=1, ota=1, web_server_base=1])
+WARNING The 'ili9xxx' component is deprecated and will be removed in ESPHome 2027.5.0, migrate to 'mipi_spi' instead.
+INFO Compiling app... Build path: /home/runner/work/ESPHome-Displays/ESPHome-Displays/displays/werkstatt-zentrale/.esphome/build/werkstatt-zentrale-by-ossi
+INFO Checking ESP-IDF 5.5.6 framework ...
+INFO Downloading ESP-IDF 5.5.6 framework ...
+INFO Patched /home/runner/.cache/esphome/idf/frameworks/5.5.6/tools/tools.json to skip installing tools ESPHome does not use (openocd, gdb, ULP toolchains).
+INFO Installing ESP-IDF 5.5.6 framework ...
+INFO Downloading 3 ESP-IDF tool archive(s): xtensa-esp-elf@esp-14.2.0_20260121, riscv32-esp-elf@esp-14.2.0_20260121, esp-rom-elfs@20260528
+Extracting 3 ESP-IDF tool archive(s) with 3 worker(s): xtensa-esp-elf@esp-14.2.0_20260121, riscv32-esp-elf@esp-14.2.0_20260121, esp-rom-elfs@20260528
+Extracting /home/runner/.cache/esphome/idf/dist/riscv32-esp-elf-14.2.0_20260121-x86_64-linux-gnu.tar.xz to /home/runner/.cache/esphome/idf/tools/riscv32-esp-elf/esp-14.2.0_20260121
+Extracting /home/runner/.cache/esphome/idf/dist/xtensa-esp-elf-14.2.0_20260121-x86_64-linux-gnu.tar.xz to /home/runner/.cache/esphome/idf/tools/xtensa-esp-elf/esp-14.2.0_20260121
+Extracting /home/runner/.cache/esphome/idf/dist/esp-rom-elfs-20260528.tar.gz to /home/runner/.cache/esphome/idf/tools/esp-rom-elfs/20260528
+extracted esp-rom-elfs@20260528
+extracted xtensa-esp-elf@esp-14.2.0_20260121
+extracted riscv32-esp-elf@esp-14.2.0_20260121
+Updating /home/runner/.cache/esphome/idf/idf-env.json
+Selected targets are: esp32c5, esp32, esp32c2, esp32c3, esp32h21, esp32s3, esp32c61, esp32h2, esp32c6, esp32h4, esp32s2, esp32p4
+Current system platform: linux-amd64
+Installing tools: xtensa-esp-elf, riscv32-esp-elf, esp-rom-elfs
+Skipping xtensa-esp-elf@esp-14.2.0_20260121 (already installed)
+Skipping riscv32-esp-elf@esp-14.2.0_20260121 (already installed)
+Skipping esp-rom-elfs@20260528 (already installed)
+INFO Checking ESP-IDF 5.5.6 Python environment ...
+INFO Downloading constraints file for ESP-IDF 5.5 ...
+INFO Installing ESP-IDF 5.5.6 Python dependencies ...
+INFO Serving IDF components from the local mirror at /home/runner/.cache/esphome/idf/component_mirror
+INFO Build configuration is up to date
+INFO Mirroring 4 IDF component(s) for offline builds...
+INFO Mirrored 4 IDF component(s) for offline builds
+INFO Compiling with a precompiled header (set ESPHOME_PCH_ENABLE=0 to disable)
+[0/2] Re-checking globbed directories...[1/2] Re-running CMake...
+-- Component directory /home/runner/.cache/esphome/idf/frameworks/5.5.6/components/esp_blockdev does not contain a CMakeLists.txt file. No component will be added
+-- Minimal build - OFF
+-- Building ESP-IDF components for target esp32s3
+-- Project sdkconfig file /home/runner/work/ESPHome-Displays/ESPHome-Displays/displays/werkstatt-zentrale/.esphome/build/werkstatt-zentrale-by-ossi/sdkconfig.werkstatt-zentrale-by-ossi
+-- Compiler supported targets: xtensa-esp-elf
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+CMake Warning (author) at /usr/local/share/cmake-4.5/Modules/ExternalProject.cmake:2688 (message):
+  Policy CMP0225 is not set: ExternalProject sets CMAKE_INSTALL_PREFIX to
+  <INSTALL_DIR> in the default configure command.  Run "cmake --help-policy
+  CMP0225" for policy details.  Use the cmake_policy command to set the
+  policy and suppress this warning.
+  ExternalProject_Add(bootloader) uses the default configure command without
+  a CMAKE_INSTALL_PREFIX.  The OLD behavior leaves the external project's
+  install prefix at the CMake default; the NEW behavior sets it to
+  <INSTALL_DIR>.
+Call Stack (most recent call first):
+  /usr/local/share/cmake-4.5/Modules/ExternalProject.cmake:2833 (_ep_extract_configure_command)
+  /usr/local/share/cmake-4.5/Modules/ExternalProject.cmake:3316 (_ep_add_configure_command)
+  /home/runner/.cache/esphome/idf/frameworks/5.5.6/components/bootloader/project_include.cmake:131 (externalproject_add)
+  /home/runner/.cache/esphome/idf/frameworks/5.5.6/tools/cmake/build.cmake:471 (include)
+  /home/runner/.cache/esphome/idf/frameworks/5.5.6/tools/cmake/build.cmake:737 (__build_process_project_includes)
+  /home/runner/.cache/esphome/idf/frameworks/5.5.6/tools/cmake/project.cmake:752 (idf_build_process)
+  CMakeLists.txt:176 (project)
+This warning is for project developers.  Use -Wno-author to suppress it.
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- USING O3
+-- App "werkstatt-zentrale-by-ossi" version: 2026.11.0
+-- Configuring done (3.6s)
+-- Generating done (0.5s)
+-- Build files have been written to: /home/runner/work/ESPHome-Displays/ESPHome-Displays/displays/werkstatt-zentrale/.esphome/build/werkstatt-zentrale-by-ossi/build
+[0/4] Re-checking globbed directories...[1/111] Performing build step for 'bootloader'[0/1] Re-running CMake...
+-- Component directory /home/runner/.cache/esphome/idf/frameworks/5.5.6/components/esp_blockdev does not contain a CMakeLists.txt file. No component will be added
+-- Minimal build - OFF
+-- Could not use 'git describe' to determine PROJECT_VER.
+-- Building ESP-IDF components for target esp32s3
+-- Project sdkconfig file /home/runner/work/ESPHome-Displays/ESPHome-Displays/displays/werkstatt-zentrale/.esphome/build/werkstatt-zentrale-by-ossi/sdkconfig.werkstatt-zentrale-by-ossi
+-- Compiler supported targets: xtensa-esp-elf
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Bootloader project name: "bootloader" version: 1
+-- Configuring done (1.3s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/runner/work/ESPHome-Displays/ESPHome-Displays/displays/werkstatt-zentrale/.esphome/build/werkstatt-zentrale-by-ossi/build/bootloader
+[1/2] cd /home/runner/work/ESPHome-Displays/ESPHome-Displays/displays/werkstatt-zentrale/.esphome/build/werkstatt-zentrale-by-ossi/build/bootloader/esp-idf/esptool_py && /home/runner/.cache/esphome/idf/penvs/5.5.6/bin/python /home/runner/.cache/esphome/idf/frameworks/5.5.6/components/partition_table/check_sizes.py --offset 0x8000 bootloader 0x0 /home/runner/work/ESPHome-Displays/ESPHome-Displays/displays/werkstatt-zentrale/.esphome/build/werkstatt-zentrale-by-ossi/build/bootloader/bootloader.bin
+Bootloader binary size 0x5020 bytes. 0x2fe0 bytes (37%) free.
+[2/111] No install step for 'bootloader'[3/111] Completed 'bootloader'[4/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/cmake_pch.hxx.gch[5/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/api/api_buffer.cpp.obj[6/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/api/api_frame_helper.cpp.obj[7/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/api/api_overflow_buffer.cpp.obj[8/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/api/api_pb2.cpp.obj[9/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/api/api_pb2_service.cpp.obj[10/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/api/api_frame_helper_noise.cpp.obj[11/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/api/api_connection.cpp.obj[12/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/api/list_entities.cpp.obj[13/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/api/api_server.cpp.obj[14/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/binary_sensor/binary_sensor.cpp.obj[15/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/api/subscribe_state.cpp.obj[16/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/api/proto.cpp.obj[17/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/binary_sensor/filter.cpp.obj[18/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/bme680/bme680.cpp.obj[19/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/display/display_buffer.cpp.obj[20/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/display/rect.cpp.obj[21/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/captive_portal/captive_portal.cpp.obj[22/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/esp32/atexit_stubs.cpp.obj[23/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/esp32/crash_handler.cpp.obj[24/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/esp32/core.cpp.obj[25/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/display/display.cpp.obj[26/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/esp32/hal.cpp.obj[27/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/esp32/printf_stubs.cpp.obj[28/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/esp32/helpers.cpp.obj[29/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/esp32/gpio.cpp.obj[30/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/esp32/preferences.cpp.obj[31/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/esp32/throw_stubs.cpp.obj[32/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/esp32/vasprintf_stubs.cpp.obj[33/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/font/font.cpp.obj[34/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/esphome/ota/ota_esphome_noise.cpp.obj[35/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/esphome/ota/ota_esphome_udp.cpp.obj[36/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/gpio/binary_sensor/gpio_binary_sensor.cpp.obj[37/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/esphome/ota/ota_esphome_inflate_session.cpp.obj[38/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/gpio/output/gpio_binary_output.cpp.obj[39/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/homeassistant/sensor/homeassistant_sensor.cpp.obj[40/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/esphome/ota/ota_esphome.cpp.obj[41/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/http_request/http_request.cpp.obj[42/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/http_request/http_request_idf.cpp.obj[43/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/i2c/i2c_bus_esp_idf.cpp.obj[44/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/i2c/i2c.cpp.obj[45/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/ledc/ledc_output.cpp.obj[46/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/http_request/ota/ota_http_request.cpp.obj[47/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/logger/logger_esp32.cpp.obj[48/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/http_request/update/http_request_update.cpp.obj[49/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/logger/logger.cpp.obj[50/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/json/json_util.cpp.obj[51/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/logger/task_log_buffer_esp32.cpp.obj[52/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/ili9xxx/ili9xxx_display.cpp.obj[53/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/md5/md5.cpp.obj[54/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/mdns/mdns_esp32.cpp.obj[55/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/network/network_component.cpp.obj[56/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/network/util.cpp.obj[57/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/noise/noise.cpp.obj[58/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/mdns/mdns_component.cpp.obj[59/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/noise/noise_handshake.cpp.obj[60/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/ota/ota_backend.cpp.obj[61/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/ota/ota_backend_esp_idf.cpp.obj[62/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/output/float_output.cpp.obj[63/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/output/switch/output_switch.cpp.obj[64/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/sensor/sensor.cpp.obj[65/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/safe_mode/safe_mode.cpp.obj[66/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/socket/bsd_sockets_impl.cpp.obj[67/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/sha256/sha256.cpp.obj[68/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/sensor/filter.cpp.obj[69/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/sntp/sntp_component.cpp.obj[70/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/socket/socket.cpp.obj[71/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/spi/spi_esp_idf.cpp.obj[72/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/time/real_time_clock.cpp.obj[73/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/switch/switch.cpp.obj[74/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/spi/spi.cpp.obj[75/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/update/update_entity.cpp.obj[76/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/time/posix_tz.cpp.obj[77/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/unicode/unicode.cpp.obj[78/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/watchdog/watchdog.cpp.obj[79/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/web_server_base/origin.cpp.obj[80/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/web_server_base/dns_server_esp32_idf.cpp.obj[81/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/web_server_idf/sse_chunk.cpp.obj[82/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/web_server_idf/multipart.cpp.obj[83/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/web_server_base/web_server_base.cpp.obj[84/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/web_server/ota/ota_web_server.cpp.obj[85/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/web_server_idf/utils.cpp.obj[86/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/core/build_info_data.cpp.obj[87/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/core/alloc_helpers.cpp.obj[88/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/core/color.cpp.obj[89/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/wifi/wifi_component_esp_idf.cpp.obj[90/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/core/entity_base.cpp.obj[91/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/wifi/wifi_component.cpp.obj[92/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/web_server_idf/web_server_idf.cpp.obj[93/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/core/component_iterator.cpp.obj[94/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/core/application.cpp.obj[95/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/core/component.cpp.obj[96/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/core/static_task.cpp.obj[97/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/core/gpio.cpp.obj[98/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/core/log.cpp.obj[99/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/core/scheduler.cpp.obj[100/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/core/wake/wake_freertos.cpp.obj[101/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/core/time.cpp.obj[102/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/core/helpers.cpp.obj[103/111] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/main.cpp.obj
+In lambda function,
+    inlined from 'static constexpr void setup()::<lambda(esphome::display::Display&)>::_FUN(esphome::display::Display&)' at /home/runner/work/ESPHome-Displays/ESPHome-Displays/displays/werkstatt-zentrale/.esphome/build/werkstatt-zentrale-by-ossi/src/main.cpp:3427:3:
+displays/werkstatt-zentrale/anzeige.yaml:65:40: warning: 'snprintf' output may be truncated before the last format character [-Wformat-truncation=]
+displays/werkstatt-zentrale/anzeige.yaml:65:17: note: 'snprintf' output between 11 and 13 bytes into a destination of size 12
+[104/111] Linking C static library esp-idf/src/libsrc.a[105/111] Linking CXX executable werkstatt-zentrale-by-ossi.elf[105/111] cd /home/runner/work/ESPHome-Displays/ESPHome-Displays/displays/werkstatt-zentrale/.esphome/build/werkstatt-zentrale-by-ossi/build && /usr/local/bin/cmake -D "IDF_SIZE_TOOL=/home/runner/.cache/esphome/idf/penvs/5.5.6/bin/python;-m;esp_idf_size" -D MAP_FILE=/home/runner/work/ESPHome-Displays/ESPHome-Displays/displays/werkstatt-zentrale/.esphome/build/werkstatt-zentrale-by-ossi/build/werkstatt-zentrale-by-ossi.map -D OUTPUT_JSON= -P /home/runner/.cache/esphome/idf/frameworks/5.5.6/tools/cmake/run_size_tool.cmake
+┏━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┓
+┃ Memory Type/Section ┃ Used [bytes] ┃ Used [%] ┃ Remain [bytes] ┃ Total [bytes] ┃
+┡━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━┩
+│ Flash Code          │       801092 │          │                │               │
+│    .text            │       801092 │          │                │               │
+│ Flash Data          │       188352 │          │                │               │
+│    .rodata          │       188096 │          │                │               │
+│    .appdesc         │          256 │          │                │               │
+│ DIRAM               │       108435 │    31.73 │         233325 │        341760 │
+│    .text            │        57011 │    16.68 │                │               │
+│    .bss             │        32504 │     9.51 │                │               │
+│    .data            │        18920 │     5.54 │                │               │
+│ IRAM                │        16384 │    100.0 │              0 │         16384 │
+│    .text            │        15356 │    93.73 │                │               │
+│    .vectors         │         1028 │     6.27 │                │               │
+│ RTC SLOW            │           32 │     0.39 │           8160 │          8192 │
+│    .force_slow      │           32 │     0.39 │                │               │
+│ RTC FAST            │           24 │     0.29 │           8168 │          8192 │
+│    .rtc_reserved    │           24 │     0.29 │                │               │
+└─────────────────────┴──────────────┴──────────┴────────────────┴───────────────┘
+Total image size: 1081791 bytes (.bin may be padded larger)
+[106/111] Generating binary image from built executable
+esptool.py v4.14.0
+Creating esp32s3 image...
+Merged 2 ELF sections
+Successfully created esp32s3 image.
+Generated /home/runner/work/ESPHome-Displays/ESPHome-Displays/displays/werkstatt-zentrale/.esphome/build/werkstatt-zentrale-by-ossi/build/werkstatt-zentrale-by-ossi.bin
+[107/111] cd /home/runner/work/ESPHome-Displays/ESPHome-Displays/displays/werkstatt-zentrale/.esphome/build/werkstatt-zentrale-by-ossi/build/esp-idf/esptool_py && /home/runner/.cache/esphome/idf/penvs/5.5.6/bin/python /home/runner/.cache/esphome/idf/frameworks/5.5.6/components/partition_table/check_sizes.py --offset 0x8000 partition --type app /home/runner/work/ESPHome-Displays/ESPHome-Displays/displays/werkstatt-zentrale/.esphome/build/werkstatt-zentrale-by-ossi/build/partition_table/partition-table.bin /home/runner/work/ESPHome-Displays/ESPHome-Displays/displays/werkstatt-zentrale/.esphome/build/werkstatt-zentrale-by-ossi/build/werkstatt-zentrale-by-ossi.bin
+werkstatt-zentrale-by-ossi.bin binary size 0x108230 bytes. Smallest app partition is 0x1c0000 bytes. 0xb7dd0 bytes (41%) free.
+RAM:   [===       ]  31.7% (used 108435 bytes from 341760 bytes)
+Flash: [======    ]  59.0% (used 1081791 bytes from 1835008 bytes)
+INFO Creating factory.bin...
+INFO Created: /home/runner/work/ESPHome-Displays/ESPHome-Displays/displays/werkstatt-zentrale/.esphome/build/werkstatt-zentrale-by-ossi/build/firmware.factory.bin
+INFO Created: /home/runner/work/ESPHome-Displays/ESPHome-Displays/displays/werkstatt-zentrale/.esphome/build/werkstatt-zentrale-by-ossi/build/firmware.ota.bin
+INFO Created: /home/runner/work/ESPHome-Displays/ESPHome-Displays/displays/werkstatt-zentrale/.esphome/build/werkstatt-zentrale-by-ossi/build/firmware.elf
+INFO Build Info: config_hash=0x5577d29d build_time_str=2026-11-25 04:58:55 +0000
+INFO Successfully compiled program.

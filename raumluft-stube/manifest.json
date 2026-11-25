@@ -1,0 +1,3 @@
+{"name": "raumluft-stube", "version": "73", "builds": [{"chipFamily": "ESP32-S3",
+  "ota": {"path": "https://raw.githubusercontent.com/Eggaossi/ESPHome-Displays/firmware/raumluft-stube/firmware.ota.bin",
+          "md5": "8dd45f3a887108974297d1237a0cb417", "summary": "Build 73 (aufgehoben) Design luftsaeule_bogen"}}]}

@@ -1,0 +1,3 @@
+{"name": "luxmeter", "version": "84", "builds": [{"chipFamily": "ESP32-S3",
+  "ota": {"path": "https://raw.githubusercontent.com/Eggaossi/ESPHome-Displays/firmware/luxmeter/firmware.ota.bin",
+          "md5": "07d0b02af88ffff30e76704679a03628", "summary": "Build 84 (aufgehoben) Design original"}}]}

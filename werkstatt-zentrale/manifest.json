@@ -1,0 +1,3 @@
+{"name": "werkstatt-zentrale", "version": "108", "builds": [{"chipFamily": "ESP32-S3",
+  "ota": {"path": "https://raw.githubusercontent.com/Eggaossi/ESPHome-Displays/firmware/werkstatt-zentrale/firmware.ota.bin",
+          "md5": "d444b9e35781585155cf38820ad43f1e", "summary": "Build 108 (neu gebaut) Design leistung"}}]}
