@@ -43,10 +43,10 @@ display:
       Color farbe_linie           = Color(212, 175, 55);
       Color gold = Color(212, 175, 55);
       // Art-Deco-Trennlinie: doppelt, kleine Rauten an beiden Enden (nichts in der Mitte, dort steht Text)
-      auto deco_linie = [&](int y) {
+      auto deco_linie = [&](int y, bool rauten) {
         it.horizontal_line(9, y - 1, 222, gold);
         it.horizontal_line(9, y + 1, 222, gold);
-        for (int x : {4, 235}) {
+        if (rauten) for (int x : {4, 235}) {
           it.filled_triangle(x - 4, y, x, y - 3, x + 4, y, gold);
           it.filled_triangle(x - 4, y, x, y + 3, x + 4, y, gold);
         }
@@ -86,7 +86,7 @@ display:
       } else {
         it.print(120, 26, id(neu_klein), farbe_beschriftung, TextAlign::TOP_CENTER, "--:--");
       }
-      deco_linie(49);
+      deco_linie(49, false);
 
       // ===== Lampen links, Steckdosen rechts (Kreise genau wie bei "Original": 65, 125, 185, 245) =====
       const char* lampe_oben[]  = {"Lampe", "Lupen", "Lampe", "Lampe"};
@@ -107,7 +107,7 @@ display:
         it.filled_circle(226, y, 10, dose_an[i] ? farbe_steckdose_an : farbe_aus);
         it.print(208, y, id(neu_steckdose), farbe_text_steckdosen, TextAlign::CENTER_RIGHT, steckdose[i]);
       }
-      deco_linie(260);
+      deco_linie(260, true);
 
       // ===== Werkraum: Spannung | Strom | Leistung =====
       if (id(sensor_shellyplus1pm_a0dd6c2b7808_voltage).has_state())
@@ -129,7 +129,7 @@ display:
       }
       if (id(sensor_shellyplus1pm_a0dd6c2b7808_power).has_state())
         it.printf(238, 261, id(neu_werte), Color(176, 185, 28), TextAlign::TOP_RIGHT, "%.1fW", id(sensor_shellyplus1pm_a0dd6c2b7808_power).state);
-      deco_linie(285);
+      deco_linie(285, true);
 
       // ===== Tabelle Innen / Aussen: Temperatur | Feuchte | Luftdruck =====
       it.print(2, 287, id(neu_klein), farbe_beschriftung, "Innen");
