@@ -1,4 +1,4 @@
-# Design "Art Deco" (24.11.2026): wie "Neu" in Gold/Creme, doppelte Trennlinien mit Raute, Strahlen-Faecher in den
+# Design "Art Deco" (24.11.2026): wie "Neu" in Gold/Creme, doppelte Trennlinien mit kleinen Rauten an den Enden, Strahlen-Faecher in den
 # oberen Ecken, goldene Ringe um die Kreise. Kreise an denselben Stellen.
 font:
   - file: 'fonts/Ananda.ttf'
@@ -42,12 +42,14 @@ display:
       Color farbe_beschriftung    = Color(212, 175, 55);
       Color farbe_linie           = Color(212, 175, 55);
       Color gold = Color(212, 175, 55);
-      // Art-Deco-Trennlinie: doppelt, mit Raute in der Mitte
+      // Art-Deco-Trennlinie: doppelt, kleine Rauten an beiden Enden (nichts in der Mitte, dort steht Text)
       auto deco_linie = [&](int y) {
-        it.horizontal_line(0, y - 1, 104, gold); it.horizontal_line(136, y - 1, 104, gold);
-        it.horizontal_line(0, y + 1, 104, gold); it.horizontal_line(136, y + 1, 104, gold);
-        it.filled_triangle(110, y, 120, y - 5, 130, y, gold);
-        it.filled_triangle(110, y, 120, y + 5, 130, y, gold);
+        it.horizontal_line(9, y - 1, 222, gold);
+        it.horizontal_line(9, y + 1, 222, gold);
+        for (int x : {4, 235}) {
+          it.filled_triangle(x - 4, y, x, y - 3, x + 4, y, gold);
+          it.filled_triangle(x - 4, y, x, y + 3, x + 4, y, gold);
+        }
       };
 
       auto druck_farbe = [](float p) -> Color {

@@ -1,4 +1,4 @@
-# Design "Laufzeit" (24.11.2026): wie "Neu", dazu bei jedem eingeschalteten Ausgang "an seit 12 min" / "an seit 1:25 h"
+# Design "Laufzeit" (24.11.2026): wie "Neu", dazu bei jedem eingeschalteten Ausgang "seit 12 min" / "seit 1:25 h"
 # (gemerkt ab dem Einschalten; nach Neustart des Geraets zaehlt es ab Neustart). Kreise an denselben Stellen.
 font:
   - file: 'fonts/Ananda.ttf'
@@ -93,8 +93,8 @@ display:
       auto seit_text = [&](int k, char *b, size_t n) {
         int min = (jetzt - seit[k]) / 60;
         if (seit[k] == 0 || jetzt < seit[k]) snprintf(b, n, "an");
-        else if (min < 60) snprintf(b, n, "an seit %d min", min);
-        else snprintf(b, n, "an seit %d:%02d h", min / 60, min % 60);
+        else if (min < 60) snprintf(b, n, "seit %d min", min);
+        else snprintf(b, n, "seit %d:%02d h", min / 60, min % 60);
       };
       Color farbe_seit = Color(0, 255, 128);
       for (int i = 0; i < 4; i++) {
