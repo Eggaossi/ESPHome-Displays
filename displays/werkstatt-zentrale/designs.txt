@@ -1,3 +1,7 @@
 # id=Name (fuer die App HA-Displays)
 original=Original
 neu=Neu
+taster=Taster
+laufzeit=Laufzeit
+artdeco=Art Deco
+leistung=Leistung

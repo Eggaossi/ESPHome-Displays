@@ -76,3 +76,7 @@ In HA dann beim ESPHome-Geraet den NEUEN API-Schluessel eintragen (HA meldet "ne
             REGEL (Nutzer 24.11.2026): jede neue Design-Variante bekommt einen EIGENEN Namen (eigene designs/anzeige_<id>.yaml
             + Zeile in designs.txt), bestehende Designs NICHT ueberschreiben - der Nutzer schaltet in der App HA-Displays um.
             Die enge Fassung von "Neu" (Kreise 76/124/172/220) wird NICHT als eigenes Design gebraucht (Nutzer: "Kompakt weg").
+24.11.2026  Nutzer hat in der App auf "Neu" umgeschaltet (Build lief an). Vier weitere Designs als Vorschau (je eigener Name):
+            Taster (Kreise wie die Edelstahl-Taster, Ring leuchtet), Laufzeit ("an seit ..."), Art Deco (Gold), Leistung
+            (LED-Skala 0-2000 W). Alle NICHT kompiliert (nur das aktive wird gebaut), nur in der Vorschau (g++-Nachbildung) OK.
+            tools/vorschau.py: Schalter (leuchte/steckdose/lampe/relais) in der Vorschau teils an, teils aus (aus dem Namen).

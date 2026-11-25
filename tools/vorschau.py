@@ -324,7 +324,13 @@ def main():
         if isinstance(e, dict) and e.get("id") in benutzt and e["id"] not in erledigt:
             decl.append(f"ZeitQuelle {e['id']};"); erledigt.add(e["id"])
     for n in sorted(benutzt - erledigt):
-        decl.append(f"Etwas {n};")
+        # Schalter (Lampen, Steckdosen ...) teils an, teils aus, damit die Vorschau beide Zustaende zeigt
+        # (24.11.2026, Werkstatt-Zentrale); immer gleich, aus dem Namen gerechnet
+        if re.search(r"leuchte|steckdose|lampe|relais", n.lower()):
+            an = int(hashlib.md5(n.encode()).hexdigest(), 16) % 2 == 0
+            decl.append(f"Etwas {n}{{{'true' if an else 'false'}}};")
+        else:
+            decl.append(f"Etwas {n};")
 
     # id() wie ESPHome umsetzen: id(x).foo -> x->foo (bei uns Objekt: x.foo), id(x) allein -> Zeiger auf x;
     # Globals immer als Wert, Schriften sind bei uns schon Zeiger

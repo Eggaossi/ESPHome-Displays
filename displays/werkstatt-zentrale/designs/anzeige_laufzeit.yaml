@@ -1,0 +1,166 @@
+# Design "Laufzeit" (24.11.2026): wie "Neu", dazu bei jedem eingeschalteten Ausgang "an seit 12 min" / "an seit 1:25 h"
+# (gemerkt ab dem Einschalten; nach Neustart des Geraets zaehlt es ab Neustart). Kreise an denselben Stellen.
+font:
+  - file: 'fonts/Ananda.ttf'
+    id: neu_titel
+    size: 16
+  - file: 'fonts/Coffin.ttf'
+    id: neu_klein
+    size: 16
+  - file: 'fonts/Coffin.ttf'
+    id: neu_steckdose
+    size: 22
+  - file: 'fonts/Cabaret.ttf'
+    id: neu_zeit
+    size: 26
+  - file: 'fonts/Cabaret.ttf'
+    id: neu_werte
+    size: 22
+
+spi:
+  clk_pin: GPIO18
+  mosi_pin: GPIO17
+
+display:
+  - platform: ili9xxx
+    model: ST7789v
+    cs_pin: GPIO7
+    dc_pin: GPIO15
+    reset_pin: GPIO16
+    color_palette: 8BIT
+    rotation: 0
+    invert_colors: false
+    update_interval: 20s
+    lambda: |-
+      // === Farben (8-Bit-Palette: reine Farben wirken am Display am besten) ===
+      Color farbe_rand          = Color(255, 255, 255);
+      Color farbe_aus           = Color(61, 34, 0);
+      Color farbe_lampe_an      = Color(255, 255, 0);
+      Color farbe_steckdose_an  = Color(0, 255, 0);
+      Color farbe_text_lampen     = Color(250, 225, 145);
+      Color farbe_text_steckdosen = Color(220, 225, 145);
+      Color farbe_beschriftung    = Color(150, 150, 150);
+      Color farbe_linie           = Color(70, 70, 70);
+
+      auto druck_farbe = [](float p) -> Color {
+        if (p < 905) return Color(255, 0, 0);
+        if (p < 910) return Color(255, 165, 0);
+        if (p < 916) return Color(0, 255, 0);
+        if (p < 920) return Color(64, 224, 208);
+        return Color(0, 128, 255);
+      };
+
+      // ===== Titel =====
+      it.print(120, 4, id(neu_titel), Color(243, 214, 119), TextAlign::TOP_CENTER, "Werkstatt Zentrale by Ossi");
+
+      // ===== Datum | Wochentag | Uhrzeit =====
+      auto time = id(sntp_time).now();
+      if (time.is_valid()) {
+        char datum[12], uhr[6];
+        snprintf(datum, sizeof(datum), "%02d.%02d.%04d", time.day_of_month, time.month, time.year);
+        snprintf(uhr, sizeof(uhr), "%02d:%02d", time.hour, time.minute);
+        it.print(2, 22, id(neu_zeit), Color(255, 255, 0), datum);
+        it.print(238, 22, id(neu_zeit), Color(255, 255, 0), TextAlign::TOP_RIGHT, uhr);
+        // Wochentag mittig in die Luecke zwischen Datum und Uhrzeit
+        int x1, y1, w_datum, w_uhr, h;
+        it.get_text_bounds(0, 0, datum, id(neu_zeit), TextAlign::TOP_LEFT, &x1, &y1, &w_datum, &h);
+        it.get_text_bounds(0, 0, uhr, id(neu_zeit), TextAlign::TOP_LEFT, &x1, &y1, &w_uhr, &h);
+        const char* tage[] = {"Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"};
+        it.print((2 + w_datum + 238 - w_uhr) / 2, 30, id(neu_klein), Color(189, 217, 80), TextAlign::TOP_CENTER,
+                 tage[(time.day_of_week + 5) % 7]);
+      } else {
+        it.print(120, 26, id(neu_klein), farbe_beschriftung, TextAlign::TOP_CENTER, "--:--");
+      }
+      it.horizontal_line(0, 50, 240, farbe_linie);
+
+      // ===== Lampen links, Steckdosen rechts (Kreise genau wie bei "Original": 65, 125, 185, 245) =====
+      const char* lampe_oben[]  = {"Lampe", "Lupen", "Lampe", "Lampe"};
+      const char* lampe_unten[] = {"3D-Drucker", "Lampe", "Werkbank", "Retro-PC"};
+      const char* steckdose[]   = {"Leata", "Entleata", "Netzteil", "Retro-PC"};
+      bool lampe_an[] = {id(keller_leuchte_1).state, id(keller_leuchte_2).state,
+                         id(keller_leuchte_3).state, id(keller_leuchte_4).state};
+      bool dose_an[]  = {id(keller_steckdose_1).state, id(keller_steckdose_2).state,
+                         id(keller_steckdose_3).state, id(keller_steckdose_4).state};
+      // Einschaltzeit merken (bleibt zwischen den Bildaufbauten erhalten)
+      static time_t seit[8] = {0};
+      static bool war_an[8] = {false};
+      time_t jetzt = id(sntp_time).now().timestamp;
+      for (int k = 0; k < 8; k++) {
+        bool an = k < 4 ? lampe_an[k] : dose_an[k - 4];
+        if (an && !war_an[k]) seit[k] = jetzt;
+        war_an[k] = an;
+      }
+      auto seit_text = [&](int k, char *b, size_t n) {
+        int min = (jetzt - seit[k]) / 60;
+        if (seit[k] == 0 || jetzt < seit[k]) snprintf(b, n, "an");
+        else if (min < 60) snprintf(b, n, "an seit %d min", min);
+        else snprintf(b, n, "an seit %d:%02d h", min / 60, min % 60);
+      };
+      Color farbe_seit = Color(0, 255, 128);
+      for (int i = 0; i < 4; i++) {
+        int y = 65 + i * 60;
+        it.filled_circle(13, y, 13, farbe_rand);
+        it.filled_circle(13, y, 10, lampe_an[i] ? farbe_lampe_an : farbe_aus);
+        it.print(30, y - 14, id(neu_klein), farbe_text_lampen, lampe_oben[i]);
+        it.print(30, y + 1, id(neu_klein), farbe_text_lampen, lampe_unten[i]);
+
+        it.filled_circle(226, y, 13, farbe_rand);
+        it.filled_circle(226, y, 10, dose_an[i] ? farbe_steckdose_an : farbe_aus);
+        it.print(208, y, id(neu_steckdose), farbe_text_steckdosen, TextAlign::CENTER_RIGHT, steckdose[i]);
+        char b[24];
+        if (lampe_an[i]) { seit_text(i, b, sizeof(b)); it.print(30, y + 17, id(neu_klein), farbe_seit, b); }
+        if (dose_an[i])  { seit_text(4 + i, b, sizeof(b)); it.print(208, y + 14, id(neu_klein), farbe_seit, TextAlign::TOP_RIGHT, b); }
+      }
+      it.horizontal_line(0, 260, 240, farbe_linie);
+
+      // ===== Werkraum: Spannung | Strom | Leistung =====
+      if (id(sensor_shellyplus1pm_a0dd6c2b7808_voltage).has_state())
+        it.printf(2, 261, id(neu_werte), Color(214, 92, 203), "%.0fV", id(sensor_shellyplus1pm_a0dd6c2b7808_voltage).state);
+      if (id(sensor_shellyplus1pm_a0dd6c2b7808_current).has_state()) {
+        // Zahl in Cabaret, das "A" in Coffin (das A der Cabaret sieht aus wie ein R)
+        char strom[12];
+        snprintf(strom, sizeof(strom), "%.2f", id(sensor_shellyplus1pm_a0dd6c2b7808_current).state);
+        int sx, sy, w_zahl, w_a, sh;
+        it.get_text_bounds(0, 0, strom, id(neu_werte), TextAlign::TOP_LEFT, &sx, &sy, &w_zahl, &sh);
+        it.get_text_bounds(0, 0, "A", id(neu_klein), TextAlign::TOP_LEFT, &sx, &sy, &w_a, &sh);
+        int links = 120 - (w_zahl + 1 + w_a) / 2;
+        // beide auf dieselbe Grundlinie wie V und W
+        int basis_y, b1, b2, b3;
+        it.get_text_bounds(0, 0, strom, id(neu_werte), TextAlign::BASELINE_LEFT, &b1, &basis_y, &b2, &b3);
+        int grundlinie = 261 - basis_y;
+        it.print(links, grundlinie, id(neu_werte), Color(240, 42, 16), TextAlign::BASELINE_LEFT, strom);
+        it.print(links + w_zahl + 1, grundlinie, id(neu_klein), Color(240, 42, 16), TextAlign::BASELINE_LEFT, "A");
+      }
+      if (id(sensor_shellyplus1pm_a0dd6c2b7808_power).has_state())
+        it.printf(238, 261, id(neu_werte), Color(176, 185, 28), TextAlign::TOP_RIGHT, "%.1fW", id(sensor_shellyplus1pm_a0dd6c2b7808_power).state);
+      it.horizontal_line(0, 285, 240, farbe_linie);
+
+      // ===== Tabelle Innen / Aussen: Temperatur | Feuchte | Luftdruck =====
+      it.print(2, 287, id(neu_klein), farbe_beschriftung, "Innen");
+      it.print(2, 303, id(neu_klein), farbe_beschriftung, "Aussen");
+
+      if (id(bme680_temperature).has_state()) {
+        float t = id(bme680_temperature).state;
+        Color c = t < 16 ? Color(0, 128, 255) : t < 19 ? Color(64, 224, 208) : t < 22 ? Color(0, 255, 0)
+                : t < 26 ? Color(255, 165, 0) : Color(255, 0, 0);
+        it.printf(120, 287, id(neu_klein), c, TextAlign::TOP_RIGHT, "%.1f°C", t);
+      }
+      if (id(sensor_luxmeter_lux_korrigierte_temperatur).has_state()) {
+        float t = id(sensor_luxmeter_lux_korrigierte_temperatur).state;
+        Color c = t < -15 ? Color(0, 0, 128) : t < -10 ? Color(0, 0, 192) : t < -5 ? Color(0, 128, 255)
+                : t < 0 ? Color(0, 192, 192) : t < 5 ? Color(0, 255, 128) : t < 10 ? Color(192, 255, 64)
+                : t < 15 ? Color(255, 255, 0) : t < 20 ? Color(255, 128, 0) : Color(255, 0, 0);
+        it.printf(120, 303, id(neu_klein), c, TextAlign::TOP_RIGHT, "%.1f°C", t);
+      }
+      if (id(bme680_humidity).has_state())
+        it.printf(162, 287, id(neu_klein), Color(173, 216, 230), TextAlign::TOP_RIGHT, "%.0f%%", id(bme680_humidity).state);
+      if (id(sensor_luxmeter_aussen_luftfeuchtigkeit).has_state())
+        it.printf(162, 303, id(neu_klein), Color(173, 216, 230), TextAlign::TOP_RIGHT, "%.0f%%", id(sensor_luxmeter_aussen_luftfeuchtigkeit).state);
+      if (id(bme680_pressure).has_state()) {
+        float p = id(bme680_pressure).state;
+        it.printf(238, 287, id(neu_klein), druck_farbe(p), TextAlign::TOP_RIGHT, "%.0f hPa", p);
+      }
+      if (id(sensor_luxmeter_aussen_luftdruck).has_state()) {
+        float p = id(sensor_luxmeter_aussen_luftdruck).state;
+        it.printf(238, 303, id(neu_klein), druck_farbe(p), TextAlign::TOP_RIGHT, "%.0f hPa", p);
+      }
